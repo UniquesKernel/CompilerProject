@@ -22,8 +22,7 @@ jobs:
       - name: Configure with CMake and Ninja
         run: |
           mkdir build
-          cd build
-          cmake -GNinja ..
+          cmake -GNinja -S . -B build
 
       # Build
       - name: Build

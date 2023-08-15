@@ -1,0 +1,39 @@
+name: Build and Test
+
+on:
+  pull_request:
+    branches:
+      - main 
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Install CMake and Ninja
+      - name: Install CMake and Ninja
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      # Configure with CMake and Ninja
+      - name: Configure with CMake and Ninja
+        run: |
+          mkdir build
+          cd build
+          cmake -GNinja ..
+
+      # Build
+      - name: Build
+        run: |
+          cd build
+          ninja
+
+      # Run tests (adjust if your testing setup is different)
+      - name: Run tests
+        run: |
+          cd build
+          tests -s
+

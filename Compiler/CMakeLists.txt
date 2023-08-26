@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(CompilerProject)
 
-set(CMAKE_CXX_STANDARD 17)
-
-# Include headers
-include_directories(${CMAKE_SOURCE_DIR}/include)
+set(CMAKE_CXX_STANDARD 20)
 
 # include catch2 through its cmake integration
 Include(FetchContent)
@@ -19,11 +16,13 @@ FetchContent_MakeAvailable(Catch2)
 ## source files as a library
 file(GLOB LIB_SOURCES "src/**/*.cpp")
 add_library(compilerLib ${LIB_SOURCES})
+target_include_directories(compilerLib PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # Add main executable 
 file(GLOB SOURCES "src/main.cpp")
 add_executable(compiler ${SOURCES})
 target_link_libraries(compiler PRIVATE compilerLib)
+target_include_directories(compiler PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 # Add tests executable
 file(GLOB TEST_SOURCES "test/**/*.cpp")

@@ -2,12 +2,8 @@
 
 #include <string>
 
-Lexer::Lexer() {
-}
+Lexer::Lexer() {}
 
-Lexer::~Lexer() {
-}
+Lexer::~Lexer() {}
 
-std::string Lexer::lex(std::string input) {
-    return input;
-}
+std::string Lexer::lex(std::string input) { return input; }

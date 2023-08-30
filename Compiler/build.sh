@@ -19,8 +19,9 @@ build_project() {
   
   echo "Generating compile_commands.json..."
   echo "Generating ninja build files..."
-  execute "cmake -DCMAKE_BUILD_TYPE=${build_type} -GNinja -S . -B build" "Failed to configure project"
-  
+  execute "cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=${build_type} -GNinja -S . -B build" "Failed to configure project"
+  execute "cp build/compile_commands.json ." "Failed to copy compile_commands.json"
+
   execute "pushd build > /dev/null" ""
   echo "Compiling project with ninja..."
   execute "ninja" "Failed to build project"
@@ -75,6 +76,14 @@ check_format() {
   echo "Format checked"
 }
 
+format_code() {
+  echo "Formating..."
+  for file in $(find . \( -iname '*.cpp' -o -iname '*.hpp' \) -not -path './build/*'); do
+    clang-format -style=llvm -i $file
+  done
+  echo "Format complet"
+}
+
 clean_project() {
   echo "Cleaning project..."
   execute "rm -rf build" "Failed to remove build directory"
@@ -106,6 +115,9 @@ case "$1" in
     ;;
   check_format)
     check_format
+    ;;
+  format)
+    format_code
     ;;
   clean)
     clean_project

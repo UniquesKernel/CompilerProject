@@ -1,0 +1,10 @@
+#pragma once
+
+enum ExpressionType {
+  EXPRESSION,
+  BINARY_EXPRESSION,
+  BINARY_OPERATOR_EXPRESSION,
+  TERMINAL_EXPRESSION,
+};
+
+

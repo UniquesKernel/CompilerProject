@@ -4,13 +4,13 @@
 #include <catch2/catch.hpp>
 
 TEST_CASE("A terminal Expression can be created", "[terminalExpression]") {
-  Token token(TokenType::INTEGER, "1", 1, 1);
+  Token token(Symbol::INTEGER, "1", 1, 1);
   TerminalExpression terminalExpression(token);
   REQUIRE(std::get<int>(terminalExpression.getValue()) == 1);
 }
 
 TEST_CASE("A terminal Expression can be visited", "[terminalExpression]") {
-  Token token(TokenType::INTEGER, "1", 1, 1);
+  Token token(Symbol::INTEGER, "1", 1, 1);
   TerminalExpression terminalExpression = TerminalExpression(token);
 
   EvaluatorVisitor evaluatorVisitor;

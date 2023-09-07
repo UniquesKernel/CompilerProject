@@ -1,25 +1,21 @@
 #pragma once
 
 #include <string>
+#include "symbols.hpp"
 
-enum TokenType {
-  INTEGER,
-  PLUS,
-  UNKNOWN,
-};
 
 class Token {
 private:
-  const TokenType type;
+  const Symbol symbol;
   const std::string value;
   const int line;
   const int column;
 
 public:
-  Token(TokenType type, std::string value, int line, int column)
-      : type(type), value(value), line(line), column(column) {}
+  Token(Symbol symbol, std::string value, int line, int column)
+      : symbol(symbol), value(value), line(line), column(column) {}
 
-  TokenType getType() const { return type; }
+  Symbol getSymbol() const { return symbol; }
   std::string getValue() const { return value; }
   int getLine() const { return line; }
   int getColumn() const { return column; }

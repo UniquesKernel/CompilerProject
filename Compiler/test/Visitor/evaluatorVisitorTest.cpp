@@ -12,12 +12,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
     WHEN("Adding two positive integers") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "7", 1, 1));
+              Token(Symbol::INTEGER, "7", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       binaryExpression.accept(evaluator);
@@ -31,12 +31,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
     WHEN("Adding a positive integer and zero") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "0", 1, 1));
+              Token(Symbol::INTEGER, "0", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       binaryExpression.accept(evaluator);
@@ -50,12 +50,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
     WHEN("Adding a positive integer and its negation") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "-5", 1, 1));
+              Token(Symbol::INTEGER, "-5", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       binaryExpression.accept(evaluator);
@@ -69,12 +69,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
     WHEN("Adding a positive integer and a negative integer") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "-7", 1, 1));
+              Token(Symbol::INTEGER, "-7", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       binaryExpression.accept(evaluator);
@@ -88,12 +88,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
     WHEN("Adding a negative integer and a positive integer") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "-5", 1, 1));
+              Token(Symbol::INTEGER, "-5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "7", 1, 1));
+              Token(Symbol::INTEGER, "7", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       binaryExpression.accept(evaluator);
@@ -108,20 +108,20 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
          "matter") {
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "7", 1, 1));
+              Token(Symbol::INTEGER, "7", 1, 1));
       std::unique_ptr<const Expression> expr3 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "5", 1, 1));
+              Token(Symbol::INTEGER, "5", 1, 1));
       std::unique_ptr<const Expression> expr4 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "7", 1, 1));
+              Token(Symbol::INTEGER, "7", 1, 1));
 
-      BinaryExpression binaryExpression1(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression1(Token(Symbol::PLUS, "+", 1, 1),
                                          std::move(expr1), std::move(expr2));
-      BinaryExpression binaryExpression2(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression2(Token(Symbol::PLUS, "+", 1, 1),
                                          std::move(expr4), std::move(expr3));
 
       binaryExpression1.accept(evaluator);
@@ -137,12 +137,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
 
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, std::to_string(max), 1, 1));
+              Token(Symbol::INTEGER, std::to_string(max), 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "1", 1, 1));
+              Token(Symbol::INTEGER, "1", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       THEN("The should throw an overflow error") {
@@ -156,12 +156,12 @@ TEST_CASE("Addition Properties with EvaluatorVisitor") {
 
       std::unique_ptr<const Expression> expr1 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, std::to_string(min), 1, 1));
+              Token(Symbol::INTEGER, std::to_string(min), 1, 1));
       std::unique_ptr<const Expression> expr2 =
           std::make_unique<TerminalExpression>(
-              Token(TokenType::INTEGER, "-1", 1, 1));
+              Token(Symbol::INTEGER, "-1", 1, 1));
 
-      BinaryExpression binaryExpression(Token(TokenType::PLUS, "+", 1, 1),
+      BinaryExpression binaryExpression(Token(Symbol::PLUS, "+", 1, 1),
                                         std::move(expr1), std::move(expr2));
 
       THEN("The should throw an overflow error") {

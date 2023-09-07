@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Expression/expression.hpp"
-#include "Expression/expressionType.hpp"
+#include "symbols.hpp"
 #include <vector>
 
 struct ProductionRule {
-  ExpressionType left;
-  std::vector<ExpressionType> right;
+  Symbol left;
+  std::vector<Symbol> right;
 };

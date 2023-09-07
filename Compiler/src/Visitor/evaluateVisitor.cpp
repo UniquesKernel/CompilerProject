@@ -12,8 +12,8 @@ void EvaluatorVisitor::visit(const BinaryExpression &binaryExpression) {
   binaryExpression.getRight()->accept(*this);
   auto right = getResult<int>();
 
-  switch (binaryExpression.getOp().getType()) {
-  case TokenType::PLUS:
+  switch (binaryExpression.getOp().getSymbol()) {
+  case Symbol::PLUS:
     if ((left > 0) && (right > std::numeric_limits<int>::max() - left)) {
       throw std::overflow_error("Integer overflow detected");
     }

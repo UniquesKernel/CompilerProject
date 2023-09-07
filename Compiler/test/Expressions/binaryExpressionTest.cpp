@@ -5,9 +5,9 @@
 #include "Visitor/evaluatorVisitor.hpp"
 
 TEST_CASE("A binary Expression can be created", "[binaryExpression]") {
-  Token fistIntegerToken = Token(TokenType::INTEGER, "1", 1, 1);
-  Token plusToken = Token(TokenType::PLUS, "+", 1, 1);
-  Token secondIntegerToken = Token(TokenType::INTEGER, "2", 1, 1);
+  Token fistIntegerToken = Token(Symbol::INTEGER, "1", 1, 1);
+  Token plusToken = Token(Symbol::PLUS, "+", 1, 1);
+  Token secondIntegerToken = Token(Symbol::INTEGER, "2", 1, 1);
 
   ExpressionPtr left = std::make_unique<TerminalExpression>(fistIntegerToken);
   ExpressionPtr right =

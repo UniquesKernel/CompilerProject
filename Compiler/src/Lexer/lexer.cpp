@@ -17,9 +17,9 @@ Token Lexer::getNextToken() {
   }
 
   if (position <= source.length()) {
-    std::vector<std::pair<std::regex, TokenType>> tokenPatterns = {
-        {std::regex("^0\\b|^([1-9][0-9]*)"), TokenType::INTEGER},
-        {std::regex("^\\+"), TokenType::PLUS},
+    std::vector<std::pair<std::regex, Symbol>> tokenPatterns = {
+        {std::regex("^0\\b|^([1-9][0-9]*)"), Symbol::INTEGER},
+        {std::regex("^\\+"), Symbol::PLUS},
     };
 
     std::smatch match;

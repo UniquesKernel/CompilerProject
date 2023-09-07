@@ -5,10 +5,10 @@
 #include <map>
 
 TerminalExpression::TerminalExpression(const Token &token) {
-  const std::map<TokenType, std::function<void()>> converter = {
-      {TokenType::INTEGER,
+  const std::map<Symbol, std::function<void()>> converter = {
+      {Symbol::INTEGER,
        [this, token]() { value = std::stoi(token.getValue()); }},
   };
 
-  converter.at(token.getType())();
+  converter.at(token.getSymbol())();
 }

@@ -7,20 +7,22 @@ TEST_CASE(
     const Lexer lexer("1+1");
     grammar_handler parser = grammar_handler();
 
-    LRItem item = LRItem({BINARY_EXPRESSION, {EXPRESSION, PLUS, EXPRESSION}},2);
+    LRItem item = LRItem({BINARY_EXPRESSION, {EXPRESSION, PLUS, EXPRESSION}},0);
     LRItem item2 = LRItem({EXPRESSION, {INTEGER}},0);
     std::set<LRItem> item_list;
     item_list.insert(item);
 
-    std::set<LRItem> closure = parser.closure(item_list);
+    std::set<LRItem> closure = parser.closure(item);
 
-
+    parser.calculateStates(item);
 
     std::cout << "\n\n";
-
-    for(LRItem item: closure){
-        item.print();
+    int count = 0;
+    for(std::set<LRItem> state : parser.states){
+        std::cout << "state " << count++ << "\n";
+        for(LRItem item: state){
+            item.print();
+        }
     }
-
     REQUIRE(item_list.find(item2) == item_list.end());
 }

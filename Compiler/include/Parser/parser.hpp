@@ -63,18 +63,20 @@ class grammar_handler {
   };
 
     std::unordered_map<Symbol, std::set<Symbol>> first;
-    std::unordered_map<Symbol, std::set<LRItem>> states;
+    std::unordered_map<Symbol, std::set<LRItem>> follower;
 
     // Expression lists
     std::set<Symbol> terminalExpression;
     std::set<Symbol> nonTerminalExpression;
 
 
+
   public:
+    std::set<std::set<LRItem>> states;
 
     void populateExpressionLists();
     // void populateMaps();
-    void calculateStates();
-    std::set<LRItem> closure(const std::set<LRItem>& items);
+    void calculateStates(const LRItem& start);
+    std::set<LRItem> closure(const LRItem& items);
 
 };

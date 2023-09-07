@@ -25,8 +25,9 @@
 // }
 
 
-std::set<LRItem> grammar_handler::closure(const std::set<LRItem>& items){
-    std::set<LRItem> closure_items = items;
+std::set<LRItem> grammar_handler::closure(const LRItem& input_item){
+    std::set<LRItem> closure_items;
+    closure_items.insert(input_item);
     bool items_added = true;
 int count = 0;
     while(items_added){
@@ -37,7 +38,6 @@ int count = 0;
                 Symbol symbol = item.productionRule.right[item.dotPosition];
                 if (grammar.find(symbol) != grammar.end()){
                     for( const ProductionRule& productionRule : grammar[symbol]){
-                            std::cout << count++ << "\n";
                         LRItem new_item = LRItem(productionRule, 0);
                         new_items.insert(new_item);
                     }
@@ -45,7 +45,6 @@ int count = 0;
             }
         }
         for(LRItem item: new_items){
-                item.print();
             if(closure_items.find(item) == closure_items.end()){
                 closure_items.insert(item);
                 items_added=true;
@@ -56,9 +55,29 @@ int count = 0;
 }
 
 
-// void grammar_handler::calculateStates(){
-//     return void;
-// }
+
+
+void grammar_handler::calculateStates(const LRItem& start){
+
+    states.insert(closure(start));
+    bool state_added = true;
+
+    while(state_added){
+        state_added = false;
+        for(std::set<LRItem> state : states){
+            for(LRItem item : state){
+                if(item.dotPosition < item.productionRule.right.size()){
+                    LRItem new_item = LRItem(item.productionRule, item.dotPosition+1);
+                    std::set<LRItem> new_state = closure(new_item);
+                    if(states.find(new_state) == states.end()){
+                        states.insert(new_state);
+                        state_added = true;
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 

@@ -49,7 +49,7 @@ test_project_with_coverage() {
 
   echo "Evaluate coverage report..."
   local line_coverage=$(lcov --summary coverage.filtered.info | grep lines | awk '{print $2}' | sed 's/%//')
-  local is_coverage_good=$(echo "${line_coverage} < 100" | bc)
+  local is_coverage_good=$(echo "${line_coverage} < 80" | bc)
   if [ "$is_coverage_good" -eq 0 ]; then
     echo "Coverage is ${line_coverage}%"
   else

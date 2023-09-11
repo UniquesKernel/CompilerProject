@@ -1,0 +1,15 @@
+#pragma once
+
+enum Symbol {
+  START,
+  BINARY_EXPRESSION,
+  EXPRESSION,
+  UNARY_EXPRESSION,
+  INTEGER,
+  PLUS,
+  MINUS,
+  UNKNOWN,
+  EPSILON,
+  END_OF_FILE,
+  EnumCount
+};

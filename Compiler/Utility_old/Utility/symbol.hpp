@@ -11,4 +11,5 @@ enum Symbol {
   UNKNOWN,
   EPSILON,
   END_OF_FILE,
+  EnumCount
 };

@@ -1,19 +1,20 @@
 #pragma once
 
 #include "Utility/symbol.hpp"
+
 #include <vector>
 
-struct Rule {
-  Symbol lhs;
-  std::vector<Symbol> rhs;
+class Rule {
+private:
+  const Symbol lhs;
+  const std::vector<Symbol> rhs;
 
-  Rule(Symbol lhs, std::vector<Symbol> rhs) : lhs(lhs), rhs(rhs){};
+public:
+  Rule(const Symbol lhs, const std::vector<Symbol> rhs) : lhs(lhs), rhs(rhs) {}
+  Symbol getLhs() const { return lhs; }
+  std::vector<Symbol> getRhs() const { return rhs; }
 
-  // implement equals
-  bool operator==(Rule other) {
-    if (lhs == other.lhs && rhs == other.rhs) {
-      return true;
-    }
-    return false;
+  bool operator==(const Rule &other) const {
+    return lhs == other.lhs && rhs == other.rhs;
   }
 };

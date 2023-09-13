@@ -1,9 +1,12 @@
+#include "../src/Lexer/parser.hpp"
 #include <iostream>
 
-int main() {
-  std::cout << "Hello World!" << std::endl;
-  for (int i = 0; i < 10; i++) {
-    std::cout << i << std::endl;
-  }
+extern int result;
+
+
+int main(int argc, char **argv)
+{
+    yyparse();
   return 0;
+
 }

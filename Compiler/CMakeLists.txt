@@ -20,7 +20,7 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
         GIT_TAG v3.0.1
 )
-
+find_package(LLVM REQUIRED)
 FetchContent_MakeAvailable(Catch2)
 
 ## source files as a library
@@ -33,7 +33,7 @@ set_target_properties(compilerLib PROPERTIES CMAKE_CXX_CLANG_TIDY
 # Add main executable 
 file(GLOB SOURCES "src/main.cpp")
 add_executable(compiler ${SOURCES})
-target_link_libraries(compiler PRIVATE compilerLib)
+target_link_libraries(compiler PRIVATE compilerLib LLVM)
 target_include_directories(compiler PRIVATE ${CMAKE_SOURCE_DIR}/include)
 set_target_properties(compilerLib PROPERTIES CMAKE_CXX_CLANG_TIDY
         "clang-tidy;-checks=*;-header-filter='${CMAKE_SOURCE_DIR}/include/*'")

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Visitors/baseVisitor.hpp"
+#include "Visitors/llvmVisitor.hpp"
 
-class baseExpression{
-    void visit(baseVisitor) = 0;
-}
+class BaseExpression{
+    public:
+        virtual llvm::Value* accept(LLVM_Visitor *visitor) = 0;
+};

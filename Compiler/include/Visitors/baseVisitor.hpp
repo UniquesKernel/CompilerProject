@@ -1,9 +1,10 @@
 #pragma once
 
+class BinaryExpression;
+class TerminalExpression;
 
-
-class baseVisitor{
+template <typename T> class BaseVisitor{
     public:
-        void visitIntegerExpression(baseVisitor) = 0;
-        void visitAdditionExpression(baseVisitor) = 0;
+        virtual T visitAdditionExpression(BinaryExpression* expression) = 0;
+        virtual T visitIntegerExpression(TerminalExpression*) = 0;
 };

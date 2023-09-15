@@ -8,7 +8,7 @@ execute() {
 setup_dependencies() {
   echo "Setting up dependencies..."
   execute "sudo apt-get update" "Failed to update apt-get"
-  execute "sudo apt-get install -y cmake ninja-build catch2 lcov gcc g++ bc" "Failed to install dependencies"
+  execute "sudo apt-get install -y cmake ninja-build catch2 lcov gcc g++ bc llvm-dev" "Failed to install dependencies"
   echo "Dependencies set up"
 }
 

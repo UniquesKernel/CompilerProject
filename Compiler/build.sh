@@ -73,7 +73,12 @@ test_project_with_coverage() {
 
 check_format() {
   echo "Checking format..."
-  for file in $(find . \( -iname '*.cpp' -o -iname '*.hpp' \) -not -path './build/*'); do
+  for file in $(find . \( -iname '*.cpp' -o -iname '*.hpp' \) \
+               -not -path './build/*' \
+               -not -name 'lexer.cpp' \
+               -not -name 'lexer.hpp' \
+               -not -name 'parser.cpp' \
+               -not -name 'parser.hpp'); do
     fileDiff=$(clang-format -style=llvm $file | diff -u $file -)
 
     if [ ! -z "$fileDiff" ]; then
@@ -84,6 +89,7 @@ check_format() {
   done
   echo "Format checked"
 }
+
 
 format_code() {
   echo "Formating..."

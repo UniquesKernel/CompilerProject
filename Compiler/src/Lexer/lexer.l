@@ -2,20 +2,35 @@
   /* Definitions */
   #include "parser.hpp"
   #include <cstdio>
+
 %}
+
+%option noyywrap
+%option yylineno
 
 /* rules */
 %% 
 
+[;] { return END_OF_LINE; }
+
 [0-9]+ { yylval.num = atoi(yytext); return NUMBER; }
-"+" { return PLUS; }
-[ \t\r]+ { /* ignore whitespace */ }
-<<EOF>> { return 0; }
-. {}
+
+"*" { return '*'; }
+
+"/" { return '/'; }
+
+"+" { return '+'; }
+
+"-" { return '-'; }
+
+"(" { return LPAREN; }
+
+")" { return RPAREN; }
+
+[ \t\r\n]* { }
+
+<<EOF>> { return END_OF_FILE; }
+
+. { return 0; }
 
 %% 
-/* Epilogue */
-
-int yywrap() {
-  return 0;
-}

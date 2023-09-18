@@ -9,5 +9,5 @@ private:
 public:
   TerminalExpression(int value) : value(value) {}
   int getValue() { return value; }
-  llvm::Value *accept(LLVM_Visitor *visitor) override;
+  void accept(LLVM_Visitor *visitor) override;
 };

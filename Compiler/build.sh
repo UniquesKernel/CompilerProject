@@ -7,6 +7,9 @@ execute() {
 
 setup_dependencies() {
   echo "Setting up dependencies..."
+  wget https://apt.llvm.org/llvm.sh
+  chmod +x llvm.sh
+  sudo ./llvm.sh 18
   execute "sudo apt-get update" "Failed to update apt-get"
   execute "sudo apt-get install -y cmake ninja-build catch2 lcov gcc g++ bc flex bison llvm-dev clang-format" "Failed to install dependencies"
   echo "Dependencies set up"

@@ -2,28 +2,36 @@
     /* Definitions */
     #include <iostream>
     #include <string>
+    #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/terminalExpression.hpp"
+
     int yylex();
     void yyerror(const char* s);
 
-    typedef struct ResultNode {
-        int value;
-        struct ResultNode* next;
-    } ResultNode;
-
-    ResultNode* results = nullptr;
-    void appendResult(int value);
+    BaseExpression* rootAST = nullptr;
 %}
 
-%locations
-%union {
-    int num;
+%code requires{
+    #include "Expressions/baseExpression.hpp"
+    #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/binaryExpression.hpp"
 }
 
-%token<num> NUMBER
+%union {
+    int num;
+    TerminalExpression* terminal;
+    BinaryExpression* binary;
+    BaseExpression* base;
+}
+
+%token<num> INT
+%type<base> expr
+%type<base> start
 %token '*'
 %token '/'
 %token '+'
 %token '-'
+%token '%'
 %token LPAREN
 %token RPAREN
 %token END_OF_LINE
@@ -31,61 +39,30 @@
 
 %left '-'
 %left '+'
-%right '/'
-%right '*'
+%left '%'
+%left '/'
+%left '*'
 %nonassoc LPAREN
 %nonassoc RPAREN
-%type<num> expr
 
 /* Rules */
 %%
 
 start:
-    program END_OF_FILE { return 0; }
-;
-
-program:
-     /* Empty */
-|    program expr END_OF_LINE { appendResult($2); }
-;
+     expr END_OF_FILE { rootAST = $1; return 0; }
 
 expr:
-    LPAREN expr RPAREN { $$ = $2; }
-|   NUMBER { $$ = $1; }
-|   expr '*' expr { $$ = $1 * $3; }
-|   expr '/' expr {
-        if ($3 == 0) {
-            yyerror("Division by zero error");
-            $$ = 0;  // Default to 0 on error
-        } else {
-            $$ = $1 / $3;
-        }
-    }
-|   expr '+' expr { $$ = $1 + $3; }
-|   expr '-' expr { $$ = $1 - $3; }
-;
+    INT { $$ = new TerminalExpression($1); }
+    | LPAREN expr RPAREN { $$ = $2; }
+    | expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }
+    | expr '-' expr { $$ = new BinaryExpression($1, '-', $3); }
+    | expr '*' expr { $$ = new BinaryExpression($1, '*', $3); }
+    | expr '/' expr { $$ = new BinaryExpression($1, '-', $3); }
+    | expr '%' expr { $$ = new BinaryExpression($1, '%', $3); }
 
 %%
 
 /* Epilogue */
 void yyerror(const char* s) {
     std::cerr << "Error: " << s << std::endl;
-}
-
-void appendResult(int value) {
-    ResultNode* newNode = new ResultNode;
-    newNode->value = value;
-    newNode->next = nullptr;
-
-    if (!results) {
-        // If the list is empty, set the new node as the first node.
-        results = newNode;
-    } else {
-        // Otherwise, find the last node and append the new node.
-        ResultNode* current = results;
-        while (current->next) {
-            current = current->next;
-        }
-        current->next = newNode;
-    }
 }

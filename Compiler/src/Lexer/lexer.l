@@ -13,7 +13,7 @@
 
 [;] { return END_OF_LINE; }
 
-[0-9]+ { yylval.num = atoi(yytext); return NUMBER; }
+[0-9]+ { yylval.num = atoi(yytext); return INT; }
 
 "*" { return '*'; }
 
@@ -22,6 +22,8 @@
 "+" { return '+'; }
 
 "-" { return '-'; }
+
+"%" { return '%'; }
 
 "(" { return LPAREN; }
 

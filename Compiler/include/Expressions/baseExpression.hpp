@@ -4,5 +4,5 @@
 
 class BaseExpression {
 public:
-  virtual llvm::Value *accept(LLVM_Visitor *visitor) = 0;
+  virtual void accept(LLVM_Visitor *visitor) = 0;
 };

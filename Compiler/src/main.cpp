@@ -24,23 +24,38 @@ typedef struct ResultNode {
 
 extern ResultNode *results;
 int main(int argc, char **argv) {
-  TerminalExpression int1 = TerminalExpression(1);
-  TerminalExpression int2 = TerminalExpression(5);
-
-  BinaryExpression adder = BinaryExpression(&int1, &int2);
-
-  BinaryExpression adder2 = BinaryExpression(&int1, &adder);
 
   LLVM_Visitor visitor;
 
-  llvm::Value *addition = adder2.accept(&visitor);
+  TerminalExpression int1 = TerminalExpression(1);
+  TerminalExpression int2 = TerminalExpression(2);
+  TerminalExpression int4 = TerminalExpression(4);
+  BinaryExpression add3 = BinaryExpression(&int1, '+', &int2);
+  BinaryExpression sub1 = BinaryExpression(&add3, '-', &int2);
+  BinaryExpression mul3 = BinaryExpression(&add3, '*', &sub1);
+  BinaryExpression div2 = BinaryExpression(&int4, '/', &int2);
+  BinaryExpression mod1 = BinaryExpression(&add3, '%', &int2);
 
-  addition->print(llvm::outs());
+  add3.accept(&visitor);
+  visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';
 
-  // visitor.Builder->CreateRet(addition);
+  sub1.accept(&visitor);
+  visitor.getResult()->print(llvm::outs());
+  llvm::outs() << '\n';
 
-  // visitor.TheModule->print(llvm::outs(), nullptr);
+  mul3.accept(&visitor);
+  visitor.getResult()->print(llvm::outs());
+  llvm::outs() << '\n';
+
+  div2.accept(&visitor);
+  visitor.getResult()->print(llvm::outs());
+  llvm::outs() << '\n';
+
+  mod1.accept(&visitor);
+  visitor.getResult()->print(llvm::outs());
+  llvm::outs() << '\n';
+
   yyparse();
 
   ResultNode *current = results;

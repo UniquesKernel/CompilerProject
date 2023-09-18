@@ -7,6 +7,7 @@
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/FixedPointBuilder.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
@@ -17,8 +18,13 @@
 
 #include <unordered_map>
 
-class LLVM_Visitor : public BaseVisitor<llvm::Value *> {
+class LLVM_Visitor : public BaseVisitor {
+private:
+  llvm::Value *llvm_result;
+
 public:
+  llvm::Value *getResult() { return llvm_result; }
+
   std::unique_ptr<llvm::LLVMContext> TheContext;
   std::unique_ptr<llvm::IRBuilder<>> Builder;
   std::unique_ptr<llvm::Module> TheModule;
@@ -33,6 +39,7 @@ public:
     Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
   }
 
-  llvm::Value *visitIntegerExpression(TerminalExpression *integer) override;
-  llvm::Value *visitAdditionExpression(BinaryExpression *expression) override;
+  void visitIntegerExpression(TerminalExpression *integer) override;
+
+  void visitBinaryExpression(BinaryExpression *expression) override;
 };

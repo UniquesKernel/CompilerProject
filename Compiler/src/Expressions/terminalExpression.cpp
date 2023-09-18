@@ -1,5 +1,5 @@
 #include "Expressions/terminalExpression.hpp"
 
-llvm::Value *TerminalExpression::accept(LLVM_Visitor *visitor) {
-  return visitor->visitIntegerExpression(this);
+void TerminalExpression::accept(LLVM_Visitor *visitor) {
+  visitor->visitIntegerExpression(this);
 }

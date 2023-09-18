@@ -10,9 +10,10 @@ private:
   char type;
 
 public:
-  BinaryExpression(BaseExpression *lhs, BaseExpression *rhs)
-      : lhs(lhs), rhs(rhs) {}
+  BinaryExpression(BaseExpression *lhs, char type, BaseExpression *rhs)
+      : lhs(lhs), rhs(rhs), type(type) {}
   BaseExpression *getLHS() { return lhs; }
   BaseExpression *getRHS() { return rhs; }
-  llvm::Value *accept(LLVM_Visitor *visitor) override;
+  char getType() { return type; }
+  void accept(LLVM_Visitor *visitor) override;
 };

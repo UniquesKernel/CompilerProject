@@ -8,7 +8,7 @@ execute() {
 setup_dependencies() {
   echo "Setting up dependencies..."
   execute "sudo apt-get update" "Failed to update apt-get"
-  execute "sudo apt-get install -y cmake ninja-build catch2 lcov gcc g++ bc llvm-dev" "Failed to install dependencies"
+  execute "sudo apt-get install -y cmake ninja-build catch2 lcov gcc g++ bc flex bison llvm-dev" "Failed to install dependencies"
   echo "Dependencies set up"
 }
 
@@ -16,6 +16,15 @@ build_project() {
   echo "Building project..."
   local build_type="${1:-Debug}"
   [ -d build ] || execute "mkdir -p build" "Failed to create build directory"
+
+  execute "pushd src/Lexer/" ""
+  echo "Building Lexer..."
+  execute "rm -rf lexer.cpp" ""
+  execute "rm -rf parser.cpp parser.hpp"
+  execute "flex -o lexer.cpp lexer.l" "could not create Lexer"
+  execute "bison -o parser.cpp -d parser.y" "could not create Parser"
+  echo "Lexer Complete"
+  execute "popd > /dev/null" ""
   
   echo "Generating compile_commands.json..."
   echo "Generating ninja build files..."
@@ -64,7 +73,12 @@ test_project_with_coverage() {
 
 check_format() {
   echo "Checking format..."
-  for file in $(find . \( -iname '*.cpp' -o -iname '*.hpp' \) -not -path './build/*'); do
+  for file in $(find . \( -iname '*.cpp' -o -iname '*.hpp' \) \
+               -not -path './build/*' \
+               -not -name 'lexer.cpp' \
+               -not -name 'lexer.hpp' \
+               -not -name 'parser.cpp' \
+               -not -name 'parser.hpp'); do
     fileDiff=$(clang-format -style=llvm $file | diff -u $file -)
 
     if [ ! -z "$fileDiff" ]; then
@@ -75,6 +89,7 @@ check_format() {
   done
   echo "Format checked"
 }
+
 
 format_code() {
   echo "Formating..."

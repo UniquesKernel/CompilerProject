@@ -39,11 +39,11 @@ int main(int argc, char **argv) {
   add3.accept(&visitor);
   visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';
-  
+
   sub1.accept(&visitor);
   visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';
-  
+
   mul3.accept(&visitor);
   visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
   div2.accept(&visitor);
   visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';
-  
+
   mod1.accept(&visitor);
   visitor.getResult()->print(llvm::outs());
   llvm::outs() << '\n';

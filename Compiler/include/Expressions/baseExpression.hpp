@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Visitors/llvmVisitor.hpp"
+class LLVM_Visitor;
 
 class BaseExpression {
 public:

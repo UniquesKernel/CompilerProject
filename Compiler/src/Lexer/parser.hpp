@@ -36,62 +36,65 @@
    private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_PARSER_HPP_INCLUDED
-#define YY_YY_PARSER_HPP_INCLUDED
+# define YY_YY_PARSER_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-#define YYDEBUG 0
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 14 "parser.y"
+
+    #include "Expressions/baseExpression.hpp"
+    #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/binaryExpression.hpp"
+
+#line 55 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
-#define YYTOKENTYPE
-enum yytokentype {
-  YYEMPTY = -2,
-  YYEOF = 0,         /* "end of file"  */
-  YYerror = 256,     /* error  */
-  YYUNDEF = 257,     /* "invalid token"  */
-  NUMBER = 258,      /* NUMBER  */
-  LPAREN = 259,      /* LPAREN  */
-  RPAREN = 260,      /* RPAREN  */
-  END_OF_LINE = 261, /* END_OF_LINE  */
-  END_OF_FILE = 262  /* END_OF_FILE  */
-};
-typedef enum yytokentype yytoken_kind_t;
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    INT = 258,                     /* INT  */
+    LPAREN = 259,                  /* LPAREN  */
+    RPAREN = 260,                  /* RPAREN  */
+    END_OF_LINE = 261,             /* END_OF_LINE  */
+    END_OF_FILE = 262              /* END_OF_FILE  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
-#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
-union YYSTYPE {
-#line 18 "parser.y"
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+union YYSTYPE
+{
+#line 20 "parser.y"
 
-  int num;
+    int num;
+    TerminalExpression* terminal;
+    BinaryExpression* binary;
+    BaseExpression* base;
 
-#line 75 "parser.hpp"
+#line 86 "parser.hpp"
+
 };
 typedef union YYSTYPE YYSTYPE;
-#define YYSTYPE_IS_TRIVIAL 1
-#define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
 
-/* Location type.  */
-#if !defined YYLTYPE && !defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE {
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
-};
-#define YYLTYPE_IS_DECLARED 1
-#define YYLTYPE_IS_TRIVIAL 1
-#endif
 
 extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
 
-int yyparse(void);
+
+int yyparse (void);
+
 
 #endif /* !YY_YY_PARSER_HPP_INCLUDED  */

@@ -1,8 +1,8 @@
 #include "../src/Lexer/parser.hpp"
-#include <iostream>
-#include "Visitors/llvmVisitor.hpp"
 #include "Expressions/binaryExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
+#include "Visitors/llvmVisitor.hpp"
+#include <iostream>
 
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
@@ -17,27 +17,27 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/raw_ostream.h"
 
-  typedef struct ResultNode {
-    int value;
-    struct ResultNode *next;
-  } ResultNode;
+typedef struct ResultNode {
+  int value;
+  struct ResultNode *next;
+} ResultNode;
 
-  extern ResultNode *results;
+extern ResultNode *results;
 int main(int argc, char **argv) {
   TerminalExpression int1 = TerminalExpression(1);
   TerminalExpression int2 = TerminalExpression(5);
 
   BinaryExpression adder = BinaryExpression(&int1, &int2);
-  
+
   BinaryExpression adder2 = BinaryExpression(&int1, &adder);
 
   LLVM_Visitor visitor;
 
-  llvm::Value* addition = adder2.accept(&visitor);
+  llvm::Value *addition = adder2.accept(&visitor);
 
   addition->print(llvm::outs());
   llvm::outs() << '\n';
- 
+
   // visitor.Builder->CreateRet(addition);
 
   // visitor.TheModule->print(llvm::outs(), nullptr);

@@ -17,29 +17,22 @@
 
 #include <unordered_map>
 
+class LLVM_Visitor : public BaseVisitor<llvm::Value *> {
+public:
+  std::unique_ptr<llvm::LLVMContext> TheContext;
+  std::unique_ptr<llvm::IRBuilder<>> Builder;
+  std::unique_ptr<llvm::Module> TheModule;
+  std::unordered_map<std::string, llvm::Value *> NamedValues;
 
+  LLVM_Visitor() {
+    // Open a new context and module.
+    TheContext = std::make_unique<llvm::LLVMContext>();
+    TheModule = std::make_unique<llvm::Module>("my cool jit", *TheContext);
 
+    // Create a new builder for the module.
+    Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
+  }
 
-
-
-
-
-class LLVM_Visitor: public BaseVisitor<llvm::Value*> {
-  public:
-    std::unique_ptr<llvm::LLVMContext> TheContext;
-    std::unique_ptr<llvm::IRBuilder<>> Builder;
-    std::unique_ptr<llvm::Module> TheModule;
-    std::unordered_map<std::string, llvm::Value *> NamedValues;
-
-    LLVM_Visitor(){
-      // Open a new context and module.
-      TheContext = std::make_unique<llvm::LLVMContext>();
-      TheModule = std::make_unique<llvm::Module>("my cool jit", *TheContext);
-
-      // Create a new builder for the module.
-      Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
-    }
-
-    llvm::Value* visitIntegerExpression(TerminalExpression* integer) override;
-    llvm::Value* visitAdditionExpression(BinaryExpression* expression) override;
+  llvm::Value *visitIntegerExpression(TerminalExpression *integer) override;
+  llvm::Value *visitAdditionExpression(BinaryExpression *expression) override;
 };

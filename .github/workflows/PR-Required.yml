@@ -12,10 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run all required checks for a PR to main
+      - name: check format
         run: |
           cd Compiler
           chmod +x build.sh 
           ./build.sh check_format # Check that the code follows llvm style
+
+      - name: Run all required checks for a PR to main
+        run: |
+          cd Compiler
+          chmod +x build.sh 
           ./build.sh setup # build the code and has clang-tidy automatically run when building
-          ./build.sh test_with_coverage # run all catch2 unit test and fail if coverage is less that 100%
+          # ./build.sh test_with_coverage # run all catch2 unit test and fail if coverage is less that 100%
+

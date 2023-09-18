@@ -1,9 +1,28 @@
+#include "../src/Lexer/parser.hpp"
 #include <iostream>
 
-int main() {
-  std::cout << "Hello World!" << std::endl;
-  for (int i = 0; i < 10; i++) {
-    std::cout << i << std::endl;
+typedef struct ResultNode {
+  int value;
+  struct ResultNode *next;
+} ResultNode;
+
+extern ResultNode *results;
+
+int main(int argc, char **argv) {
+  yyparse();
+
+  ResultNode *current = results;
+  while (current) {
+    std::cout << "result: " << current->value << std::endl;
+    current = current->next;
   }
+
+  // Cleanup
+  while (results) {
+    ResultNode *temp = results;
+    results = results->next;
+    delete temp;
+  }
+
   return 0;
 }

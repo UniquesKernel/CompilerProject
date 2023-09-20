@@ -1,0 +1,22 @@
+\begin{figure}[h]
+\centering
+  \midsepremove{}
+  \begin{tabular}{|l|l|l|}
+    \toprule
+    Symbols & Token & Regular Expression \\ 
+    \midrule
+    $0, 1, 2, 3\dots$ & \texttt{INTEGER} & \regex{[1-9][0-9]*|^0\b} \\
+    \midrule
+    $+, -, *, /, \%$ & \texttt{'+', '-', '*', '/', '\%'} & \regex{[+\-*\%]} \\
+    \midrule
+    tabs, spaces and newlines & (Ignored) & \regex{[ \\t\\n\\r]} \\
+    \midrule
+    Anything else & Throws error: "Unknown Token" & \regex{[.]} \\
+    \bottomrule
+  \end{tabular}
+  \caption{The \lexer{} recognizes lexemes by using regular
+  expressions. The table shows which lexemes are mapped to which tokens and which
+regular expression is used to identify them.}
+  \label{fig:SymbolMap}
+\end{figure}
+

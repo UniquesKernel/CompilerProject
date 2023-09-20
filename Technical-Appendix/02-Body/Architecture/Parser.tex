@@ -1,0 +1,56 @@
+\subsection{Parser}
+
+The \lang{} \parser{} utilizes a \textit{bottom-up} parsing methodology.
+Specifically, it is a \parserType{}\footnote{Look-Ahead LR Parser with 1 symbol of
+lookahead} parser that is capable of parsing all deterministic context-free
+grammars (CFGs).
+
+Given a grammar, the \parser{} synthesizes a \textit{parse table} that is used to
+determine what action to take based on the current \textit{state}\footnote{The tokens
+read so far} and the next token in the token stream. 
+
+The \parser{} can take one of four actions: \textit{shift}, \textit{reduce},
+\textit{accept}, or \textit{error}. 
+
+\begin{itemize} 
+  
+  \item \textbf{Shift} - When the \parser{} reads a token that is not the last token
+    in a production rule, it shifts. This means it places the current token on a
+    stack, reads the next symbol, and transitions to the state specified by the parse
+    table.
+
+  \item \textbf{Reduce} - When the \parser{} reads a token that is the last token in
+    a production rule, it reduces. This involves popping the symbols on the stack
+    that correspond to the production rule, pushing the non-terminal symbol specified
+    by the production rule onto the stack, and transitioning to the state specified
+    by the parse table.
+
+  \item \textbf{Accept} - The \parser{} enters this state when it has successfully
+    parsed the entire token stream.
+
+  \item \textbf{Error} - This state is entered when the \parser{} encounters an
+    unexpected token that is not valid in any state reachable from the current state.
+
+\end{itemize}
+
+This means the \parser{} effectively becomes an automaton, cycling through states
+shifting and reducing until it either accepts or errors. In this process it builds an
+\textit{abstract syntax tree} (AST) that represents the structure of the program.
+
+\subsubsection{Bison}
+
+\parserGen{} is a prominent parser generator, part of the GNU project, capable of
+producing parsers for a variety of languages by supporting multiple parsing
+algorithms. \\
+
+For the \lang{} compiler, \parserGen{} was employed because of its flexibility,
+efficiency, and user-friendliness. It facilitates rapid iterations and adjustments to
+the grammar. Moreover, its robust and modular parser implementation can be easily
+extended. Notably, \parserGen{} integrates natively with \lexerGen{}, ensuring a
+cohesive interaction between the \lexer{} and \parser{}. \\
+
+When configured appropriately, \parserGen{} can generate a \textit{\parserType{}}
+parser using LALR(1), IELR(1), or CLR(1) parsing tables. Its comprehensive
+documentation and active community support further cemented its selection as the
+parser generator of choice for the \lang{} compiler.
+

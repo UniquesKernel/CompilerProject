@@ -15,7 +15,7 @@ Requirements for the compiler, and accompanying language is listed below, using 
 \end{itemize}
 \item The language \textbf{must} contain variables
 \begin{itemize}
-\item The variables \textbf{must} be immutable, unless explicitly made mutable
+\item The variables \textbf{could} be immutable, unless explicitly made mutable
 \end{itemize}
 \item The language \textbf{must} allow conditional code execution
 \item The language \textbf{must} be able to do basic arithmetic\footnote{Addition, subtraction, multiplication, division and modulus}
@@ -32,9 +32,9 @@ Requirements for the compiler, and accompanying language is listed below, using 
 \end{itemize}
 \item The language syntax \textbf{must} follow the language specification in appendix \ref{app:syntax}
 \item The language \textbf{should} have memory-management with Rust inspired borrow checker
-\item The language \textbf{should} have native array support
-\item The language \textbf{should} allow a runtime input
-\item The language \textbf{should} have error handling
+\item The language \textbf{could} allow a runtime input
+\item The language \textbf{could} have error handling
+\item The language \textbf{could} have native array support
 \item The language \textbf{could} allow access to system resources
 \item The language \textbf{wont} have classes
 \item The language \textbf{wont} have tooling/ecosystem/debugger
@@ -47,8 +47,6 @@ Requirements for the compiler, and accompanying language is listed below, using 
 \item Compiler \textbf{must} crash on invalid inputs
 \item Compiler \textbf{must} pass all test cases
 \item Compiler \textbf{must} generate an intermediary language from an AST
-%\item Compiler \textbf{must} undergo regular review
-\item Test coverage \textbf{should} be above 80\%
 \item Compiler \textbf{should} have clear error messages
 \item Compiler \textbf{wont} have intuitive CLI
 \item Compiler \textbf{wont} support several national languages

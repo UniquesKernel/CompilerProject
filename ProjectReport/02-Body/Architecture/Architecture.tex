@@ -1,5 +1,15 @@
 \section{Architecture}
 \label{sec:architecture}
 
-The \lang compiler uses a very simple architecture. It is comprised of three
-components. The \textit{Lexer}, the \textit{Parser} and the \textit{}.
+On the topic of architecture, the \lang{} compiler is comprised of four primary
+components: the \lexer, the \parser, the \semantic, and the \codeGen. These
+components form a pipeline, where the output of one component is the input of the
+next; in tandem, they constitute the complete compilation process. 
+
+\input{02-Body/Architecture/CompilerProcess.tex}
+
+\input{02-Body/Architecture/Lexer.tex}
+\input{02-Body/Architecture/Parser.tex}
+\input{02-Body/Architecture/LLVM-backend.tex}
+
+

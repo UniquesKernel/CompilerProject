@@ -1,0 +1,30 @@
+\section{Problem Statement}
+\label{sec:ProblemStatement}
+
+\subsection{Background}
+
+As of 2023, the top four most popular programming languages: Python, JavaScript,
+TypeScript, and Java permit, to various degrees, a loose or optional type
+system\cite{STACK}. This flexibility often results in ambiguities that may hinder the
+readability and maintainability of code, as type deductions occur either at compile
+time or runtime. With increasing complexities in software systems, there is an
+emerging need for a language and compiler that enforce discipline and explicitness in
+code, while offering robust control over system memory.
+
+\subsection{Problem}
+
+Developers currently can opt for dynamic or weak typing in popular programming
+languages, which may compromise code readability and maintainability due to implicit
+type deduction. This raises challenges in discerning the intentions of the developer
+solely based on the source code. Moreover, these languages often utilize garbage
+collectors, sacrificing control over system memory.
+
+\subsection{Objectives}
+
+To design and develop a custom programming language that mandates explicit typing for
+all data structures and variables. To implement a compiler for the language that
+performs zero type inference and provides clear error messages where ambiguities or
+mistakes are detected. To achieve a balance between the explicitness of data types
+and the conciseness of the language syntax, promoting readability. To offer precise
+control over system memory while ensuring safety and avoiding the performance
+drawbacks of garbage collection.

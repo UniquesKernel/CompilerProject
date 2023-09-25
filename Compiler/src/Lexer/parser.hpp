@@ -45,13 +45,14 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 14 "parser.y"
+#line 15 "parser.y"
 
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 
-#line 55 "parser.hpp"
+#line 56 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -63,10 +64,13 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     INT = 258,                     /* INT  */
-    LPAREN = 259,                  /* LPAREN  */
-    RPAREN = 260,                  /* RPAREN  */
-    END_OF_LINE = 261,             /* END_OF_LINE  */
-    END_OF_FILE = 262              /* END_OF_FILE  */
+    STR = 259,                     /* STR  */
+    KW_VAR = 260,                  /* KW_VAR  */
+    KW_MUT = 261,                  /* KW_MUT  */
+    LPAREN = 262,                  /* LPAREN  */
+    RPAREN = 263,                  /* RPAREN  */
+    END_OF_LINE = 264,             /* END_OF_LINE  */
+    END_OF_FILE = 265              /* END_OF_FILE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -75,14 +79,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "parser.y"
+#line 22 "parser.y"
 
     int num;
+    char* str;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
 
-#line 86 "parser.hpp"
+#line 93 "parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

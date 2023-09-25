@@ -42,4 +42,8 @@ public:
   void visitIntegerExpression(TerminalExpression *integer) override;
 
   void visitBinaryExpression(BinaryExpression *expression) override;
+
+  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
+
+  void visitVariableExpression(VariableExpression *variable) override;
 };

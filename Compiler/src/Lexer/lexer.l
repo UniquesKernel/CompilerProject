@@ -29,6 +29,14 @@
 
 ")" { return RPAREN; }
 
+"=" { return '='; }
+
+"let" { return KW_VAR; }
+
+"mut" { return KW_MUT; }
+
+[a-zA-Z][0-9a-zA-Z]* { yylval.str = strdup(yytext); return STR;}
+
 [ \t\r\n]* { }
 
 <<EOF>> { return END_OF_FILE; }

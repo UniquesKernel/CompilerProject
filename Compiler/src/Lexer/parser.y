@@ -4,6 +4,7 @@
     #include <string>
     #include "Expressions/binaryExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 
     int yylex();
     void yyerror(const char* s);
@@ -15,16 +16,21 @@
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 }
 
 %union {
     int num;
+    char* str;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
 }
 
 %token<num> INT
+%token<str> STR
 %type<base> expr
 %type<base> start
 %token '*'
@@ -32,6 +38,9 @@
 %token '+'
 %token '-'
 %token '%'
+%token '='
+%token KW_VAR
+%token KW_MUT
 %token LPAREN
 %token RPAREN
 %token END_OF_LINE
@@ -53,13 +62,14 @@ start:
 
 expr:
     INT { $$ = new TerminalExpression($1); }
+    | STR { $$ = new VariableExpression($1); }
     | LPAREN expr RPAREN { $$ = $2; }
     | expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }
     | expr '-' expr { $$ = new BinaryExpression($1, '-', $3); }
     | expr '*' expr { $$ = new BinaryExpression($1, '*', $3); }
     | expr '/' expr { $$ = new BinaryExpression($1, '-', $3); }
     | expr '%' expr { $$ = new BinaryExpression($1, '%', $3); }
-
+    | KW_VAR STR '=' expr { $$ = new VariableAssignmentExpression($4, $2); }
 %%
 
 /* Epilogue */

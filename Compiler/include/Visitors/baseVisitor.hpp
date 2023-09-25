@@ -5,6 +5,8 @@ class TerminalExpression;
 class BlockExpression;
 class ReturnExpression;
 class IfExpression;
+class VariableExpression;
+class VariableAssignmentExpression;
 
 class BaseVisitor {
 public:
@@ -13,4 +15,7 @@ public:
   virtual void visitBlockExpression(BlockExpression *block) = 0;
   virtual void visitReturnExpression(ReturnExpression *returnExpr) = 0;
   virtual void visitIfExpression(IfExpression *IfExpr) = 0;
+  virtual void visitIntegerExpression(TerminalExpression *integer) = 0;
+  virtual void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) = 0;
+  virtual void visitVariableExpression(VariableExpression *variable) = 0;
 };

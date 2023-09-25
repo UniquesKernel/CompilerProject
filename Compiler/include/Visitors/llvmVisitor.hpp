@@ -47,4 +47,7 @@ public:
 
   void visitReturnExpression(ReturnExpression* returnExpr) override;
   void visitIfExpression(IfExpression* IfExpr) override;
+  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
+
+  void visitVariableExpression(VariableExpression *variable) override;
 };

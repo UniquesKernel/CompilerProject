@@ -4,6 +4,7 @@
     #include <string>
     #include "Expressions/binaryExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 
     int yylex();
     void yyerror(const char* s);
@@ -18,19 +19,24 @@
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 }
 
 %union {
     int num;
     bool boolean;
+    char* str;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
 }
 
 %token<num> TOKEN_INT
+%token<str> TOKEN_STR
 %type<base> expr
 %type<terminal> terminal
 %type<base> program
@@ -46,6 +52,9 @@
 %token '%'
 %token LPAREN RPAREN
 %token LBRACE RBRACE
+%token '='
+%token KW_VAR
+%token KW_MUT
 %token END_OF_LINE
 %token END_OF_FILE
 %token RETURN
@@ -82,6 +91,14 @@ terminal:
     TOKEN_INT { $$ = new TerminalExpression($1); }
 |   T_TRUE { $$ = new TerminalExpression(true); }
 |   T_FALSE { $$ = new TerminalExpression(false); }
+
+variableAssignment:
+    KW_VAR variable '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
+|   KW_VAR KW_MUT variable '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
+
+variable:
+    TOKEN_STR { $$ = new VariableExpression($1); }
+
 
 arith_expr:
     expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }

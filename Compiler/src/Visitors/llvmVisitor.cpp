@@ -5,6 +5,8 @@
 #include "Expressions/ReturnExpression.hpp"
 #include "Expressions/ifExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
+#include "Expressions/variableExpression.hpp"
+
 #include <iostream>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
@@ -74,5 +76,20 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
     ifExpression->getThenBlock()->accept(this);
   } else if (ifExpression->getElseBlock() != nullptr) {
     ifExpression->getElseBlock()->accept(this);
+  }
+}
+
+
+void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpression *variable){
+  BaseExpression* variableValue = variable->getValueExpression();
+  variableValue->accept(this);
+  std::string variableName = variable->getName();
+  NamedValues[variableName] = llvm_result;
+}
+
+void LLVM_Visitor::visitVariableExpression(VariableExpression *variable){
+  llvm_result = NamedValues[variable->getName()];
+  if(!llvm_result){
+    throw std::invalid_argument("Invalid variable name");
   }
 }

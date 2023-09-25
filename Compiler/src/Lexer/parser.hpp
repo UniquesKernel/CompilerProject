@@ -45,16 +45,14 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 14 "parser.y"
+#line 15 "parser.y"
 
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
-    #include "Expressions/blockExpression.hpp"
-    #include "Expressions/ReturnExpression.hpp"
-    #include "Expressions/ifExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 
-#line 58 "parser.hpp"
+#line 56 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -65,19 +63,14 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    TOKEN_INT = 258,               /* TOKEN_INT  */
-    LPAREN = 259,                  /* LPAREN  */
-    RPAREN = 260,                  /* RPAREN  */
-    LBRACE = 261,                  /* LBRACE  */
-    RBRACE = 262,                  /* RBRACE  */
-    END_OF_LINE = 263,             /* END_OF_LINE  */
-    END_OF_FILE = 264,             /* END_OF_FILE  */
-    RETURN = 265,                  /* RETURN  */
-    T_TRUE = 266,                  /* T_TRUE  */
-    T_FALSE = 267,                 /* T_FALSE  */
-    IF_TOKEN = 268,                /* IF_TOKEN  */
-    ELSE_TOKEN = 269,              /* ELSE_TOKEN  */
-    LOWEST_PRECEDENCE = 270        /* LOWEST_PRECEDENCE  */
+    INT = 258,                     /* INT  */
+    STR = 259,                     /* STR  */
+    KW_VAR = 260,                  /* KW_VAR  */
+    KW_MUT = 261,                  /* KW_MUT  */
+    LPAREN = 262,                  /* LPAREN  */
+    RPAREN = 263,                  /* RPAREN  */
+    END_OF_LINE = 264,             /* END_OF_LINE  */
+    END_OF_FILE = 265              /* END_OF_FILE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -86,17 +79,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 23 "parser.y"
+#line 22 "parser.y"
 
     int num;
-    bool boolean;
+    char* str;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
-    BlockExpression* blockExpr;
-    std::vector<BaseExpression*>* block;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
 
-#line 100 "parser.hpp"
+#line 93 "parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

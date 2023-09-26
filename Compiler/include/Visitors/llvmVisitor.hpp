@@ -39,7 +39,12 @@ public:
     Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
   }
 
-  void visitIntegerExpression(TerminalExpression *integer) override;
+  void visitTerminalExpression(TerminalExpression *terminal) override;
 
   void visitBinaryExpression(BinaryExpression *expression) override;
+
+  void visitBlockExpression(BlockExpression* block) override;
+
+  void visitReturnExpression(ReturnExpression* returnExpr) override;
+  void visitIfExpression(IfExpression* IfExpr) override;
 };

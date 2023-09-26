@@ -11,9 +11,23 @@
 /* rules */
 %% 
 
+"true" { return T_TRUE; }
+
+"false" { return T_FALSE; }
+
+"return" { return RETURN; }
+
+"if" { return IF_TOKEN; }
+
+"else" { return ELSE_TOKEN; }
+
+"{" { return LBRACE; }
+
+"}" { return RBRACE; }
+
 [;] { return END_OF_LINE; }
 
-[0-9]+ { yylval.num = atoi(yytext); return INT; }
+[0-9]+ { yylval.num = atoi(yytext); return TOKEN_INT; }
 
 "*" { return '*'; }
 

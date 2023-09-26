@@ -50,8 +50,11 @@ extern int yydebug;
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/blockExpression.hpp"
+    #include "Expressions/ReturnExpression.hpp"
+    #include "Expressions/ifExpression.hpp"
 
-#line 55 "parser.hpp"
+#line 58 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -62,11 +65,19 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    INT = 258,                     /* INT  */
+    TOKEN_INT = 258,               /* TOKEN_INT  */
     LPAREN = 259,                  /* LPAREN  */
     RPAREN = 260,                  /* RPAREN  */
-    END_OF_LINE = 261,             /* END_OF_LINE  */
-    END_OF_FILE = 262              /* END_OF_FILE  */
+    LBRACE = 261,                  /* LBRACE  */
+    RBRACE = 262,                  /* RBRACE  */
+    END_OF_LINE = 263,             /* END_OF_LINE  */
+    END_OF_FILE = 264,             /* END_OF_FILE  */
+    RETURN = 265,                  /* RETURN  */
+    T_TRUE = 266,                  /* T_TRUE  */
+    T_FALSE = 267,                 /* T_FALSE  */
+    IF_TOKEN = 268,                /* IF_TOKEN  */
+    ELSE_TOKEN = 269,              /* ELSE_TOKEN  */
+    LOWEST_PRECEDENCE = 270        /* LOWEST_PRECEDENCE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -75,14 +86,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "parser.y"
+#line 23 "parser.y"
 
     int num;
+    bool boolean;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
+    BlockExpression* blockExpr;
+    std::vector<BaseExpression*>* block;
 
-#line 86 "parser.hpp"
+#line 100 "parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

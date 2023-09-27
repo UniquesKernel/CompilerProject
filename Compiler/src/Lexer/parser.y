@@ -69,7 +69,8 @@ expr:
     | expr '*' expr { $$ = new BinaryExpression($1, '*', $3); }
     | expr '/' expr { $$ = new BinaryExpression($1, '-', $3); }
     | expr '%' expr { $$ = new BinaryExpression($1, '%', $3); }
-    | KW_VAR STR '=' expr { $$ = new VariableAssignmentExpression($4, $2); }
+    | KW_VAR STR '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
+    | KW_VAR KW_MUT STR '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
 %%
 
 /* Epilogue */

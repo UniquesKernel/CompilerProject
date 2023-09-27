@@ -49,7 +49,7 @@
 
 "mut" { return KW_MUT; }
 
-[a-zA-Z][0-9a-zA-Z]* { yylval.str = strdup(yytext); return STR;}
+[a-zA-Z][0-9a-zA-Z]* { yylval.str = strdup(yytext); return TOKEN_STR;}
 
 [ \t\r\n]* { }
 

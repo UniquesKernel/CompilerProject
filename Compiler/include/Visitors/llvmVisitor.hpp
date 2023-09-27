@@ -41,7 +41,7 @@ public:
     Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
   }
 
-  void visitIntegerExpression(TerminalExpression *integer) override;
+  void visitTerminalExpression(TerminalExpression *terminal) override;
 
   void visitBinaryExpression(BinaryExpression *expression) override;
 
@@ -57,4 +57,9 @@ public:
     return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr, VarName);
   }
 
+};
+  void visitBlockExpression(BlockExpression* block) override;
+
+  void visitReturnExpression(ReturnExpression* returnExpr) override;
+  void visitIfExpression(IfExpression* IfExpr) override;
 };

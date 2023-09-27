@@ -13,11 +13,13 @@ class VariableAssignmentExpression : public BaseExpression {
     private:
         std::string name;
         BaseExpression * valueExpression;
+        bool isMutable;
 
     public:
-        VariableAssignmentExpression(BaseExpression * valueExpression, std::string name) : valueExpression(valueExpression), name(name) {}
+        VariableAssignmentExpression(BaseExpression * valueExpression, std::string name, bool isMutable) : valueExpression(valueExpression), name(name), isMutable(isMutable) {}
         BaseExpression* getValueExpression(){ return valueExpression; }
         std::string getName(){ return name; }
+        bool isVarMutable(){ return isMutable; }
         void accept(LLVM_Visitor *visitor) override;
     };
 

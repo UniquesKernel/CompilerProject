@@ -47,4 +47,6 @@ public:
 
   void visitReturnExpression(ReturnExpression* returnExpr) override;
   void visitIfExpression(IfExpression* IfExpr) override;
+  void visitFunctionDeclaration(FunctionDeclaration* FuncDeclExpr) override;
+  void visitFunctionCall(FunctionCall* FuncCallExpr) override;
 };

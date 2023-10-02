@@ -5,6 +5,8 @@ class TerminalExpression;
 class BlockExpression;
 class ReturnExpression;
 class IfExpression;
+class FunctionDeclaration;
+class FunctionCall;
 
 class BaseVisitor {
 public:
@@ -13,4 +15,6 @@ public:
   virtual void visitBlockExpression(BlockExpression *block) = 0;
   virtual void visitReturnExpression(ReturnExpression *returnExpr) = 0;
   virtual void visitIfExpression(IfExpression *IfExpr) = 0;
+  virtual void visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) = 0;
+  virtual void visitFunctionCall(FunctionCall *funcCallExpr) = 0;
 };

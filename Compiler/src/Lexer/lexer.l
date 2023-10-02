@@ -2,6 +2,7 @@
   /* Definitions */
   #include "parser.hpp"
   #include <cstdio>
+  #include <string>
 
 %}
 
@@ -10,6 +11,8 @@
 
 /* rules */
 %% 
+
+"fn" { return FUNCTION; }
 
 "true" { return T_TRUE; }
 
@@ -20,6 +23,11 @@
 "if" { return IF_TOKEN; }
 
 "else" { return ELSE_TOKEN; }
+
+"int" { yylval.type = new std::string(yytext); return TYPE; }
+"bool" { yylval.type = new std::string(yytext); return TYPE; }
+
+[a-zA-Z][a-zA-Z0-9]* { yylval.identifier = new std::string(yytext); return IDENTIFIER; }
 
 "{" { return LBRACE; }
 

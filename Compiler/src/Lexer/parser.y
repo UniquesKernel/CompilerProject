@@ -43,7 +43,8 @@
 %type<base> return_expr
 %type<block> expr_list
 %type<base> arith_expr
-%type<varAssign> assignment
+%type<varAssign> variableAssignment
+%type<var> variable
 %type<base> ifExpr
 %token '*'
 %token '/'
@@ -85,18 +86,22 @@ expr:
 |   ifExpr { $$ = $1; }
 |   arith_expr { $$ = $1; }
 |   terminal { $$ = $1; }
-|   assignment { $$ = $1; }
+|   variableAssignment { $$ = $1; }
+|   variable { $$ = $1; }
 ;
 
 terminal:
     TOKEN_INT { $$ = new TerminalExpression($1); }
 |   T_TRUE { $$ = new TerminalExpression(true); }
 |   T_FALSE { $$ = new TerminalExpression(false); }
-|   TOKEN_STR { $$ = new VariableExpression($1); }
 
-assignment:
-    KW_VAR STR '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
-|   KW_VAR KW_MUT STR '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
+variableAssignment:
+    KW_VAR variable '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
+|   KW_VAR KW_MUT variable '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
+
+variable:
+    TOKEN_STR { $$ = new VariableExpression($1); }
+
 
 arith_expr:
     expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }

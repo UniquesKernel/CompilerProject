@@ -49,6 +49,11 @@ public:
 
   void visitVariableExpression(VariableExpression *variable) override;
 
+  void visitBlockExpression(BlockExpression* block) override;
+
+  void visitReturnExpression(ReturnExpression* returnExpr) override;
+
+  void visitIfExpression(IfExpression* IfExpr) override;
 
 //Helper functions
   llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName) 
@@ -57,9 +62,4 @@ public:
     return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr, VarName);
   }
 
-};
-  void visitBlockExpression(BlockExpression* block) override;
-
-  void visitReturnExpression(ReturnExpression* returnExpr) override;
-  void visitIfExpression(IfExpression* IfExpr) override;
 };

@@ -17,6 +17,7 @@
 #include <memory>
 
 #include <unordered_map>
+#include <unordered_set>
 
 class LLVM_Visitor : public BaseVisitor {
 private:
@@ -28,7 +29,8 @@ public:
   std::unique_ptr<llvm::LLVMContext> TheContext;
   std::unique_ptr<llvm::IRBuilder<>> Builder;
   std::unique_ptr<llvm::Module> TheModule;
-  std::unordered_map<std::string, llvm::Value *> NamedValues;
+  std::unordered_map<std::string, llvm::AllocaInst *> symbolTable;
+  std::unordered_set<std::string> mutableVars;
 
   LLVM_Visitor() {
     // Open a new context and module.
@@ -43,10 +45,26 @@ public:
 
   void visitBinaryExpression(BinaryExpression *expression) override;
 
+  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
+
+  void visitVariableExpression(VariableExpression *variable) override;
+
   void visitBlockExpression(BlockExpression* block) override;
 
   void visitReturnExpression(ReturnExpression* returnExpr) override;
+
   void visitIfExpression(IfExpression* IfExpr) override;
+<<<<<<< HEAD
   void visitFunctionDeclaration(FunctionDeclaration* FuncDeclExpr) override;
   void visitFunctionCall(FunctionCall* FuncCallExpr) override;
+=======
+
+//Helper functions
+  llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName) 
+  {
+    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
+    return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr, VarName);
+  }
+
+>>>>>>> origin/Variables
 };

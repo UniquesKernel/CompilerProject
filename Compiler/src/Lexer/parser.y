@@ -4,6 +4,7 @@
     #include <string>
     #include "Expressions/binaryExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
 
     int yylex();
     void yyerror(const char* s);
@@ -15,6 +16,7 @@
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
@@ -24,16 +26,22 @@
 
 %union {
     int num;
+<<<<<<< HEAD
     std::string* identifier;
     std::string* type;
+=======
+    char* str;
+>>>>>>> origin/Variables
     bool boolean;
-    TerminalExpression* terminal;
-    BinaryExpression* binary;
     BaseExpression* base;
+    TerminalExpression* terminal;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
+    BinaryExpression* binary;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
 }
-
+%token<str> TOKEN_STR
 %token<num> TOKEN_INT
 %type<base> expr
 %type<terminal> terminal
@@ -42,6 +50,8 @@
 %type<base> return_expr
 %type<block> expr_list
 %type<base> arith_expr
+%type<varAssign> variableAssignment
+%type<var> variable
 %type<base> ifExpr
 %type<base> function_decl
 %type<base> functionCall
@@ -52,7 +62,13 @@
 %token '+'
 %token '-'
 %token '%'
+<<<<<<< HEAD
 %token FUNCTION
+=======
+%token '='
+%token KW_VAR
+%token KW_MUT
+>>>>>>> origin/Variables
 %token LPAREN RPAREN
 %token LBRACE RBRACE
 %token END_OF_LINE
@@ -85,14 +101,27 @@ expr:
 |   ifExpr { $$ = $1; }
 |   arith_expr { $$ = $1; }
 |   terminal { $$ = $1; }
+<<<<<<< HEAD
 |   function_decl { $$ = $1; }
 |   functionCall { $$ = $1; }
+=======
+|   variableAssignment { $$ = $1; }
+|   variable { $$ = $1; }
+>>>>>>> origin/Variables
 ;
 
 terminal:
     TOKEN_INT { $$ = new TerminalExpression($1); }
 |   T_TRUE { $$ = new TerminalExpression(true); }
 |   T_FALSE { $$ = new TerminalExpression(false); }
+
+variableAssignment:
+    KW_VAR variable '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
+|   KW_VAR KW_MUT variable '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
+
+variable:
+    TOKEN_STR { $$ = new VariableExpression($1); }
+
 
 arith_expr:
     expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }

@@ -45,18 +45,23 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 14 "parser.y"
+#line 15 "parser.y"
 
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
 
+<<<<<<< HEAD
 #line 60 "parser.hpp"
+=======
+#line 59 "parser.hpp"
+>>>>>>> origin/Variables
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -67,10 +72,17 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
+<<<<<<< HEAD
     TOKEN_INT = 258,               /* TOKEN_INT  */
     IDENTIFIER = 259,              /* IDENTIFIER  */
     TYPE = 260,                    /* TYPE  */
     FUNCTION = 261,                /* FUNCTION  */
+=======
+    TOKEN_STR = 258,               /* TOKEN_STR  */
+    TOKEN_INT = 259,               /* TOKEN_INT  */
+    KW_VAR = 260,                  /* KW_VAR  */
+    KW_MUT = 261,                  /* KW_MUT  */
+>>>>>>> origin/Variables
     LPAREN = 262,                  /* LPAREN  */
     RPAREN = 263,                  /* RPAREN  */
     LBRACE = 264,                  /* LBRACE  */
@@ -94,12 +106,18 @@ union YYSTYPE
 #line 25 "parser.y"
 
     int num;
+<<<<<<< HEAD
     std::string* identifier;
     std::string* type;
+=======
+    char* str;
+>>>>>>> origin/Variables
     bool boolean;
-    TerminalExpression* terminal;
-    BinaryExpression* binary;
     BaseExpression* base;
+    TerminalExpression* terminal;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
+    BinaryExpression* binary;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
 

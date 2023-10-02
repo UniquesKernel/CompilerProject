@@ -44,6 +44,8 @@
 %type<base> return_expr
 %type<block> expr_list
 %type<base> arith_expr
+%type<varAssign> variableAssignment
+%type<var> variable
 %type<base> ifExpr
 %token '*'
 %token '/'

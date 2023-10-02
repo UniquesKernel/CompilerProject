@@ -1,6 +1,7 @@
 #pragma once
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/llvmVisitor.hpp"
+#include <iostream>
 
 enum VarType{
     INTEGER,
@@ -11,14 +12,15 @@ enum VarType{
 
 class VariableAssignmentExpression : public BaseExpression {
     private:
-        std::string name;
+        VariableExpression *variable;
         BaseExpression * valueExpression;
         bool isMutable;
 
     public:
-        VariableAssignmentExpression(BaseExpression * valueExpression, std::string name, bool isMutable) : valueExpression(valueExpression), name(name), isMutable(isMutable) {}
+        VariableAssignmentExpression(BaseExpression * valueExpression, VariableExpression* variable, bool isMutable) : valueExpression(valueExpression),
+                                                                variable(variable), isMutable(isMutable) {}
         BaseExpression* getValueExpression(){ return valueExpression; }
-        std::string getName(){ return name; }
+        VariableExpression* getVariable(){ return variable; }
         bool isVarMutable(){ return isMutable; }
         void accept(LLVM_Visitor *visitor) override;
     };

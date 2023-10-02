@@ -102,10 +102,12 @@ void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpressio
   // get value to be stored
   BaseExpression* variableValue = variable->getValueExpression();
   variableValue->accept(this);
-  std::string variableName = variable->getName();
+  std::string variableName = variable->getVariable()->getName();
   // create variable in memmory
-  llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent(); //scope?
-  llvm::AllocaInst* varAllocation = CreateEntryBlockAlloca(parentFunction, variableName);
+  //llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
+
+  std::cout << " 1 \n";
+  llvm::AllocaInst* varAllocation = (*Builder).CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr, variableName);//CreateEntryBlockAlloca(parentFunction, variableName);
   symbolTable[variableName] = varAllocation;
 
   //store value in variable
@@ -115,9 +117,10 @@ void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpressio
 }
 
 void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
+  std::cout << "visit var \n";
   llvm::AllocaInst* loadedVar = symbolTable[variable->getName()];
   if(!loadedVar) {
-    throw std::invalid_argument("Variable " + variable->getName() + " not found name");
+    throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
   }
   llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar, variable->getName().c_str());
 }

@@ -20,10 +20,14 @@
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
     #include "Expressions/variableExpression.hpp"
+    #include "Expressions/functionDeclaration.hpp"
+    #include "Expressions/functionCall.hpp"
 }
 
 %union {
     int num;
+    std::string* identifier;
+    std::string* type;
     bool boolean;
     char* str;
     TerminalExpression* terminal;
@@ -47,11 +51,16 @@
 %type<varAssign> variableAssignment
 %type<var> variable
 %type<base> ifExpr
+%type<base> function_decl
+%type<base> functionCall
+%token<identifier> IDENTIFIER
+%token<type> TYPE
 %token '*'
 %token '/'
 %token '+'
 %token '-'
 %token '%'
+%token FUNCTION
 %token LPAREN RPAREN
 %token LBRACE RBRACE
 %token '='
@@ -87,6 +96,8 @@ expr:
 |   ifExpr { $$ = $1; }
 |   arith_expr { $$ = $1; }
 |   terminal { $$ = $1; }
+|   function_decl { $$ = $1; }
+|   functionCall { $$ = $1; }
 ;
 
 terminal:
@@ -138,6 +149,18 @@ expr_list:
         $$ = $1;
     }
 ;
+
+function_decl:
+    FUNCTION TYPE IDENTIFIER LPAREN RPAREN exprBlock {
+        std::string type = *$2;
+        std::string identifier = *$3;
+        $$ = new FunctionDeclaration(type, identifier, $6);
+    }
+
+functionCall:
+    IDENTIFIER LPAREN RPAREN {
+        $$ = new FunctionCall(*$1);
+    }
 
 return_expr:
     RETURN expr %prec LOWEST_PRECEDENCE { $$ = new ReturnExpression($2); }

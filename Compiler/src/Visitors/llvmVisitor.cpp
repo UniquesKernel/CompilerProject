@@ -4,10 +4,14 @@
 #include "Expressions/blockExpression.hpp"
 #include "Expressions/ReturnExpression.hpp"
 #include "Expressions/ifExpression.hpp"
+#include "Expressions/functionDeclaration.hpp"
+#include "Expressions/functionCall.hpp"
 #include "Visitors/baseVisitor.hpp"
 #include "Expressions/variableExpression.hpp"
 
 #include <iostream>
+#include <llvm-18/llvm/IR/DerivedTypes.h>
+#include <optional>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   char type = expression->getType();
@@ -123,4 +127,43 @@ void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
     throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
   }
   llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar, variable->getName().c_str());
+void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration* funcDeclExpr) {
+  std::string returnType = funcDeclExpr->getType();
+  llvm::FunctionType* funcType;
+
+  std::cout << returnType << std::endl;
+
+  if (returnType == "int") {
+    funcType = llvm::FunctionType::get(llvm::Type::getInt64Ty(*TheContext),{}, false);
+  } else if (returnType == "bool") {
+    funcType = llvm::FunctionType::get(llvm::Type::getInt1Ty(*TheContext), {}, false);
+  } else {
+    throw std::invalid_argument("PANIC");
+  }
+
+  auto* function = llvm::Function::Create(
+    funcType, 
+    llvm::Function::ExternalLinkage,
+    funcDeclExpr->getName(),
+    TheModule.get()
+  );                     
+
+  auto* block = llvm::BasicBlock::Create(*TheContext, "entry", function);
+  Builder->SetInsertPoint(block);
+
+  funcDeclExpr->getBody()->accept(this);
+
+  llvm::verifyFunction(*function);
+}
+
+void LLVM_Visitor::visitFunctionCall(FunctionCall* funcCallExpr) {
+  llvm::Function* function = TheModule->getFunction(funcCallExpr->getName());
+
+  std::cout << funcCallExpr->getName() << std::endl;
+
+  if (!function) {
+    throw std::invalid_argument("PANIC");
+  }
+
+  llvm_result = Builder->CreateCall(function, {}, "calltmp");
 }

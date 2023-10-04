@@ -7,6 +7,8 @@ class ReturnExpression;
 class IfExpression;
 class VariableExpression;
 class VariableAssignmentExpression;
+class FunctionDeclaration;
+class FunctionCall;
 
 class BaseVisitor {
 public:
@@ -18,4 +20,6 @@ public:
   virtual void visitIntegerExpression(TerminalExpression *integer) = 0;
   virtual void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) = 0;
   virtual void visitVariableExpression(VariableExpression *variable) = 0;
+  virtual void visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) = 0;
+  virtual void visitFunctionCall(FunctionCall *funcCallExpr) = 0;
 };

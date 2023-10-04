@@ -54,8 +54,10 @@ extern int yydebug;
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
+    #include "Expressions/functionDeclaration.hpp"
+    #include "Expressions/functionCall.hpp"
 
-#line 59 "parser.hpp"
+#line 60 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -66,10 +68,10 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    TOKEN_STR = 258,               /* TOKEN_STR  */
-    TOKEN_INT = 259,               /* TOKEN_INT  */
-    KW_VAR = 260,                  /* KW_VAR  */
-    KW_MUT = 261,                  /* KW_MUT  */
+    TOKEN_INT = 258,               /* TOKEN_INT  */
+    IDENTIFIER = 259,              /* IDENTIFIER  */
+    TYPE = 260,                    /* TYPE  */
+    FUNCTION = 261,                /* FUNCTION  */
     LPAREN = 262,                  /* LPAREN  */
     RPAREN = 263,                  /* RPAREN  */
     LBRACE = 264,                  /* LBRACE  */
@@ -93,7 +95,8 @@ union YYSTYPE
 #line 25 "parser.y"
 
     int num;
-    char* str;
+    std::string* identifier;
+    std::string* type;
     bool boolean;
     BaseExpression* base;
     TerminalExpression* terminal;

@@ -36,65 +36,92 @@
    private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_PARSER_HPP_INCLUDED
-# define YY_YY_PARSER_HPP_INCLUDED
+#define YY_YY_PARSER_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+#define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 14 "parser.y"
+#line 15 "parser.y"
 
-    #include "Expressions/baseExpression.hpp"
-    #include "Expressions/terminalExpression.hpp"
-    #include "Expressions/binaryExpression.hpp"
+#include "Expressions/ReturnExpression.hpp"
+#include "Expressions/baseExpression.hpp"
+#include "Expressions/binaryExpression.hpp"
+#include "Expressions/blockExpression.hpp"
+#include "Expressions/functionCall.hpp"
+#include "Expressions/functionDeclaration.hpp"
+#include "Expressions/ifExpression.hpp"
+#include "Expressions/terminalExpression.hpp"
+#include "Expressions/variableExpression.hpp"
+#include <memory>
 
-#line 55 "parser.hpp"
+#line 62 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    INT = 258,                     /* INT  */
-    LPAREN = 259,                  /* LPAREN  */
-    RPAREN = 260,                  /* RPAREN  */
-    END_OF_LINE = 261,             /* END_OF_LINE  */
-    END_OF_FILE = 262              /* END_OF_FILE  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
+#define YYTOKENTYPE
+enum yytokentype {
+  YYEMPTY = -2,
+  YYEOF = 0,              /* "end of file"  */
+  YYerror = 256,          /* error  */
+  YYUNDEF = 257,          /* "invalid token"  */
+  TOKEN_INT = 258,        /* TOKEN_INT  */
+  TOKEN_CHAR = 259,       /* TOKEN_CHAR  */
+  TOKEN_FLOAT = 260,      /* TOKEN_FLOAT  */
+  IDENTIFIER = 261,       /* IDENTIFIER  */
+  MAIN = 262,             /* MAIN  */
+  TYPE = 263,             /* TYPE  */
+  FUNCTION = 264,         /* FUNCTION  */
+  KW_VAR = 265,           /* KW_VAR  */
+  KW_MUT = 266,           /* KW_MUT  */
+  LPAREN = 267,           /* LPAREN  */
+  RPAREN = 268,           /* RPAREN  */
+  LBRACE = 269,           /* LBRACE  */
+  RBRACE = 270,           /* RBRACE  */
+  END_OF_LINE = 271,      /* END_OF_LINE  */
+  END_OF_FILE = 272,      /* END_OF_FILE  */
+  RETURN = 273,           /* RETURN  */
+  T_TRUE = 274,           /* T_TRUE  */
+  T_FALSE = 275,          /* T_FALSE  */
+  IF_TOKEN = 276,         /* IF_TOKEN  */
+  ELSE_TOKEN = 277,       /* ELSE_TOKEN  */
+  LOWEST_PRECEDENCE = 278 /* LOWEST_PRECEDENCE  */
+};
+typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 20 "parser.y"
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
+union YYSTYPE {
+#line 28 "parser.y"
 
-    int num;
-    TerminalExpression* terminal;
-    BinaryExpression* binary;
-    BaseExpression* base;
+  int num;
+  std::string *identifier;
+  std::string *type;
+  std::string *str;
+  bool boolean;
+  char chr;
+  float flt;
+  TerminalExpression *terminal;
+  BinaryExpression *binary;
+  BaseExpression *base;
+  VariableExpression *var;
+  VariableAssignmentExpression *varAssign;
+  BlockExpression *blockExpr;
+  std::vector<BaseExpression *> *block;
 
-#line 86 "parser.hpp"
-
+#line 119 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
+#define YYSTYPE_IS_DECLARED 1
 #endif
-
 
 extern YYSTYPE yylval;
 
-
-int yyparse (void);
-
+int yyparse(void);
 
 #endif /* !YY_YY_PARSER_HPP_INCLUDED  */

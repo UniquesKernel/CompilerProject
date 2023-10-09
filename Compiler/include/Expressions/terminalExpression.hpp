@@ -10,13 +10,13 @@ private:
   char charValue;
 
 public:
-  TerminalExpression(int value) : intValue(value) { type = INT; }
-  TerminalExpression(bool value) : boolValue(value) { type = BOOLEAN; }
-  TerminalExpression(float value) : floatValue(value) { type = FLOAT; }
-  TerminalExpression(char value) : charValue(value) { type = CHAR; }
+  TerminalExpression(int value) : intValue(value) { type = "int"; }
+  TerminalExpression(bool value) : boolValue(value) { type = "boolean"; }
+  TerminalExpression(float value) : floatValue(value) { type = "float"; }
+  TerminalExpression(char value) : charValue(value) { type = "char"; }
   int getIntValue() { return intValue; }
   bool getBoolValue() { return boolValue; }
   float getFloatValue() { return floatValue; }
   char getCharValue() { return charValue; }
-  void accept(LLVM_Visitor *visitor) override;
+  void accept(BaseVisitor *visitor) override;
 };

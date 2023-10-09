@@ -47,17 +47,15 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
 }
 
 void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
-  switch (terminal->getType()) {
-  case INT:
+  if (terminal->getType() == "int"){
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
-    break;
-  case BOOLEAN:
+    }  else if (terminal->getType() ==  "boolean"){
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(1, terminal->getBoolValue()));
-    break;
+    }
   }
-}
+
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
   for (auto &expr : block->getInstructions()) {

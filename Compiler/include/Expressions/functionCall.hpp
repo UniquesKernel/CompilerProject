@@ -13,7 +13,7 @@ public:
     std::cout << "FunctionCall Constructor" << std::endl;
   }
   std::string getName() { return name; }
-  void accept(LLVM_Visitor *visitor) override {
+  void accept(BaseVisitor *visitor) override {
     visitor->visitFunctionCall(this);
   }
 };

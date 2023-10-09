@@ -22,7 +22,7 @@ public:
   std::vector<llvm::Type *> getParams() { return params; }
   std::string getReturnType() { return returnType; }
   BlockExpression *getBody() { return body.get(); }
-  void accept(LLVM_Visitor *visitor) override {
+  void accept(BaseVisitor *visitor) override {
     visitor->visitFunctionDeclaration(this);
   }
 };

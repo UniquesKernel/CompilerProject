@@ -26,8 +26,14 @@
 
 "else" { return ELSE_TOKEN; }
 
+"let" { return KW_VAR; }
+
+"mut" { return KW_MUT; }
+
 "int" { yylval.type = new std::string(yytext); return TYPE; }
 "bool" { yylval.type = new std::string(yytext); return TYPE; }
+"float" { yylval.type = new std::string(yytext); return TYPE; }
+"char" { yylval.type = new std::string(yytext); return TYPE; }
 
 '[a-zA-Z]' { yylval.chr = yytext[1]; return TOKEN_CHAR; }
 
@@ -60,9 +66,7 @@
 
 "=" { return '='; }
 
-"let" { return KW_VAR; }
 
-"mut" { return KW_MUT; }
 
 [ \t\r\n]* { }
 

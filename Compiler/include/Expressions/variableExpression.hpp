@@ -10,15 +10,8 @@ class VariableAssignmentExpression : public BaseExpression {
         bool isMutable;
 
     public:
-        VariableAssignmentExpression(BaseExpression * valueExpression, VariableExpression* variable, bool isMutable, TerminalType inType) : valueExpression(valueExpression),
-                                                                variable(variable), isMutable(isMutable) 
-                                                                { 
-                                                                    if(valueExpression->getType() == inType){
-                                                                        type=inType; 
-                                                                    }else{
-                                                                        throw std::invalid_argument("Variable type does not match expression type: " +  TerminalTypeStrings[valueExpression->getType()] + " = " + TerminalTypeStrings[inType]);
-                                                                    }
-                                                                }
+        VariableAssignmentExpression(BaseExpression * valueExpression, VariableExpression* variable, bool isMutable, std::string inType) : valueExpression(valueExpression),
+                                                                variable(variable), isMutable(isMutable){std::cout << "create  var assign \n";}
         BaseExpression* getValueExpression(){ return valueExpression; }
         VariableExpression* getVariable(){ return variable; }
         bool isVarMutable(){ return isMutable; }

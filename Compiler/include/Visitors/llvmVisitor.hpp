@@ -2,6 +2,8 @@
 
 #include "Visitors/baseVisitor.hpp"
 
+#include "Expressions/baseExpression.hpp"
+
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
@@ -48,9 +50,7 @@ public:
   void visitBlockExpression(BlockExpression* block) override;
   void visitReturnExpression(ReturnExpression* returnExpr) override;
   void visitIfExpression(IfExpression* IfExpr) override;
-  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
 
-  void visitVariableExpression(VariableExpression *variable) override;
 
   void visitFunctionDeclaration(FunctionDeclaration* FuncDeclExpr) override;
   void visitFunctionCall(FunctionCall* FuncCallExpr) override;

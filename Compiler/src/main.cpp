@@ -36,26 +36,35 @@ extern FILE* yyin;
 
 int main(int argc, char **argv) {
 
-  std::string inputFile;
   if (argc != 2){
-    std::cout << "file error";
+    std::cout << "file error\n";
     return 1;
   }
-
+  
   yyin = fopen(argv[1], "r");
   if (!yyin) {
     perror("Input file not found");
     return 1;
   }
+  // char buff[256];
+  // while(fgets(buff, sizeof(buff), yyin)!= NULL){
+  //   printf("%s", buff);
+  // }
 
   LLVM_Visitor visitor;
 
   yyparse();
 
+  fclose(yyin);
+
+  if(rootAST == NULL){
+    std::cout << "AST is null";
+    return 1;
+  }
+
   rootAST->accept(&visitor);
 
   visitor.TheModule->dump();
-
 
 /* COMPILE TO .O FILE*/
 

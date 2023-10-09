@@ -12,7 +12,7 @@ private:
   char charValue;
 
 public:
-  TerminalExpression(int value) : intValue(value) { type=INT; }
+  TerminalExpression(int value) : intValue(value) { type=INT;}
   TerminalExpression(bool value) : boolValue(value) { type=BOOLEAN; }
   TerminalExpression(float value) : floatValue(value) { type=FLOAT; }
   TerminalExpression(char value) : charValue(value) { type=CHAR; }

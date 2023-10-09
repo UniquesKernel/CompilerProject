@@ -11,7 +11,7 @@ enum TerminalType {
 };
 
 // use this for error messages
-const std::string TerminalTypeStrings[4] = {"INT", "BOOLEAN", "FLOAT", "CHAR"}; 
+const std::string TerminalTypeStrings[4] = {"int", "bool", "float", "char"}; 
 
 
 class BaseExpression {

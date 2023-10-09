@@ -17,12 +17,12 @@ class FunctionDeclaration : public BaseExpression {
   public:
     FunctionDeclaration(std::string name, std::string returnType, BlockExpression* body) : 
     name(name),
-    returnType(returnType), 
-    body(body) {}
+    body(body),
+    returnType(returnType) {}
 
     std::string getName() { return name; }
-    std::string getReturnType() { return returnType; }
     std::vector<llvm::Type*> getParams() { return params; }
+    std::string getReturnType(){ return returnType; }
     BlockExpression* getBody() { return body.get(); }
     void accept(LLVM_Visitor *visitor) override { visitor->visitFunctionDeclaration(this); }
 };

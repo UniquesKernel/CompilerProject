@@ -7,8 +7,6 @@ class VariableAssignmentExpression;
 class BlockExpression;
 class ReturnExpression;
 class IfExpression;
-class VariableExpression;
-class VariableAssignmentExpression;
 class FunctionDeclaration;
 class FunctionCall;
 
@@ -21,8 +19,6 @@ public:
   virtual void visitBlockExpression(BlockExpression *block) = 0;
   virtual void visitReturnExpression(ReturnExpression *returnExpr) = 0;
   virtual void visitIfExpression(IfExpression *IfExpr) = 0;
-  virtual void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) = 0;
-  virtual void visitVariableExpression(VariableExpression *variable) = 0;
   virtual void visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) = 0;
   virtual void visitFunctionCall(FunctionCall *funcCallExpr) = 0;
 };

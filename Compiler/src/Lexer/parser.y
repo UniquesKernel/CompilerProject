@@ -20,7 +20,6 @@
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
-    #include "Expressions/variableExpression.hpp"
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
     #include <memory>
@@ -32,24 +31,18 @@
     std::string* type;
     std::string* str;
     bool boolean;
-    char* str;
     char chr;
     float flt;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
-    TerminalExpression* terminal;
     VariableExpression* var;
     VariableAssignmentExpression* varAssign;
-    BinaryExpression* binary;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
-    VariableExpression* var;
-    VariableAssignmentExpression* varAssign;
 }
-%token<str> TOKEN_STR
+
 %token<num> TOKEN_INT
-%token<str> TOKEN_STR
 %token<chr> TOKEN_CHAR
 %token<flt> TOKEN_FLOAT
 %type<base> expr
@@ -79,9 +72,6 @@
 %token KW_MUT
 %token LPAREN RPAREN
 %token LBRACE RBRACE
-%token '='
-%token KW_VAR
-%token KW_MUT
 %token END_OF_LINE
 %token END_OF_FILE
 %token RETURN
@@ -133,11 +123,18 @@ terminal:
 |   T_FALSE { $$ = new TerminalExpression(false); }
 
 variableAssignment:
-    KW_VAR TYPE variable '=' expr { $$ = new VariableAssignmentExpression($5, $3, false, $2); }
-|   KW_VAR KW_MUT TYPE variable '=' expr { $$  = new VariableAssignmentExpression($6, $4, true, $3); }
+    KW_VAR TYPE variable '=' expr {
+        std::string varType = *$2;
+        $$ = new VariableAssignmentExpression($5, $3, false, varType); 
+        }
+|   KW_VAR KW_MUT TYPE variable '=' expr {
+        std::cout << "parse var assign \n";
+        std::string varType = *$3;
+        $$  = new VariableAssignmentExpression($6, $4, true, varType); 
+        }
 
 variable:
-    IDENTIFIER { $$ = new VariableExpression($1); }
+    IDENTIFIER { $$ = new VariableExpression(*$1); }
 
 
 arith_expr:
@@ -195,7 +192,7 @@ function_decl:
     FUNCTION TYPE IDENTIFIER LPAREN RPAREN exprBlock {
         std::string type = *$2;
         std::string identifier = *$3;
-        $$ = new FunctionDeclaration(type, identifier, $6);
+        $$ = new FunctionDeclaration(identifier, type, $6);
     }
 
 functionCall:
@@ -212,11 +209,11 @@ return_expr:
 /* Epilogue */
 void yyerror(const char* s) {
     /* if mainFunc tell the user that the main function is missing */
-    if (rootAST == nullptr) {
-        std::cout << "Error: main function is missing" << std::endl;
-    }
-    else {
+    // if (rootAST == nullptr) {
+    //     std::cout << "Error: main function is missing" << std::endl;
+    // }
+    // else {
         std::cout << "Error: " << s << std::endl;
-    }
+    // }
 }
 

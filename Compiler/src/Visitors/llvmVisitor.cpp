@@ -1,4 +1,5 @@
 #include "Visitors/llvmVisitor.hpp"
+#include "Expressions/baseExpression.hpp"
 #include "Expressions/binaryExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
@@ -9,7 +10,6 @@
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/functionCall.hpp"
 #include "Visitors/baseVisitor.hpp"
-#include "Expressions/variableExpression.hpp"
 
 #include <iostream>
 #include <llvm-18/llvm/IR/BasicBlock.h>
@@ -19,30 +19,9 @@
 #include <stdexcept>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
-  char type = expression->getType();
+  char type = expression->getOPType();
   expression->getRHS()->accept(this);
   llvm::Value *R = llvm_result;
-
-
-  if(type == '=') { // check if assigning to a variable
-        VariableExpression *L = static_cast<VariableExpression*>(expression->getLHS());
-    if (!L) {
-      throw std::invalid_argument("'=' must assign to  a variable");
-    }
-
-    if(mutableVars.find(L->getName()) == mutableVars.end()){
-      throw std::invalid_argument("Assignment to immutable variable. is not allowed");
-    }
-
-    llvm::Value * variable = symbolTable[L->getName()];
-    Builder->CreateStore(R, variable);
-
-    llvm_result = R;
-  }
-
-  expression->getLHS()->accept(this);
-  llvm::Value *L = llvm_result;
-
   expression->getLHS()->accept(this);
   llvm::Value *L = llvm_result;
 
@@ -126,6 +105,7 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
 
 
 void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpression *variable) {
+  std::cout << "visit var assign \n";
   // get value to be stored
   BaseExpression* variableValue = variable->getValueExpression();
   variableValue->accept(this);
@@ -133,7 +113,6 @@ void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpressio
   // create variable in memmory
   //llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  std::cout << " 1 \n";
   llvm::AllocaInst* varAllocation = (*Builder).CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr, variableName);//CreateEntryBlockAlloca(parentFunction, variableName);
   symbolTable[variableName] = varAllocation;
 
@@ -144,7 +123,7 @@ void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpressio
 }
 
 void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
-  std::cout << "visit var \n";
+  
   llvm::AllocaInst* loadedVar = symbolTable[variable->getName()];
   if(!loadedVar) {
     throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
@@ -154,6 +133,7 @@ void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
 
 void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration* funcDeclExpr) {
   llvm::Type* returnType = getLLVMType(funcDeclExpr->getReturnType());
+  returnType->dump();
   llvm::FunctionType* funcType;
 
   funcType = llvm::FunctionType::get(returnType,{}, false);
@@ -183,31 +163,6 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall* funcCallExpr) {
   }*/
 
   llvm_result = Builder->CreateCall(function, {});
-}
-
-void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpression *variable) {
-  // get value to be stored
-  BaseExpression* variableValue = variable->getValueExpression();
-  variableValue->accept(this);
-  std::string variableName = variable->getVariable()->getName();
-  // create variable in memmory
-  //llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
-
-  llvm::AllocaInst* varAllocation = (*Builder).CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr, variableName);//CreateEntryBlockAlloca(parentFunction, variableName);
-  symbolTable[variableName] = varAllocation;
-
-  //store value in variable
-  Builder->CreateStore(llvm_result, varAllocation);
-
-  if(variable->isVarMutable()){ mutableVars.insert(variableName); }
-}
-
-void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
-  llvm::AllocaInst* loadedVar = symbolTable[variable->getName()];
-  if(!loadedVar) {
-    throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
-  }
-  llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar, variable->getName().c_str());
 }
 
 llvm::Type* LLVM_Visitor::getLLVMType(std::string type) {

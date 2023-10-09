@@ -12,6 +12,8 @@
 /* rules */
 %% 
 
+"main" { yylval.identifier = new std::string(yytext); return MAIN; }
+
 "fn" { return FUNCTION; }
 
 "true" { return T_TRUE; }
@@ -61,8 +63,6 @@
 "let" { return KW_VAR; }
 
 "mut" { return KW_MUT; }
-
-[a-zA-Z][0-9a-zA-Z]* { yylval.str = strdup(yytext); return TOKEN_STR;}
 
 [ \t\r\n]* { }
 

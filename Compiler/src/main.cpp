@@ -54,9 +54,7 @@ int main(int argc, char **argv) {
 
   rootAST->accept(&visitor);
 
-// print IR for debug
-  visitor.getResult()->print(llvm::outs());
-  llvm::outs() << "\n";
+  visitor.TheModule->dump();
 
 
 /* COMPILE TO .O FILE*/

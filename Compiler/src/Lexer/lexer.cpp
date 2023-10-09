@@ -807,41 +807,41 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 15 "lexer.l"
-{ return FUNCTION; }
+{ yylval.identifier = new std::string(yytext); return MAIN; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 17 "lexer.l"
-{ return T_TRUE; }
+{ return FUNCTION; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 19 "lexer.l"
-{ return T_FALSE; }
+{ return T_TRUE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 21 "lexer.l"
-{ return RETURN; }
+{ return T_FALSE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 23 "lexer.l"
-{ return IF_TOKEN; }
+{ return RETURN; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 25 "lexer.l"
-{ return ELSE_TOKEN; }
+{ return IF_TOKEN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 27 "lexer.l"
-{ yylval.type = new std::string(yytext); return TYPE; }
+{ return ELSE_TOKEN; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 28 "lexer.l"
+#line 29 "lexer.l"
 { yylval.type = new std::string(yytext); return TYPE; }
 	YY_BREAK
 case 9:

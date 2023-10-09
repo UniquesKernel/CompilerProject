@@ -50,12 +50,14 @@ extern int yydebug;
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
     #include "Expressions/variableExpression.hpp"
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
+    #include <memory>
 
 #line 61 "parser.hpp"
 
@@ -102,6 +104,7 @@ union YYSTYPE
     int num;
     std::string* identifier;
     std::string* type;
+    std::string* str;
     bool boolean;
     char* str;
     char chr;
@@ -109,6 +112,10 @@ union YYSTYPE
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
+    TerminalExpression* terminal;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
+    BinaryExpression* binary;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
     VariableExpression* var;

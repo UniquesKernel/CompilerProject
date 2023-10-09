@@ -2,6 +2,7 @@
 
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/llvmVisitor.hpp"
+#include <memory>
 
 class BinaryExpression : public BaseExpression {
 private:
@@ -22,4 +23,7 @@ public:
   BaseExpression *getRHS() { return rhs; }
   char getType() { return type; }
   void accept(LLVM_Visitor *visitor) override;
-};
+  
+  static BinaryExpression* createBinaryExpression(BaseExpression* lhs_raw, char op, BaseExpression* rhs_raw);
+
+  };

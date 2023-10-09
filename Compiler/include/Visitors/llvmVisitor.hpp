@@ -42,11 +42,10 @@ public:
   }
 
   void visitTerminalExpression(TerminalExpression *terminal) override;
-
   void visitBinaryExpression(BinaryExpression *expression) override;
-
+  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
+  void visitVariableExpression(VariableExpression *variable) override;
   void visitBlockExpression(BlockExpression* block) override;
-
   void visitReturnExpression(ReturnExpression* returnExpr) override;
   void visitIfExpression(IfExpression* IfExpr) override;
   void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
@@ -62,4 +61,6 @@ public:
     llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
     return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr, VarName);
   }
+
+  llvm::Type* getLLVMType(std::string type);
 };

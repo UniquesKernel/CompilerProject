@@ -482,7 +482,7 @@ union yyalloc
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  30
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  14
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  30
 /* YYNSTATES -- Number of states.  */
@@ -578,7 +578,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-7)
+#define YYTABLE_NINF (-11)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -1538,5 +1538,12 @@ yyreturnlab:
 
 /* Epilogue */
 void yyerror(const char* s) {
-    std::cerr << "Error: " << s << std::endl;
+    /* if mainFunc tell the user that the main function is missing */
+    if (rootAST == nullptr) {
+        std::cout << "Error: main function is missing" << std::endl;
+    }
+    else {
+        std::cout << "Error: " << s << std::endl;
+    }
 }
+

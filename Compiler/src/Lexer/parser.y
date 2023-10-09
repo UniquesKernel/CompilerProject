@@ -22,16 +22,14 @@
     #include "Expressions/ifExpression.hpp"
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
+    #include <memory>
 }
 
 %union {
     int num;
-<<<<<<< HEAD
     std::string* identifier;
     std::string* type;
-=======
-    char* str;
->>>>>>> origin/Variables
+    std::string* str;
     bool boolean;
     BaseExpression* base;
     TerminalExpression* terminal;
@@ -55,20 +53,19 @@
 %type<base> ifExpr
 %type<base> function_decl
 %type<base> functionCall
+%type<base> mainFunc
 %token<identifier> IDENTIFIER
+%token<identifier> MAIN
 %token<type> TYPE
 %token '*'
 %token '/'
 %token '+'
 %token '-'
 %token '%'
-<<<<<<< HEAD
 %token FUNCTION
-=======
 %token '='
 %token KW_VAR
 %token KW_MUT
->>>>>>> origin/Variables
 %token LPAREN RPAREN
 %token LBRACE RBRACE
 %token END_OF_LINE
@@ -91,8 +88,15 @@
 %%
 
 program:
-     expr END_OF_FILE { rootAST = $1; return 0; }
+     mainFunc END_OF_FILE { rootAST = $1; return 0; }
 ;
+
+mainFunc:
+    FUNCTION TYPE MAIN LPAREN RPAREN exprBlock {
+        std::string type = *$2;
+        std::string identifier = *$3;
+        $$ = new FunctionDeclaration(identifier, type, $6);
+    }
 
 expr:
     return_expr { $$ = $1; }
@@ -101,13 +105,10 @@ expr:
 |   ifExpr { $$ = $1; }
 |   arith_expr { $$ = $1; }
 |   terminal { $$ = $1; }
-<<<<<<< HEAD
 |   function_decl { $$ = $1; }
 |   functionCall { $$ = $1; }
-=======
 |   variableAssignment { $$ = $1; }
 |   variable { $$ = $1; }
->>>>>>> origin/Variables
 ;
 
 terminal:
@@ -120,29 +121,39 @@ variableAssignment:
 |   KW_VAR KW_MUT variable '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
 
 variable:
-    TOKEN_STR { $$ = new VariableExpression($1); }
+    IDENTIFIER { $$ = new VariableExpression(*$1); }
 
 
 arith_expr:
-    expr '+' expr { $$ = new BinaryExpression($1, '+', $3); }
-|   expr '-' expr { $$ = new BinaryExpression($1, '-', $3); }
-|   expr '*' expr { $$ = new BinaryExpression($1, '*', $3); }
-|   expr '/' expr { $$ = new BinaryExpression($1, '/', $3); }
-|   expr '%' expr { $$ = new BinaryExpression($1, '%', $3); }
+    expr '+' expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, '+', $3);
+        }
+|   expr '-' expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, '-', $3);
+        }
+|   expr '*' expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, '*', $3);
+        }
+|   expr '/' expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, '/', $3);
+        }
+|   expr '%' expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, '%', $3);
+        }
 
 exprBlock: 
    LBRACE expr_list RBRACE { $$ = new BlockExpression(*$2); }
 ;
 
 ifExpr:
-    IF_TOKEN LPAREN expr RPAREN exprBlock {
-        std::cout << "matched if" << std::endl; $$ = new IfExpression($3, $5, nullptr);
+    IF_TOKEN LPAREN terminal RPAREN exprBlock {
+        $$ = new IfExpression($3, $5, nullptr);
     }
-|   IF_TOKEN LPAREN expr RPAREN exprBlock ELSE_TOKEN exprBlock {
-        std::cout << "match if-else" << std::endl; $$ = new IfExpression($3, $5, $7);
+|   IF_TOKEN LPAREN terminal RPAREN exprBlock ELSE_TOKEN exprBlock {
+        $$ = new IfExpression($3, $5, $7);
     }
-|   IF_TOKEN LPAREN expr RPAREN exprBlock ELSE_TOKEN ifExpr {
-        std::cout << "match if-else if" << std::endl; $$ = new IfExpression($3, $5, $7);
+|   IF_TOKEN LPAREN terminal RPAREN exprBlock ELSE_TOKEN ifExpr {
+        $$ = new IfExpression($3, $5, $7);
     }
 ;
 
@@ -155,6 +166,10 @@ expr_list:
         $$ = $1;
     }
 |   expr_list ifExpr {
+        $1->push_back($2);
+        $$ = $1;
+    }
+|   expr_list function_decl {
         $1->push_back($2);
         $$ = $1;
     }
@@ -180,5 +195,12 @@ return_expr:
 
 /* Epilogue */
 void yyerror(const char* s) {
-    std::cerr << "Error: " << s << std::endl;
+    /* if mainFunc tell the user that the main function is missing */
+    if (rootAST == nullptr) {
+        std::cout << "Error: main function is missing" << std::endl;
+    }
+    else {
+        std::cout << "Error: " << s << std::endl;
+    }
 }
+

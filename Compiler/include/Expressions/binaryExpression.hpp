@@ -2,18 +2,22 @@
 
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/llvmVisitor.hpp"
+#include <memory>
 
 class BinaryExpression : public BaseExpression {
 private:
-  BaseExpression *lhs;
-  BaseExpression *rhs;
-  char type;
+  std::unique_ptr<BaseExpression> lhs;
+  std::unique_ptr<BaseExpression> rhs;
+  char operatorType;
 
 public:
-  BinaryExpression(BaseExpression *lhs, char type, BaseExpression *rhs)
-      : lhs(lhs), rhs(rhs), type(type) {}
-  BaseExpression *getLHS() { return lhs; }
-  BaseExpression *getRHS() { return rhs; }
-  char getType() { return type; }
+  BinaryExpression(std::unique_ptr<BaseExpression> lhs, char operatorType, std::unique_ptr<BaseExpression> rhs)
+      : lhs(std::move(lhs)), rhs(std::move(rhs)), operatorType(operatorType) {}
+  BaseExpression* getLHS() const { return lhs.get(); }
+  BaseExpression* getRHS() const { return rhs.get(); }
+  char getType() const { return operatorType; }
   void accept(LLVM_Visitor *visitor) override;
-};
+  
+  static BinaryExpression* createBinaryExpression(BaseExpression* lhs_raw, char op, BaseExpression* rhs_raw);
+
+  };

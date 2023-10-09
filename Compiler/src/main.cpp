@@ -28,8 +28,7 @@ int main(int argc, char **argv) {
 
   rootAST->accept(&visitor);
 
-  visitor.getResult()->print(llvm::outs());
-  llvm::outs() << "\n";
+  visitor.TheModule->dump();
 
   return 0;
 }

@@ -6,34 +6,26 @@
 #include "Visitors/baseVisitor.hpp"
 #include "Visitors/llvmVisitor.hpp"
 #include <iostream>
+#include <stdexcept>
 
 class IfExpression : public BaseExpression {
 private:
-  BaseExpression *condition;
-  BaseExpression *thenBlock;
+  TerminalExpression* condition;
+  BlockExpression *thenBlock;
   BaseExpression *elseBlock;
 
 public:
-  IfExpression(BaseExpression *condition, BaseExpression *thenBlock, BaseExpression *elseBlock)
+  IfExpression(TerminalExpression*condition, BlockExpression *thenBlock, BaseExpression *elseBlock)
       : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
   
-    std::cout << dynamic_cast<TerminalExpression*>(condition)->getType() << std::endl;
 
-    if (dynamic_cast<TerminalExpression*>(condition)->getType() != TerminalType::BOOLEAN) {
-      throw std::runtime_error("If condition must be a boolean expression");
-    }
-
-    if (!(dynamic_cast<BlockExpression*>(thenBlock))) {
-      throw std::runtime_error("If is expecting { } expression."); 
-    }
-
-    if (!(dynamic_cast<BlockExpression*>(elseBlock) || dynamic_cast<IfExpression*>(elseBlock)) && elseBlock != nullptr) {
-      throw std::runtime_error("else is expecting either {} or if ().");
+    if (condition->getType() != TerminalType::BOOLEAN) {
+      std::invalid_argument("Expected a boolean expression");
     }
   }
 
-  BaseExpression *getCondition() { return condition; }
-  BaseExpression *getThenBlock() { return thenBlock; }
+  TerminalExpression *getCondition() { return condition; }
+  BlockExpression *getThenBlock() { return thenBlock; }
   BaseExpression *getElseBlock() { return elseBlock; }
 
   void accept(LLVM_Visitor *visitor) override {

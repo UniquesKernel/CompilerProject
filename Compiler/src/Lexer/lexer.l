@@ -12,6 +12,8 @@
 /* rules */
 %% 
 
+"main" { yylval.identifier = new std::string(yytext); return MAIN; }
+
 "fn" { return FUNCTION; }
 
 "true" { return T_TRUE; }
@@ -27,7 +29,9 @@
 "int" { yylval.type = new std::string(yytext); return TYPE; }
 "bool" { yylval.type = new std::string(yytext); return TYPE; }
 
-[a-zA-Z][a-zA-Z0-9]* { yylval.identifier = new std::string(yytext); return IDENTIFIER; }
+"let" { return KW_VAR; }
+
+"mut" { return KW_MUT; }
 
 "{" { return LBRACE; }
 
@@ -53,11 +57,7 @@
 
 "=" { return '='; }
 
-"let" { return KW_VAR; }
-
-"mut" { return KW_MUT; }
-
-[a-zA-Z][0-9a-zA-Z]* { yylval.str = strdup(yytext); return TOKEN_STR;}
+[a-zA-Z][a-zA-Z0-9]* { yylval.identifier = new std::string(yytext); return IDENTIFIER; }
 
 [ \t\r\n]* { }
 

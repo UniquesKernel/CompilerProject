@@ -17,30 +17,28 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
-#include "llvm/Support/raw_ostream.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/TargetSelect.h"
-#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
-#include "llvm/IR/LegacyPassManager.h"
-
-
 
 extern BaseExpression *rootAST;
-extern FILE* yyin;
+extern FILE *yyin;
 
 int main(int argc, char **argv) {
 
-  if (argc != 2){
+  if (argc != 2) {
     std::cout << "file error\n";
     return 1;
   }
-  
+
   yyin = fopen(argv[1], "r");
   if (!yyin) {
     perror("Input file not found");
@@ -57,7 +55,7 @@ int main(int argc, char **argv) {
 
   fclose(yyin);
 
-  if(rootAST == NULL){
+  if (rootAST == NULL) {
     std::cout << "AST is null";
     return 1;
   }
@@ -66,7 +64,7 @@ int main(int argc, char **argv) {
 
   visitor.TheModule->dump();
 
-/* COMPILE TO .O FILE*/
+  /* COMPILE TO .O FILE*/
 
   // get current architecture and initialize compiler
   auto TargetTriple = llvm::sys::getDefaultTargetTriple();
@@ -91,11 +89,11 @@ int main(int argc, char **argv) {
 
   llvm::TargetOptions opt;
   auto RM = std::optional<llvm::Reloc::Model>();
-  auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+  auto TargetMachine =
+      Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
 
   visitor.TheModule->setDataLayout(TargetMachine->createDataLayout());
   visitor.TheModule->setTargetTriple(TargetTriple);
-
 
   std::string outputFilename = "output.o";
   std::error_code errorCode;

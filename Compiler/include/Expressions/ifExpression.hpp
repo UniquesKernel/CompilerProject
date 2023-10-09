@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Expressions/baseExpression.hpp"
-#include "Expressions/terminalExpression.hpp"
 #include "Expressions/blockExpression.hpp"
+#include "Expressions/terminalExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 #include "Visitors/llvmVisitor.hpp"
 #include <iostream>
@@ -10,14 +10,14 @@
 
 class IfExpression : public BaseExpression {
 private:
-  TerminalExpression* condition;
+  TerminalExpression *condition;
   BlockExpression *thenBlock;
   BaseExpression *elseBlock;
 
 public:
-  IfExpression(TerminalExpression*condition, BlockExpression *thenBlock, BaseExpression *elseBlock)
+  IfExpression(TerminalExpression *condition, BlockExpression *thenBlock,
+               BaseExpression *elseBlock)
       : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
-  
 
     if (condition->getType() != TerminalType::BOOLEAN) {
       std::invalid_argument("Expected a boolean expression");

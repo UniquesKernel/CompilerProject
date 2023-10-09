@@ -4,11 +4,11 @@
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
 
-#include "Expressions/blockExpression.hpp"
 #include "Expressions/ReturnExpression.hpp"
-#include "Expressions/ifExpression.hpp"
-#include "Expressions/functionDeclaration.hpp"
+#include "Expressions/blockExpression.hpp"
 #include "Expressions/functionCall.hpp"
+#include "Expressions/functionDeclaration.hpp"
+#include "Expressions/ifExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 
 #include <iostream>
@@ -47,20 +47,22 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
 }
 
 void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
-  switch(terminal->getType()) {
-    case INT:
-      llvm_result = llvm::ConstantInt::get(*TheContext, llvm::APInt(64, terminal->getIntValue()));
-      break;
-    case BOOLEAN:
-      llvm_result = llvm::ConstantInt::get(*TheContext, llvm::APInt(1, terminal->getBoolValue()));
-      break;
+  switch (terminal->getType()) {
+  case INT:
+    llvm_result = llvm::ConstantInt::get(
+        *TheContext, llvm::APInt(64, terminal->getIntValue()));
+    break;
+  case BOOLEAN:
+    llvm_result = llvm::ConstantInt::get(
+        *TheContext, llvm::APInt(1, terminal->getBoolValue()));
+    break;
   }
 }
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
-  for (auto& expr : block->getInstructions()) {
+  for (auto &expr : block->getInstructions()) {
     expr->accept(this);
-    if (dynamic_cast<ReturnExpression*>(expr) != nullptr) {
+    if (dynamic_cast<ReturnExpression *>(expr) != nullptr) {
       break;
     }
   }
@@ -71,81 +73,86 @@ void LLVM_Visitor::visitReturnExpression(ReturnExpression *returnExpr) {
 }
 
 void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
-  llvm::Function* function = Builder->GetInsertBlock()->getParent();
-
+  llvm::Function *function = Builder->GetInsertBlock()->getParent();
 
   ifExpression->getCondition()->accept(this);
-  llvm::Value* cond = llvm_result;
+  llvm::Value *cond = llvm_result;
 
-  llvm::BasicBlock* thenBB = llvm::BasicBlock::Create(*TheContext, "then", function);
-  llvm::BasicBlock* elseBB = llvm::BasicBlock::Create(*TheContext, "else", function);
-  llvm::BasicBlock* mergeBB = llvm::BasicBlock::Create(*TheContext, "mergeBB", function);
+  llvm::BasicBlock *thenBB =
+      llvm::BasicBlock::Create(*TheContext, "then", function);
+  llvm::BasicBlock *elseBB =
+      llvm::BasicBlock::Create(*TheContext, "else", function);
+  llvm::BasicBlock *mergeBB =
+      llvm::BasicBlock::Create(*TheContext, "mergeBB", function);
 
   Builder->CreateCondBr(cond, thenBB, elseBB);
 
   Builder->SetInsertPoint(thenBB);
   ifExpression->getThenBlock()->accept(this);
 
-  llvm::Value* thenValue = llvm_result;
+  llvm::Value *thenValue = llvm_result;
   Builder->CreateBr(mergeBB);
 
   Builder->SetInsertPoint(elseBB);
   ifExpression->getElseBlock()->accept(this);
-  llvm::Value* elseValue = llvm_result;
+  llvm::Value *elseValue = llvm_result;
   Builder->CreateBr(mergeBB);
 
-
   Builder->SetInsertPoint(mergeBB);
-  llvm::PHINode* phi = Builder->CreatePHI(llvm::Type::getInt64Ty(*TheContext), 2, "iftmp");
+  llvm::PHINode *phi =
+      Builder->CreatePHI(llvm::Type::getInt64Ty(*TheContext), 2, "iftmp");
   phi->addIncoming(thenValue, thenBB);
   phi->addIncoming(elseValue, elseBB);
 
   llvm_result = phi;
 }
 
-
-void LLVM_Visitor::visitVariableAssignmentExpression(VariableAssignmentExpression *variable) {
+void LLVM_Visitor::visitVariableAssignmentExpression(
+    VariableAssignmentExpression *variable) {
   std::cout << "visit var assign \n";
   // get value to be stored
-  BaseExpression* variableValue = variable->getValueExpression();
+  BaseExpression *variableValue = variable->getValueExpression();
   variableValue->accept(this);
   std::string variableName = variable->getVariable()->getName();
   // create variable in memmory
-  //llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
+  // llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  llvm::AllocaInst* varAllocation = (*Builder).CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr, variableName);//CreateEntryBlockAlloca(parentFunction, variableName);
+  llvm::AllocaInst *varAllocation = (*Builder).CreateAlloca(
+      llvm::Type::getInt64Ty(*TheContext), nullptr,
+      variableName); // CreateEntryBlockAlloca(parentFunction, variableName);
   symbolTable[variableName] = varAllocation;
 
-  //store value in variable
+  // store value in variable
   Builder->CreateStore(llvm_result, varAllocation);
 
-  if(variable->isVarMutable()){ mutableVars.insert(variableName); }
+  if (variable->isVarMutable()) {
+    mutableVars.insert(variableName);
+  }
 }
 
 void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
-  
-  llvm::AllocaInst* loadedVar = symbolTable[variable->getName()];
-  if(!loadedVar) {
-    throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
+
+  llvm::AllocaInst *loadedVar = symbolTable[variable->getName()];
+  if (!loadedVar) {
+    throw std::invalid_argument("Variable with name: '" + variable->getName() +
+                                "' not found");
   }
-  llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar, variable->getName().c_str());
+  llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar,
+                                    variable->getName().c_str());
 }
 
-void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration* funcDeclExpr) {
-  llvm::Type* returnType = getLLVMType(funcDeclExpr->getReturnType());
+void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
+  llvm::Type *returnType = getLLVMType(funcDeclExpr->getReturnType());
   returnType->dump();
-  llvm::FunctionType* funcType;
+  llvm::FunctionType *funcType;
 
-  funcType = llvm::FunctionType::get(returnType,{}, false);
+  funcType = llvm::FunctionType::get(returnType, {}, false);
 
-  auto* function = llvm::Function::Create(
-    funcType, 
-    llvm::Function::ExternalLinkage,
-    funcDeclExpr->getName(),
-    TheModule.get()
-  );                     
+  auto *function =
+      llvm::Function::Create(funcType, llvm::Function::ExternalLinkage,
+                             funcDeclExpr->getName(), TheModule.get());
 
-  auto* block = llvm::BasicBlock::Create(*TheContext, "entry", function);
+  auto *block = llvm::BasicBlock::Create(*TheContext, "entry", function);
   Builder->SetInsertPoint(block);
 
   funcDeclExpr->getBody()->accept(this);
@@ -155,17 +162,17 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration* funcDeclExpr) {
   llvm::verifyFunction(*function);
 }
 
-void LLVM_Visitor::visitFunctionCall(FunctionCall* funcCallExpr) {
-  llvm::Function* function = TheModule->getFunction(funcCallExpr->getName());
+void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
+  llvm::Function *function = TheModule->getFunction(funcCallExpr->getName());
 
- /* if (!function) {
-    throw std::invalid_argument("PANIC");
-  }*/
+  /* if (!function) {
+     throw std::invalid_argument("PANIC");
+   }*/
 
   llvm_result = Builder->CreateCall(function, {});
 }
 
-llvm::Type* LLVM_Visitor::getLLVMType(std::string type) {
+llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
   } else {

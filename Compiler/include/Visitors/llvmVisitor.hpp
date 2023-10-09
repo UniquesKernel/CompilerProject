@@ -45,22 +45,24 @@ public:
 
   void visitTerminalExpression(TerminalExpression *terminal) override;
   void visitBinaryExpression(BinaryExpression *expression) override;
-  void visitVariableAssignmentExpression(VariableAssignmentExpression *variable) override;
+  void visitVariableAssignmentExpression(
+      VariableAssignmentExpression *variable) override;
   void visitVariableExpression(VariableExpression *variable) override;
-  void visitBlockExpression(BlockExpression* block) override;
-  void visitReturnExpression(ReturnExpression* returnExpr) override;
-  void visitIfExpression(IfExpression* IfExpr) override;
+  void visitBlockExpression(BlockExpression *block) override;
+  void visitReturnExpression(ReturnExpression *returnExpr) override;
+  void visitIfExpression(IfExpression *IfExpr) override;
 
+  void visitFunctionDeclaration(FunctionDeclaration *FuncDeclExpr) override;
+  void visitFunctionCall(FunctionCall *FuncCallExpr) override;
 
-  void visitFunctionDeclaration(FunctionDeclaration* FuncDeclExpr) override;
-  void visitFunctionCall(FunctionCall* FuncCallExpr) override;
-
-//Helper functions
-  llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName) 
-  {
-    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
-    return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr, VarName);
+  // Helper functions
+  llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
+                                           const std::string &VarName) {
+    llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
+                           TheFunction->getEntryBlock().begin());
+    return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr,
+                             VarName);
   }
 
-  llvm::Type* getLLVMType(std::string type);
+  llvm::Type *getLLVMType(std::string type);
 };

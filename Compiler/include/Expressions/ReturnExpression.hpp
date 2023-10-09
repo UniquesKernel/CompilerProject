@@ -3,13 +3,11 @@
 
 class ReturnExpression : public BaseExpression {
 public:
-  ReturnExpression(BaseExpression* expr) : expr(expr) {}
-  BaseExpression* getExpr() { return expr; }
+  ReturnExpression(BaseExpression *expr) : expr(expr) {}
+  BaseExpression *getExpr() { return expr; }
 
-  void accept(LLVM_Visitor *visitor) {
-    visitor->visitReturnExpression(this);
-  }
+  void accept(LLVM_Visitor *visitor) { visitor->visitReturnExpression(this); }
 
-private: 
-  BaseExpression* expr;
+private:
+  BaseExpression *expr;
 };

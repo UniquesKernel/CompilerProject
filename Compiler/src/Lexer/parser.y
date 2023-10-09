@@ -30,6 +30,8 @@
     std::string* type;
     bool boolean;
     char* str;
+    char chr;
+    float flt;
     TerminalExpression* terminal;
     BinaryExpression* binary;
     BaseExpression* base;
@@ -41,6 +43,8 @@
 
 %token<num> TOKEN_INT
 %token<str> TOKEN_STR
+%token<chr> TOKEN_CHAR
+%token<flt> TOKEN_FLOAT
 %type<base> expr
 %type<terminal> terminal
 %type<base> program
@@ -102,12 +106,14 @@ expr:
 
 terminal:
     TOKEN_INT { $$ = new TerminalExpression($1); }
+|   TOKEN_CHAR { $$ = new TerminalExpression($1); }
+|   TOKEN_FLOAT { $$ = new TerminalExpression($1); }
 |   T_TRUE { $$ = new TerminalExpression(true); }
 |   T_FALSE { $$ = new TerminalExpression(false); }
 
 variableAssignment:
-    KW_VAR variable '=' expr { $$ = new VariableAssignmentExpression($4, $2, false); }
-|   KW_VAR KW_MUT variable '=' expr { $$  = new VariableAssignmentExpression($5, $3, true); }
+    KW_VAR TYPE variable '=' expr { $$ = new VariableAssignmentExpression($5, $3, false, $2); }
+|   KW_VAR KW_MUT TYPE variable '=' expr { $$  = new VariableAssignmentExpression($6, $4, true, $3); }
 
 variable:
     TOKEN_STR { $$ = new VariableExpression($1); }

@@ -7,11 +7,17 @@ class BinaryExpression : public BaseExpression {
 private:
   BaseExpression *lhs;
   BaseExpression *rhs;
-  char type;
+  char operatorType;
 
 public:
-  BinaryExpression(BaseExpression *lhs, char type, BaseExpression *rhs)
-      : lhs(lhs), rhs(rhs), type(type) {}
+  BinaryExpression(BaseExpression *lhs, char operatorType, BaseExpression *rhs)
+      : lhs(lhs), operatorType(operatorType), rhs(rhs) { 
+        if(lhs->getType() == rhs->getType()){
+          type=lhs->getType();
+        }else{
+          throw std::invalid_argument("Binary opperator must have matching types: " + TerminalTypeStrings[lhs->getType()] + " " + operatorType + " " + TerminalTypeStrings[rhs->getType()]);
+        }
+      }
   BaseExpression *getLHS() { return lhs; }
   BaseExpression *getRHS() { return rhs; }
   char getType() { return type; }

@@ -2,30 +2,23 @@
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/llvmVisitor.hpp"
 
-enum TerminalType {
-  INT, 
-  BOOLEAN, 
-  FLOAT,
-  CHAR,
-};
+
 
 class TerminalExpression : public BaseExpression {
 private:
-  TerminalType type;
   int intValue;
   bool boolValue;
   float floatValue;
   char charValue;
 
 public:
-  TerminalExpression(int value) : type(INT), intValue(value) {}
-  TerminalExpression(bool value) : type(BOOLEAN), boolValue(value) {}
-  TerminalExpression(float value) : type(FLOAT), floatValue(value) {}
-  TerminalExpression(char value) : type(CHAR), charValue(value) {}
+  TerminalExpression(int value) : intValue(value) { type=INT; }
+  TerminalExpression(bool value) : boolValue(value) { type=BOOLEAN; }
+  TerminalExpression(float value) : floatValue(value) { type=FLOAT; }
+  TerminalExpression(char value) : charValue(value) { type=CHAR; }
   int getIntValue() { return intValue; }
   bool getBoolValue() { return boolValue; }
   float getFloatValue() { return floatValue; }
   char getCharValue() { return charValue; }
-  TerminalType getType() { return type; }
   void accept(LLVM_Visitor *visitor) override;
 };

@@ -50,14 +50,14 @@ extern int yydebug;
     #include "Expressions/baseExpression.hpp"
     #include "Expressions/terminalExpression.hpp"
     #include "Expressions/binaryExpression.hpp"
-    #include "Expressions/variableExpression.hpp"
     #include "Expressions/blockExpression.hpp"
     #include "Expressions/ReturnExpression.hpp"
     #include "Expressions/ifExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
 
-#line 60 "parser.hpp"
+#line 61 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -69,21 +69,26 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     TOKEN_INT = 258,               /* TOKEN_INT  */
-    IDENTIFIER = 259,              /* IDENTIFIER  */
-    TYPE = 260,                    /* TYPE  */
-    FUNCTION = 261,                /* FUNCTION  */
-    LPAREN = 262,                  /* LPAREN  */
-    RPAREN = 263,                  /* RPAREN  */
-    LBRACE = 264,                  /* LBRACE  */
-    RBRACE = 265,                  /* RBRACE  */
-    END_OF_LINE = 266,             /* END_OF_LINE  */
-    END_OF_FILE = 267,             /* END_OF_FILE  */
-    RETURN = 268,                  /* RETURN  */
-    T_TRUE = 269,                  /* T_TRUE  */
-    T_FALSE = 270,                 /* T_FALSE  */
-    IF_TOKEN = 271,                /* IF_TOKEN  */
-    ELSE_TOKEN = 272,              /* ELSE_TOKEN  */
-    LOWEST_PRECEDENCE = 273        /* LOWEST_PRECEDENCE  */
+    TOKEN_STR = 259,               /* TOKEN_STR  */
+    TOKEN_CHAR = 260,              /* TOKEN_CHAR  */
+    TOKEN_FLOAT = 261,             /* TOKEN_FLOAT  */
+    IDENTIFIER = 262,              /* IDENTIFIER  */
+    TYPE = 263,                    /* TYPE  */
+    FUNCTION = 264,                /* FUNCTION  */
+    LPAREN = 265,                  /* LPAREN  */
+    RPAREN = 266,                  /* RPAREN  */
+    LBRACE = 267,                  /* LBRACE  */
+    RBRACE = 268,                  /* RBRACE  */
+    KW_VAR = 269,                  /* KW_VAR  */
+    KW_MUT = 270,                  /* KW_MUT  */
+    END_OF_LINE = 271,             /* END_OF_LINE  */
+    END_OF_FILE = 272,             /* END_OF_FILE  */
+    RETURN = 273,                  /* RETURN  */
+    T_TRUE = 274,                  /* T_TRUE  */
+    T_FALSE = 275,                 /* T_FALSE  */
+    IF_TOKEN = 276,                /* IF_TOKEN  */
+    ELSE_TOKEN = 277,              /* ELSE_TOKEN  */
+    LOWEST_PRECEDENCE = 278        /* LOWEST_PRECEDENCE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -92,21 +97,24 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 25 "parser.y"
+#line 27 "parser.y"
 
     int num;
     std::string* identifier;
     std::string* type;
     bool boolean;
-    BaseExpression* base;
+    char* str;
+    char chr;
+    float flt;
     TerminalExpression* terminal;
-    VariableExpression* var;
-    VariableAssignmentExpression* varAssign;
     BinaryExpression* binary;
+    BaseExpression* base;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
 
-#line 107 "parser.hpp"
+#line 118 "parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

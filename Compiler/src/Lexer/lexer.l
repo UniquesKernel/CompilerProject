@@ -27,7 +27,12 @@
 "int" { yylval.type = new std::string(yytext); return TYPE; }
 "bool" { yylval.type = new std::string(yytext); return TYPE; }
 
+'[a-zA-Z]' { yylval.chr = yytext[1]; return TOKEN_CHAR; }
+
 [a-zA-Z][a-zA-Z0-9]* { yylval.identifier = new std::string(yytext); return IDENTIFIER; }
+
+
+[0-9]+\.[0-9]+ { yylval.flt = atof(yytext); return TOKEN_FLOAT; }
 
 "{" { return LBRACE; }
 

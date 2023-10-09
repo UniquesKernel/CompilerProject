@@ -127,6 +127,8 @@ void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
     throw std::invalid_argument("Variable with name: '" + variable->getName() + "' not found");
   }
   llvm_result = Builder->CreateLoad(loadedVar->getAllocatedType(), loadedVar, variable->getName().c_str());
+}
+
 void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration* funcDeclExpr) {
   std::string returnType = funcDeclExpr->getType();
   llvm::FunctionType* funcType;

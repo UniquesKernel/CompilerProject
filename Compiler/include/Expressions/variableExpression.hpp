@@ -3,13 +3,6 @@
 #include "Visitors/llvmVisitor.hpp"
 #include <iostream>
 
-enum VarType{
-    INTEGER,
-    FLOAT,
-    BOOL,
-    CHAR,
-};
-
 class VariableAssignmentExpression : public BaseExpression {
     private:
         VariableExpression *variable;
@@ -17,8 +10,15 @@ class VariableAssignmentExpression : public BaseExpression {
         bool isMutable;
 
     public:
-        VariableAssignmentExpression(BaseExpression * valueExpression, VariableExpression* variable, bool isMutable) : valueExpression(valueExpression),
-                                                                variable(variable), isMutable(isMutable) {}
+        VariableAssignmentExpression(BaseExpression * valueExpression, VariableExpression* variable, bool isMutable, TerminalType inType) : valueExpression(valueExpression),
+                                                                variable(variable), isMutable(isMutable) 
+                                                                { 
+                                                                    if(valueExpression->getType() == inType){
+                                                                        type=inType; 
+                                                                    }else{
+                                                                        throw std::invalid_argument("Variable type does not match expression type: " +  TerminalTypeStrings[valueExpression->getType()] + " = " + TerminalTypeStrings[inType]);
+                                                                    }
+                                                                }
         BaseExpression* getValueExpression(){ return valueExpression; }
         VariableExpression* getVariable(){ return variable; }
         bool isVarMutable(){ return isMutable; }

@@ -18,5 +18,5 @@ public:
   bool getHasMainFunction() const { return hasMainFunction; }
   void setHasMainFunction(bool hasMain) { hasMainFunction = hasMain; }
   std::vector<FunctionDeclaration *> getFunctions() { return functions; }
-  void accept(LLVM_Visitor *visitor) { visitor->visitProgramExpression(this); }
+  void accept(BaseVisitor *visitor) { visitor->visitProgramExpression(this); }
 };

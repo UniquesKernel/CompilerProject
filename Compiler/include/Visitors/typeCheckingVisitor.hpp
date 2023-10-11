@@ -1,9 +1,9 @@
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <stack>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 class typeCheckingVisitor : BaseVisitor {
 private:

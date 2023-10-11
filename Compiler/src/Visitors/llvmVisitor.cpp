@@ -52,15 +52,14 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
 }
 
 void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
-  if (terminal->getType() == "int"){
+  if (terminal->getType() == "int") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
-    }  else if (terminal->getType() ==  "boolean"){
+  } else if (terminal->getType() == "boolean") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(1, terminal->getBoolValue()));
-    }
   }
-
+}
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
   symbolTableStack.push({});

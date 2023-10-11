@@ -15,7 +15,7 @@ public:
                                std::string inType)
       : valueExpression(valueExpression), variable(variable),
         isMutable(isMutable) {
-            type = inType;
+    type = inType;
   }
   BaseExpression *getValueExpression() { return valueExpression; }
   VariableExpression *getVariable() { return variable; }

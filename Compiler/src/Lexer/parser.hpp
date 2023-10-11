@@ -54,11 +54,12 @@ extern int yydebug;
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
+#include "Expressions/programExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
 #include <memory>
 
-#line 62 "parser.hpp"
+#line 63 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -96,7 +97,7 @@ typedef enum yytokentype yytoken_kind_t;
 /* Value type.  */
 #if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 union YYSTYPE {
-#line 28 "parser.y"
+#line 29 "parser.y"
 
   int num;
   std::string *identifier;
@@ -112,8 +113,12 @@ union YYSTYPE {
   VariableAssignmentExpression *varAssign;
   BlockExpression *blockExpr;
   std::vector<BaseExpression *> *block;
+  std::vector<FunctionDeclaration *> *funcList;
+  ProgramExpression *programExpr;
+  std::vector<std::pair<std::string, std::string>> *argList;
+  std::vector<BaseExpression *> *exprList;
 
-#line 119 "parser.hpp"
+#line 124 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
 #define YYSTYPE_IS_TRIVIAL 1

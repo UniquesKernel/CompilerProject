@@ -9,6 +9,7 @@ class ReturnExpression;
 class IfExpression;
 class FunctionDeclaration;
 class FunctionCall;
+class ProgramExpression;
 
 class BaseVisitor {
 public:
@@ -22,4 +23,5 @@ public:
   virtual void visitIfExpression(IfExpression *IfExpr) = 0;
   virtual void visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) = 0;
   virtual void visitFunctionCall(FunctionCall *funcCallExpr) = 0;
+  virtual void visitProgramExpression(ProgramExpression *funcCallExpr) = 0;
 };

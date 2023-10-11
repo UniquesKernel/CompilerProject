@@ -23,6 +23,7 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
 
   if (lhsType == rhsType) {
     type = lhsType;
+    expression->setType(lhsType);
   } else {
     throw std::invalid_argument("Binary operation with mismatching types: " +
                                 lhsType + " and " + rhsType + "\n");
@@ -37,22 +38,105 @@ void typeCheckingVisitor::visitVariableAssignmentExpression(
         "variable assignment operation with mismatching types: " +
         variable->getType() + " and " + type + "\n");
   } else {
-    typeTable.insert({variable->getVariable()->getName(), variable->getType()});
+    typeTable.top().insert({variable->getVariable()->getName(), variable->getType()});
+    variable->setType(type);
   }
 }
 
 void typeCheckingVisitor::visitVariableExpression(
     VariableExpression *variable) {
-  type = typeTable.at(variable->getName());
+    
+  std::stack<std::unordered_map<std::string, std::string>> tmpStack = typeTable;
+
+  while (!tmpStack.empty()) {
+    if (tmpStack.top().find(variable->getName()) != tmpStack.top().end()) {
+      type = tmpStack.top()[variable->getName()];
+      break;
+    }
+    tmpStack.pop();
+  }
+  variable->setType(type);
 }
 
-void typeCheckingVisitor::visitBlockExpression(BlockExpression *block) {}
+void typeCheckingVisitor::visitBlockExpression(BlockExpression *block) {
+  typeTable.push({});
+  std::vector<BaseExpression *> blockInstructions = block->getInstructions();
+  std::string blockType = "";
+  for (int i=0; i<blockInstructions.size(); i++){
+    BaseExpression * expr = blockInstructions[i];
+    if (dynamic_cast<ReturnExpression *>(expr) != nullptr){
+      expr->accept(this);
+      if(type == blockType || blockType == ""){
+        blockType=type;
+      }else{
+        throw std::invalid_argument(
+        "Block must not have different return types");
+      }
+    }
+  }
+  if(blockType==""){
+    blockInstructions.back()->accept(this);
+    blockType = type;
+  }
+  block->setType(blockType);
+  typeTable.pop();
+}
 
-void typeCheckingVisitor::visitReturnExpression(ReturnExpression *returnExpr) {}
+void typeCheckingVisitor::visitReturnExpression(ReturnExpression *returnExpr) {
+  returnExpr->getExpr()->accept(this);
+  returnExpr->setType(type);
+}
 
-void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {}
+void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
+  IfExpr->getCondition()->accept(this);
+  if(type != "boolean"){
+        throw std::invalid_argument(
+        "Conditionals must be of type 'boolean'");
+  }
+  std::string thenType, elseType;
+  IfExpr->getThenBlock()->accept(this);
+  thenType = type;
+  IfExpr->getElseBlock()->accept(this);
+  elseType = type;
+
+  if(thenType == elseType){
+    IfExpr->setType(thenType);
+    type = thenType;
+  }else{
+        throw std::invalid_argument(
+        "Conditional blocks must be of same type");
+  }
+}
 
 void typeCheckingVisitor::visitFunctionDeclaration(
-    FunctionDeclaration *FuncDeclExpr) {}
+  FunctionDeclaration *FuncDeclExpr) {
+    FuncDeclExpr->getBody()->accept(this);
+    if(FuncDeclExpr->getReturnType() == type){
+      FuncDeclExpr->setType(type);
+      typeTable.top()[FuncDeclExpr->getName()] = type;
+    }else{
+      throw std::invalid_argument(
+      "Function declared type does not match block type: " + FuncDeclExpr->getReturnType() + ", " + type);
+    }
+    std::vector<std::string> argTypes;
+    for (auto &arg : FuncDeclExpr->getArgs()) {
+      argTypes.push_back(arg.first);
+    }
+    functionArgTypes[FuncDeclExpr->getName()] = argTypes;
+  }
 
-void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {}
+void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
+  std::vector<std::string> argTypes = functionArgTypes[FuncCallExpr->getName()];
+  std::vector<std::string> argInputTypes;
+  for (auto &arg : FuncCallExpr->getArgs()) {
+    arg->accept(this);
+    argInputTypes.push_back(type);
+  }
+  if(argTypes != argInputTypes){
+    throw std::invalid_argument(
+      "Function called with incorrect argument types");
+  }else{
+    type = typeTable.top()[FuncCallExpr->getName()];
+    FuncCallExpr->setType(type);
+  }
+}

@@ -20,4 +20,5 @@ protected:
 public:
   virtual void accept(BaseVisitor *visitor) = 0;
   std::string getType() { return type; }
+  void setType(std::string type) { this->type = type; }
 };

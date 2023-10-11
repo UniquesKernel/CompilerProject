@@ -1,14 +1,18 @@
 #include "Expressions/baseExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 #include <string>
+#include <vector>
 #include <unordered_map>
+#include <stack>
 
 class typeCheckingVisitor : BaseVisitor {
 private:
   std::string type;
 
 public:
-  std::unordered_map<std::string, std::string> typeTable;
+  std::stack<std::unordered_map<std::string, std::string>> typeTable;
+  std::unordered_map<std::string, std::vector<std::string>> functionArgTypes;
+
   void visitTerminalExpression(TerminalExpression *terminal) override;
   void visitBinaryExpression(BinaryExpression *expression) override;
   void visitVariableAssignmentExpression(

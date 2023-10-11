@@ -47,7 +47,7 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
     llvm_result = Builder->CreateSRem(L, R, "modtmp");
     break;
   default:
-    throw std::invalid_argument("PANIC");
+    throw std::invalid_argument("Unknown Binary opperator");
   }
 }
 

@@ -47,18 +47,19 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 15 "parser.y"
 
-    #include "Expressions/baseExpression.hpp"
-    #include "Expressions/terminalExpression.hpp"
-    #include "Expressions/binaryExpression.hpp"
-    #include "Expressions/variableExpression.hpp"
-    #include "Expressions/blockExpression.hpp"
-    #include "Expressions/ReturnExpression.hpp"
-    #include "Expressions/ifExpression.hpp"
-    #include "Expressions/functionDeclaration.hpp"
-    #include "Expressions/functionCall.hpp"
-    #include <memory>
+#include "Expressions/ReturnExpression.hpp"
+#include "Expressions/baseExpression.hpp"
+#include "Expressions/binaryExpression.hpp"
+#include "Expressions/blockExpression.hpp"
+#include "Expressions/functionCall.hpp"
+#include "Expressions/functionDeclaration.hpp"
+#include "Expressions/ifExpression.hpp"
+#include "Expressions/programExpression.hpp"
+#include "Expressions/terminalExpression.hpp"
+#include "Expressions/variableExpression.hpp"
+#include <memory>
 
-#line 62 "parser.hpp"
+#line 63 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -95,28 +96,30 @@ extern int yydebug;
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 28 "parser.y"
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
+union YYSTYPE {
+#line 29 "parser.y"
 
-    int num;
-    std::string* identifier;
-    std::string* type;
-    std::string* str;
-    bool boolean;
-    char chr;
-    float flt;
-    TerminalExpression* terminal;
-    BinaryExpression* binary;
-    BaseExpression* base;
-    VariableExpression* var;
-    VariableAssignmentExpression* varAssign;
-    BlockExpression* blockExpr;
-    std::vector<BaseExpression*>* block;
+  int num;
+  std::string *identifier;
+  std::string *type;
+  std::string *str;
+  bool boolean;
+  char chr;
+  float flt;
+  TerminalExpression *terminal;
+  BinaryExpression *binary;
+  BaseExpression *base;
+  VariableExpression *var;
+  VariableAssignmentExpression *varAssign;
+  BlockExpression *blockExpr;
+  std::vector<BaseExpression *> *block;
+  std::vector<FunctionDeclaration *> *funcList;
+  ProgramExpression *programExpr;
+  std::vector<std::pair<std::string, std::string>> *argList;
+  std::vector<BaseExpression *> *exprList;
 
-#line 119 "parser.hpp"
-
+#line 124 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1

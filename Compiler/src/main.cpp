@@ -1,7 +1,9 @@
 #include "../src/Lexer/parser.hpp"
 #include "Expressions/baseExpression.hpp"
 #include "Expressions/binaryExpression.hpp"
+#include "Expressions/blockExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
+#include "Visitors/baseVisitor.hpp"
 #include "Visitors/llvmVisitor.hpp"
 #include <iostream>
 
@@ -29,7 +31,7 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
 
-extern BaseExpression *rootAST;
+extern ProgramExpression *rootAST;
 extern FILE *yyin;
 
 int main(int argc, char **argv) {
@@ -56,7 +58,7 @@ int main(int argc, char **argv) {
   fclose(yyin);
 
   if (rootAST == NULL) {
-    std::cout << "AST is null";
+    std::cout << "AST is null" << std::endl;
     return 1;
   }
 

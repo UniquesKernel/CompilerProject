@@ -7,7 +7,6 @@ void BinaryExpression::accept(BaseVisitor *visitor) {
 BinaryExpression *
 BinaryExpression::createBinaryExpression(BaseExpression *lhs_raw, char op,
                                          BaseExpression *rhs_raw) {
-  std::cout << "create binary";
   std::unique_ptr<BaseExpression> lhs(lhs_raw);
   std::unique_ptr<BaseExpression> rhs(rhs_raw);
 

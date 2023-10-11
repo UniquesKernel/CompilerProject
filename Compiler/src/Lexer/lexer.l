@@ -12,8 +12,6 @@
 /* rules */
 %% 
 
-"main" { yylval.identifier = new std::string(yytext); return MAIN; }
-
 "fn" { return FUNCTION; }
 
 "true" { return T_TRUE; }
@@ -35,10 +33,9 @@
 "float" { yylval.type = new std::string(yytext); return TYPE; }
 "char" { yylval.type = new std::string(yytext); return TYPE; }
 
-'[a-zA-Z]' { yylval.chr = yytext[1]; return TOKEN_CHAR; }
-
 [a-zA-Z][a-zA-Z0-9]* { yylval.identifier = new std::string(yytext); return IDENTIFIER; }
 
+'[a-zA-Z]' { yylval.chr = yytext[1]; return TOKEN_CHAR; }
 
 [0-9]+\.[0-9]+ { yylval.flt = atof(yytext); return TOKEN_FLOAT; }
 
@@ -47,6 +44,8 @@
 "}" { return RBRACE; }
 
 [;] { return END_OF_LINE; }
+
+[,] { return ','; }
 
 [0-9]+ { yylval.num = atoi(yytext); return TOKEN_INT; }
 

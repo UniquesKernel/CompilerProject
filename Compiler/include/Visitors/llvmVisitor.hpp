@@ -18,6 +18,7 @@
 #include <llvm/IR/Verifier.h>
 #include <memory>
 
+#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -31,7 +32,8 @@ public:
   std::unique_ptr<llvm::LLVMContext> TheContext;
   std::unique_ptr<llvm::IRBuilder<>> Builder;
   std::unique_ptr<llvm::Module> TheModule;
-  std::unordered_map<std::string, llvm::AllocaInst *> symbolTable;
+  std::stack<std::unordered_map<std::string, llvm::AllocaInst *>>
+      symbolTableStack;
   std::unordered_set<std::string> mutableVars;
 
   LLVM_Visitor() {
@@ -54,13 +56,14 @@ public:
 
   void visitFunctionDeclaration(FunctionDeclaration *FuncDeclExpr) override;
   void visitFunctionCall(FunctionCall *FuncCallExpr) override;
+  void visitProgramExpression(ProgramExpression *program) override;
 
   // Helper functions
   llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
                                            const std::string &VarName) {
     llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
                            TheFunction->getEntryBlock().begin());
-    return TmpB.CreateAlloca(llvm::Type::getDoubleTy(*TheContext), nullptr,
+    return TmpB.CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr,
                              VarName);
   }
 

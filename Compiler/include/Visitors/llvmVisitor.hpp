@@ -34,7 +34,7 @@ public:
   std::unique_ptr<llvm::Module> TheModule;
   std::stack<std::unordered_map<std::string, llvm::AllocaInst *>>
       symbolTableStack;
-  std::unordered_set<std::string> mutableVars;
+  std::stack<std::unordered_set<std::string>> mutableVars;
 
   LLVM_Visitor() {
     // Open a new context and module.
@@ -58,12 +58,13 @@ public:
   void visitFunctionCall(FunctionCall *FuncCallExpr) override;
   void visitProgramExpression(ProgramExpression *program) override;
 
+  void visitVariableReassignmentExpression(VariableReassignmentExpression *variable) override;
   // Helper functions
   llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
-                                           const std::string &VarName) {
+                                           const std::string &VarName, llvm::Type * varType) {
     llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
                            TheFunction->getEntryBlock().begin());
-    return TmpB.CreateAlloca(llvm::Type::getInt64Ty(*TheContext), nullptr,
+    return TmpB.CreateAlloca(varType, nullptr,
                              VarName);
   }
 

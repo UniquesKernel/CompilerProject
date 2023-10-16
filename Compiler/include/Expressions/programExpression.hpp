@@ -5,7 +5,7 @@
 #include "Visitors/llvmVisitor.hpp"
 #include <iostream>
 #include <vector>
-class ProgramExpression : BaseExpression {
+class ProgramExpression : public BaseExpression {
 private:
   std::vector<FunctionDeclaration *> functions;
   bool hasMainFunction = false;

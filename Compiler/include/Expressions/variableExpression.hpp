@@ -32,3 +32,16 @@ public:
   std::string getName() { return name; }
   void accept(BaseVisitor *visitor) override;
 };
+
+class VariableReassignmentExpression : public BaseExpression {
+private:
+  VariableExpression *variable;
+  BaseExpression *valueExpression;
+
+public:
+  VariableReassignmentExpression(BaseExpression *valueExpression,
+                               VariableExpression *variable) : variable(variable), valueExpression(valueExpression) {}
+  BaseExpression *getValueExpression() { return valueExpression; }
+  VariableExpression *getVariable() { return variable; }
+  void accept(BaseVisitor *visitor) override;
+};

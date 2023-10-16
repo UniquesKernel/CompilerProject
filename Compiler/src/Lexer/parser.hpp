@@ -36,10 +36,10 @@
    private implementation details that can be changed or removed.  */
 
 #ifndef YY_YY_PARSER_HPP_INCLUDED
-#define YY_YY_PARSER_HPP_INCLUDED
+# define YY_YY_PARSER_HPP_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-#define YYDEBUG 0
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -47,86 +47,93 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 15 "parser.y"
 
-#include "Expressions/ReturnExpression.hpp"
-#include "Expressions/baseExpression.hpp"
-#include "Expressions/binaryExpression.hpp"
-#include "Expressions/blockExpression.hpp"
-#include "Expressions/functionCall.hpp"
-#include "Expressions/functionDeclaration.hpp"
-#include "Expressions/ifExpression.hpp"
-#include "Expressions/programExpression.hpp"
-#include "Expressions/terminalExpression.hpp"
-#include "Expressions/variableExpression.hpp"
-#include <memory>
+    #include "Expressions/baseExpression.hpp"
+    #include "Expressions/terminalExpression.hpp"
+    #include "Expressions/binaryExpression.hpp"
+    #include "Expressions/variableExpression.hpp"
+    #include "Expressions/blockExpression.hpp"
+    #include "Expressions/ReturnExpression.hpp"
+    #include "Expressions/ifExpression.hpp"
+    #include "Expressions/functionDeclaration.hpp"
+    #include "Expressions/functionCall.hpp"
+    #include "Expressions/programExpression.hpp"
+    #include <memory>
 
 #line 63 "parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
-#define YYTOKENTYPE
-enum yytokentype {
-  YYEMPTY = -2,
-  YYEOF = 0,              /* "end of file"  */
-  YYerror = 256,          /* error  */
-  YYUNDEF = 257,          /* "invalid token"  */
-  TOKEN_INT = 258,        /* TOKEN_INT  */
-  TOKEN_CHAR = 259,       /* TOKEN_CHAR  */
-  TOKEN_FLOAT = 260,      /* TOKEN_FLOAT  */
-  IDENTIFIER = 261,       /* IDENTIFIER  */
-  MAIN = 262,             /* MAIN  */
-  TYPE = 263,             /* TYPE  */
-  FUNCTION = 264,         /* FUNCTION  */
-  KW_VAR = 265,           /* KW_VAR  */
-  KW_MUT = 266,           /* KW_MUT  */
-  LPAREN = 267,           /* LPAREN  */
-  RPAREN = 268,           /* RPAREN  */
-  LBRACE = 269,           /* LBRACE  */
-  RBRACE = 270,           /* RBRACE  */
-  END_OF_LINE = 271,      /* END_OF_LINE  */
-  END_OF_FILE = 272,      /* END_OF_FILE  */
-  RETURN = 273,           /* RETURN  */
-  T_TRUE = 274,           /* T_TRUE  */
-  T_FALSE = 275,          /* T_FALSE  */
-  IF_TOKEN = 276,         /* IF_TOKEN  */
-  ELSE_TOKEN = 277,       /* ELSE_TOKEN  */
-  LOWEST_PRECEDENCE = 278 /* LOWEST_PRECEDENCE  */
-};
-typedef enum yytokentype yytoken_kind_t;
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    TOKEN_INT = 258,               /* TOKEN_INT  */
+    TOKEN_CHAR = 259,              /* TOKEN_CHAR  */
+    TOKEN_FLOAT = 260,             /* TOKEN_FLOAT  */
+    IDENTIFIER = 261,              /* IDENTIFIER  */
+    MAIN = 262,                    /* MAIN  */
+    TYPE = 263,                    /* TYPE  */
+    FUNCTION = 264,                /* FUNCTION  */
+    KW_VAR = 265,                  /* KW_VAR  */
+    KW_MUT = 266,                  /* KW_MUT  */
+    LPAREN = 267,                  /* LPAREN  */
+    RPAREN = 268,                  /* RPAREN  */
+    LBRACE = 269,                  /* LBRACE  */
+    RBRACE = 270,                  /* RBRACE  */
+    END_OF_LINE = 271,             /* END_OF_LINE  */
+    END_OF_FILE = 272,             /* END_OF_FILE  */
+    RETURN = 273,                  /* RETURN  */
+    T_TRUE = 274,                  /* T_TRUE  */
+    T_FALSE = 275,                 /* T_FALSE  */
+    IF_TOKEN = 276,                /* IF_TOKEN  */
+    ELSE_TOKEN = 277,              /* ELSE_TOKEN  */
+    LOWEST_PRECEDENCE = 278        /* LOWEST_PRECEDENCE  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
-#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
-union YYSTYPE {
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+union YYSTYPE
+{
 #line 29 "parser.y"
 
-  int num;
-  std::string *identifier;
-  std::string *type;
-  std::string *str;
-  bool boolean;
-  char chr;
-  float flt;
-  TerminalExpression *terminal;
-  BinaryExpression *binary;
-  BaseExpression *base;
-  VariableExpression *var;
-  VariableAssignmentExpression *varAssign;
-  BlockExpression *blockExpr;
-  std::vector<BaseExpression *> *block;
-  std::vector<FunctionDeclaration *> *funcList;
-  ProgramExpression *programExpr;
-  std::vector<std::pair<std::string, std::string>> *argList;
-  std::vector<BaseExpression *> *exprList;
+    int num;
+    std::string* identifier;
+    std::string* type;
+    std::string* str;
+    bool boolean;
+    char chr;
+    float flt;
+    TerminalExpression* terminal;
+    BinaryExpression* binary;
+    BaseExpression* base;
+    VariableExpression* var;
+    VariableAssignmentExpression* varAssign;
+    VariableReassignmentExpression* varReassign;
+    BlockExpression* blockExpr;
+    std::vector<BaseExpression*>* block;
+    std::vector<FunctionDeclaration*>* funcList;
+    ProgramExpression* programExpr;
+    std::vector<std::pair<std::string, std::string>>* argList;
+    std::vector<BaseExpression*>* exprList;
 
-#line 124 "parser.hpp"
+#line 125 "parser.hpp"
+
 };
 typedef union YYSTYPE YYSTYPE;
-#define YYSTYPE_IS_TRIVIAL 1
-#define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
-int yyparse(void);
+
+int yyparse (void);
+
 
 #endif /* !YY_YY_PARSER_HPP_INCLUDED  */

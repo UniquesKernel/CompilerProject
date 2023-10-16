@@ -5,6 +5,7 @@
 #include "Expressions/terminalExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 #include "Visitors/llvmVisitor.hpp"
+#include "Visitors/typeCheckingVisitor.hpp"
 #include <iostream>
 
 #include <stdio.h>
@@ -52,6 +53,8 @@ int main(int argc, char **argv) {
   // }
 
   LLVM_Visitor visitor;
+  
+  typeCheckingVisitor typeChecker;
 
   yyparse();
 
@@ -62,7 +65,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  rootAST->accept(&typeChecker);
+
   rootAST->accept(&visitor);
+
 
   visitor.TheModule->dump();
 

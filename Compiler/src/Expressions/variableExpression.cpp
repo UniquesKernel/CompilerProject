@@ -7,3 +7,7 @@ void VariableAssignmentExpression::accept(BaseVisitor *visitor) {
 void VariableExpression::accept(BaseVisitor *visitor) {
   visitor->visitVariableExpression(this);
 }
+
+void VariableReassignmentExpression::accept(BaseVisitor *visitor) {
+  visitor->visitVariableReassignmentExpression(this);
+}

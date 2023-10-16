@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-class typeCheckingVisitor : BaseVisitor {
+class typeCheckingVisitor : public BaseVisitor {
 private:
   std::string type;
 
@@ -23,4 +23,6 @@ public:
   void visitIfExpression(IfExpression *IfExpr) override;
   void visitFunctionDeclaration(FunctionDeclaration *FuncDeclExpr) override;
   void visitFunctionCall(FunctionCall *FuncCallExpr) override;
+  void visitProgramExpression(ProgramExpression *funcCallExpr) override;
+  void visitVariableReassignmentExpression(VariableReassignmentExpression *variable) override;
 };

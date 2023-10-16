@@ -9,10 +9,14 @@
 #include "Expressions/ifExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
+#include "Expressions/programExpression.hpp"
+
+#include "iostream"
 
 void typeCheckingVisitor::visitTerminalExpression(
     TerminalExpression *terminal) {
   type = terminal->getType();
+std::cout << type << std::endl;
 }
 
 void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
@@ -32,7 +36,7 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
 
 void typeCheckingVisitor::visitVariableAssignmentExpression(
     VariableAssignmentExpression *variable) {
-  variable->getVariable()->accept(this);
+  variable->getValueExpression()->accept(this);
   if (variable->getType() != type) {
     throw std::invalid_argument(
         "variable assignment operation with mismatching types: " +
@@ -140,3 +144,24 @@ void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
     FuncCallExpr->setType(type);
   }
 }
+
+
+  void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program){
+    for (auto funcDecl : program->getFunctions()) {
+        funcDecl->accept(this);
+      }
+    program->setType(type);
+  }
+
+  void typeCheckingVisitor::visitVariableReassignmentExpression(VariableReassignmentExpression *variable){
+    
+    variable->getValueExpression()->accept(this);
+
+    if(variable->getVariable()->getType() == type){
+      variable->setType(type);
+    }else{
+      throw std::invalid_argument(
+        "Variable reassingment to different type");
+    }
+
+  }

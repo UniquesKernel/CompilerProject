@@ -64,11 +64,11 @@ int main(int argc, char **argv) {
     std::cout << "AST is null" << std::endl;
     return 1;
   }
-
+  std::cout << "debug: AST done \n";
   rootAST->accept(&typeChecker);
-
+  std::cout << "debug: Typecheck done \n";
   rootAST->accept(&visitor);
-
+  std::cout << "debug: llvm done \n";
 
   visitor.TheModule->dump();
 

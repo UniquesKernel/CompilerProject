@@ -42,6 +42,7 @@ void typeCheckingVisitor::visitVariableAssignmentExpression(
         "variable assignment operation with mismatching types: " +
         variable->getType() + " and " + type + "\n");
   } else {
+
     typeTable.top().insert(
         {variable->getVariable()->getName(), variable->getType()});
     variable->setType(type);
@@ -69,8 +70,8 @@ void typeCheckingVisitor::visitBlockExpression(BlockExpression *block) {
   std::string blockType = "";
   for (int i = 0; i < blockInstructions.size(); i++) {
     BaseExpression *expr = blockInstructions[i];
+    expr->accept(this);
     if (dynamic_cast<ReturnExpression *>(expr) != nullptr) {
-      expr->accept(this);
       if (type == blockType || blockType == "") {
         blockType = type;
       } else {
@@ -79,10 +80,7 @@ void typeCheckingVisitor::visitBlockExpression(BlockExpression *block) {
       }
     }
   }
-  if (blockType == "") {
-    blockInstructions.back()->accept(this);
-    blockType = type;
-  }
+
   block->setType(blockType);
   typeTable.pop();
 }
@@ -113,6 +111,7 @@ void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
 
 void typeCheckingVisitor::visitFunctionDeclaration(
     FunctionDeclaration *FuncDeclExpr) {
+  typeTable.push({});
   FuncDeclExpr->getBody()->accept(this);
   if (FuncDeclExpr->getReturnType() == type) {
     FuncDeclExpr->setType(type);
@@ -126,7 +125,8 @@ void typeCheckingVisitor::visitFunctionDeclaration(
   for (auto &arg : FuncDeclExpr->getArgs()) {
     argTypes.push_back(arg.first);
   }
-  functionArgTypes[FuncDeclExpr->getName()] = argTypes;
+  functionArgTypes[FuncDeclExpr->getName()] = argTypes; 
+  typeTable.pop();
 }
 
 void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {

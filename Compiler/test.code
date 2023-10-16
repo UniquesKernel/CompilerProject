@@ -1,6 +1,12 @@
 fn int main() {
-  let float a = 1.5 + 1.5;
-
-  return 0;
+  if(true){
+    let int a = 1 + 1;
+  }else {
+    let int a = 0;
+  }
 }
 
+fn float createFloat(int input){
+ let float a = 0.5;
+ return a;
+}

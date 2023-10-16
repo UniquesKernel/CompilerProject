@@ -139,6 +139,8 @@ void LLVM_Visitor::visitVariableAssignmentExpression(
   // create variable in memmory
   llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
+  
+
   llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(parentFunction, variableName, getLLVMType(variable->getType())); 
   symbolTableStack.top()[variableName] = varAllocation;
 

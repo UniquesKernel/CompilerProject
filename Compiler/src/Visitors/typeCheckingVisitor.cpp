@@ -7,16 +7,15 @@
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
-#include "Expressions/programExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
+#include "Expressions/programExpression.hpp"
 
 #include "iostream"
 
 void typeCheckingVisitor::visitTerminalExpression(
     TerminalExpression *terminal) {
   type = terminal->getType();
-  std::cout << type << std::endl;
 }
 
 void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
@@ -111,22 +110,24 @@ void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
 
 void typeCheckingVisitor::visitFunctionDeclaration(
     FunctionDeclaration *FuncDeclExpr) {
-  typeTable.push({});
+  typeTable.push({}); 
+  std::vector<std::string> argTypes;
+  for (auto &arg : FuncDeclExpr->getArgs()) {
+    argTypes.push_back(arg.first);
+    typeTable.top()[arg.second] = arg.first;
+  }
   FuncDeclExpr->getBody()->accept(this);
   if (FuncDeclExpr->getReturnType() == type) {
     FuncDeclExpr->setType(type);
-    typeTable.top()[FuncDeclExpr->getName()] = type;
+    functionTypes[FuncDeclExpr->getName()] = type;
   } else {
     throw std::invalid_argument(
         "Function declared type does not match block type: " +
         FuncDeclExpr->getReturnType() + ", " + type);
   }
-  std::vector<std::string> argTypes;
-  for (auto &arg : FuncDeclExpr->getArgs()) {
-    argTypes.push_back(arg.first);
-  }
-  functionArgTypes[FuncDeclExpr->getName()] = argTypes;
+
   typeTable.pop();
+  functionArgTypes[FuncDeclExpr->getName()] = argTypes; 
 }
 
 void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
@@ -136,30 +137,34 @@ void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
     arg->accept(this);
     argInputTypes.push_back(type);
   }
-  if (argTypes != argInputTypes) {
-    throw std::invalid_argument(
-        "Function called with incorrect argument types");
-  } else {
-    type = typeTable.top()[FuncCallExpr->getName()];
-    FuncCallExpr->setType(type);
+  for (int i = 0; i< argTypes.size(); i++){
+    if (argTypes[i] != argInputTypes[i]) {
+      throw std::invalid_argument(
+          "Function called with incorrect argument types");
+    } 
   }
+  type = functionTypes[FuncCallExpr->getName()];
+
+  FuncCallExpr->setType(type);
 }
 
-void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program) {
-  for (auto funcDecl : program->getFunctions()) {
-    funcDecl->accept(this);
+
+  void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program){
+    for (auto funcDecl : program->getFunctions()) {
+        funcDecl->accept(this);
+      }
+    program->setType(type);
   }
-  program->setType(type);
-}
 
-void typeCheckingVisitor::visitVariableReassignmentExpression(
-    VariableReassignmentExpression *variable) {
+  void typeCheckingVisitor::visitVariableReassignmentExpression(VariableReassignmentExpression *variable){
 
-  variable->getValueExpression()->accept(this);
+    variable->getVariable()->accept(this);    
+    variable->getValueExpression()->accept(this);
+    if(variable->getVariable()->getType() == type){
+      variable->setType(type);
+    }else{
+      throw std::invalid_argument(
+        "Variable reassingment to different type");
+    }
 
-  if (variable->getVariable()->getType() == type) {
-    variable->setType(type);
-  } else {
-    throw std::invalid_argument("Variable reassingment to different type");
   }
-}

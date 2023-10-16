@@ -12,6 +12,8 @@ private:
 public:
   std::stack<std::unordered_map<std::string, std::string>> typeTable;
   std::unordered_map<std::string, std::vector<std::string>> functionArgTypes;
+  std::unordered_map<std::string, std::string> functionTypes;
+
 
   void visitTerminalExpression(TerminalExpression *terminal) override;
   void visitBinaryExpression(BinaryExpression *expression) override;

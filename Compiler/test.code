@@ -1,12 +1,16 @@
-fn int main() {
-  if(true){
-    let int a = 1 + 1;
-  }else {
-    let int a = 0;
-  }
+
+
+fn int createFloat(int input, float test){
+ let float a = test;
+ let int i = input;
+ return i;
 }
 
-fn float createFloat(int input){
- let float a = 0.5;
- return a;
+fn int main() {
+  let int i = 1;
+  let float a = 1.4;
+  let mut char e = 'e';
+  e = e + 'f';
+
+  return createFloat(i,a);
 }

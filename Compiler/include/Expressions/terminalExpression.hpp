@@ -14,19 +14,15 @@ private:
 public:
   TerminalExpression(int value) : intValue(value) {
     type = "int";
-    std::cout << type << std::endl;
   }
   TerminalExpression(bool value) : boolValue(value) {
     type = "boolean";
-    std::cout << type << std::endl;
   }
   TerminalExpression(float value) : floatValue(value) {
     type = "float";
-    std::cout << type << std::endl;
   }
   TerminalExpression(char value) : charValue(value) {
     type = "char";
-    std::cout << type << std::endl;
   }
   int getIntValue() { return intValue; }
   bool getBoolValue() { return boolValue; }

@@ -131,7 +131,6 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
 
 void LLVM_Visitor::visitVariableAssignmentExpression(
     VariableAssignmentExpression *variable) {
-  std::cout << "visit var assign \n";
   // get value to be stored
   BaseExpression *variableValue = variable->getValueExpression();
   variableValue->accept(this);

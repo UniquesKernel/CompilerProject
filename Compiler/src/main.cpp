@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   // }
 
   LLVM_Visitor visitor;
-  
+
   typeCheckingVisitor typeChecker;
 
   yyparse();

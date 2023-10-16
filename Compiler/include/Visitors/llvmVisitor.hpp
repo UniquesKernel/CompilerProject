@@ -58,14 +58,15 @@ public:
   void visitFunctionCall(FunctionCall *FuncCallExpr) override;
   void visitProgramExpression(ProgramExpression *program) override;
 
-  void visitVariableReassignmentExpression(VariableReassignmentExpression *variable) override;
+  void visitVariableReassignmentExpression(
+      VariableReassignmentExpression *variable) override;
   // Helper functions
   llvm::AllocaInst *CreateEntryBlockAlloca(llvm::Function *TheFunction,
-                                           const std::string &VarName, llvm::Type * varType) {
+                                           const std::string &VarName,
+                                           llvm::Type *varType) {
     llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
                            TheFunction->getEntryBlock().begin());
-    return TmpB.CreateAlloca(varType, nullptr,
-                             VarName);
+    return TmpB.CreateAlloca(varType, nullptr, VarName);
   }
 
   llvm::Type *getLLVMType(std::string type);

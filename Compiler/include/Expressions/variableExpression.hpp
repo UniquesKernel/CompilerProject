@@ -40,7 +40,8 @@ private:
 
 public:
   VariableReassignmentExpression(BaseExpression *valueExpression,
-                               VariableExpression *variable) : variable(variable), valueExpression(valueExpression) {}
+                                 VariableExpression *variable)
+      : variable(variable), valueExpression(valueExpression) {}
   BaseExpression *getValueExpression() { return valueExpression; }
   VariableExpression *getVariable() { return variable; }
   void accept(BaseVisitor *visitor) override;

@@ -64,7 +64,7 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
   } else if (terminal->getType() == "char") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(8, terminal->getBoolValue()));
-  } 
+  }
 }
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
@@ -139,9 +139,8 @@ void LLVM_Visitor::visitVariableAssignmentExpression(
   // create variable in memmory
   llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  
-
-  llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(parentFunction, variableName, getLLVMType(variable->getType())); 
+  llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(
+      parentFunction, variableName, getLLVMType(variable->getType()));
   symbolTableStack.top()[variableName] = varAllocation;
 
   // store value in variable
@@ -202,7 +201,7 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 
   auto Idx = 0;
   for (auto &arg : function->args()) {
-    llvm::Type * argType = argTypes[Idx];
+    llvm::Type *argType = argTypes[Idx];
     arg.setName(argNames[Idx++]);
     llvm::AllocaInst *alloca =
         CreateEntryBlockAlloca(function, std::string(arg.getName()), argType);
@@ -264,9 +263,10 @@ void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   llvm::verifyFunction(*entryFunc);
 }
 
-void LLVM_Visitor::visitVariableReassignmentExpression(VariableReassignmentExpression *variable) {
+void LLVM_Visitor::visitVariableReassignmentExpression(
+    VariableReassignmentExpression *variable) {
   variable->getValueExpression()->accept(this);
-  
+
   llvm::AllocaInst *loadedVar = nullptr;
 
   std::stack<std::unordered_map<std::string, llvm::AllocaInst *>> tmpStack =
@@ -274,9 +274,11 @@ void LLVM_Visitor::visitVariableReassignmentExpression(VariableReassignmentExpre
   std::stack<std::unordered_set<std::string>> tmpMutableVars = mutableVars;
 
   while (!tmpStack.empty()) {
-    if (tmpStack.top().find(variable->getVariable()->getName()) != tmpStack.top().end()) {
+    if (tmpStack.top().find(variable->getVariable()->getName()) !=
+        tmpStack.top().end()) {
       loadedVar = tmpStack.top()[variable->getVariable()->getName()];
-      if(tmpMutableVars.top().find(variable->getVariable()->getName()) == tmpMutableVars.top().end()){
+      if (tmpMutableVars.top().find(variable->getVariable()->getName()) ==
+          tmpMutableVars.top().end()) {
         throw std::runtime_error("Reassignment of immutable variable.");
       }
       break;
@@ -286,31 +288,26 @@ void LLVM_Visitor::visitVariableReassignmentExpression(VariableReassignmentExpre
   }
 
   if (!loadedVar) {
-    throw std::invalid_argument("Variable with name: '" + variable->getVariable()->getName() +
+    throw std::invalid_argument("Variable with name: '" +
+                                variable->getVariable()->getName() +
                                 "' not found");
   }
-  
+
   Builder->CreateStore(llvm_result, loadedVar);
-
 }
-
-
 
 llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
-  }else if (type == "float"){
+  } else if (type == "float") {
     return llvm::Type::getFP128Ty(*TheContext);
-  }else if (type == "char"){
+  } else if (type == "char") {
     return llvm::Type::getInt8Ty(*TheContext);
-  }else if (type == "boolean"){
+  } else if (type == "boolean") {
     return llvm::Type::getInt1Ty(*TheContext);
-  }
-   else {
+  } else {
     throw std::runtime_error("Unknown Type:" + type);
   }
 
   return llvm::Type::getVoidTy(*TheContext);
 }
-
-

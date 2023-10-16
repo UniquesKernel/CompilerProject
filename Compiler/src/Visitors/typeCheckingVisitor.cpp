@@ -7,16 +7,16 @@
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
+#include "Expressions/programExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
-#include "Expressions/programExpression.hpp"
 
 #include "iostream"
 
 void typeCheckingVisitor::visitTerminalExpression(
     TerminalExpression *terminal) {
   type = terminal->getType();
-std::cout << type << std::endl;
+  std::cout << type << std::endl;
 }
 
 void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
@@ -125,7 +125,7 @@ void typeCheckingVisitor::visitFunctionDeclaration(
   for (auto &arg : FuncDeclExpr->getArgs()) {
     argTypes.push_back(arg.first);
   }
-  functionArgTypes[FuncDeclExpr->getName()] = argTypes; 
+  functionArgTypes[FuncDeclExpr->getName()] = argTypes;
   typeTable.pop();
 }
 
@@ -145,23 +145,21 @@ void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
   }
 }
 
-
-  void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program){
-    for (auto funcDecl : program->getFunctions()) {
-        funcDecl->accept(this);
-      }
-    program->setType(type);
+void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program) {
+  for (auto funcDecl : program->getFunctions()) {
+    funcDecl->accept(this);
   }
+  program->setType(type);
+}
 
-  void typeCheckingVisitor::visitVariableReassignmentExpression(VariableReassignmentExpression *variable){
-    
-    variable->getValueExpression()->accept(this);
+void typeCheckingVisitor::visitVariableReassignmentExpression(
+    VariableReassignmentExpression *variable) {
 
-    if(variable->getVariable()->getType() == type){
-      variable->setType(type);
-    }else{
-      throw std::invalid_argument(
-        "Variable reassingment to different type");
-    }
+  variable->getValueExpression()->accept(this);
 
+  if (variable->getVariable()->getType() == type) {
+    variable->setType(type);
+  } else {
+    throw std::invalid_argument("Variable reassingment to different type");
   }
+}

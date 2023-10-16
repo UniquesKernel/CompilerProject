@@ -24,5 +24,6 @@ public:
   void visitFunctionDeclaration(FunctionDeclaration *FuncDeclExpr) override;
   void visitFunctionCall(FunctionCall *FuncCallExpr) override;
   void visitProgramExpression(ProgramExpression *funcCallExpr) override;
-  void visitVariableReassignmentExpression(VariableReassignmentExpression *variable) override;
+  void visitVariableReassignmentExpression(
+      VariableReassignmentExpression *variable) override;
 };

@@ -49,15 +49,23 @@
 
 [0-9]+ { yylval.num = atoi(yytext); return TOKEN_INT; }
 
-"*" { return '*'; }
+"==" { return EQ; }
 
-"/" { return '/'; }
+"!=" { return NEQ; }
 
-"+" { return '+'; }
+"<" { return LT; }
 
-"-" { return '-'; }
+">" { return GT; }
 
-"%" { return '%'; }
+"*" { return MUL; }
+
+"/" { return DIV; }
+
+"+" { return PLUS; }
+
+"-" { return MINUS; }
+
+"%" { return MOD; }
 
 "(" { return LPAREN; }
 

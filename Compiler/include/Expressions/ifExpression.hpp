@@ -10,12 +10,12 @@
 
 class IfExpression : public BaseExpression {
 private:
-  TerminalExpression *condition;
+  BaseExpression *condition;
   BlockExpression *thenBlock;
   BaseExpression *elseBlock;
 
 public:
-  IfExpression(TerminalExpression *condition, BlockExpression *thenBlock,
+  IfExpression(BaseExpression *condition, BlockExpression *thenBlock,
                BaseExpression *elseBlock)
       : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
 
@@ -24,7 +24,7 @@ public:
     }
   }
 
-  TerminalExpression *getCondition() { return condition; }
+  BaseExpression *getCondition() { return condition; }
   BlockExpression *getThenBlock() { return thenBlock; }
   BaseExpression *getElseBlock() { return elseBlock; }
 

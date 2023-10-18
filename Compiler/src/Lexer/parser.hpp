@@ -75,21 +75,30 @@ enum yytokentype {
   IDENTIFIER = 261,       /* IDENTIFIER  */
   MAIN = 262,             /* MAIN  */
   TYPE = 263,             /* TYPE  */
-  FUNCTION = 264,         /* FUNCTION  */
-  KW_VAR = 265,           /* KW_VAR  */
-  KW_MUT = 266,           /* KW_MUT  */
-  LPAREN = 267,           /* LPAREN  */
-  RPAREN = 268,           /* RPAREN  */
-  LBRACE = 269,           /* LBRACE  */
-  RBRACE = 270,           /* RBRACE  */
-  END_OF_LINE = 271,      /* END_OF_LINE  */
-  END_OF_FILE = 272,      /* END_OF_FILE  */
-  RETURN = 273,           /* RETURN  */
-  T_TRUE = 274,           /* T_TRUE  */
-  T_FALSE = 275,          /* T_FALSE  */
-  IF_TOKEN = 276,         /* IF_TOKEN  */
-  ELSE_TOKEN = 277,       /* ELSE_TOKEN  */
-  LOWEST_PRECEDENCE = 278 /* LOWEST_PRECEDENCE  */
+  PLUS = 264,             /* PLUS  */
+  MINUS = 265,            /* MINUS  */
+  MUL = 266,              /* MUL  */
+  DIV = 267,              /* DIV  */
+  MOD = 268,              /* MOD  */
+  LT = 269,               /* LT  */
+  GT = 270,               /* GT  */
+  EQ = 271,               /* EQ  */
+  NEQ = 272,              /* NEQ  */
+  FUNCTION = 273,         /* FUNCTION  */
+  KW_VAR = 274,           /* KW_VAR  */
+  KW_MUT = 275,           /* KW_MUT  */
+  LPAREN = 276,           /* LPAREN  */
+  RPAREN = 277,           /* RPAREN  */
+  LBRACE = 278,           /* LBRACE  */
+  RBRACE = 279,           /* RBRACE  */
+  END_OF_LINE = 280,      /* END_OF_LINE  */
+  END_OF_FILE = 281,      /* END_OF_FILE  */
+  RETURN = 282,           /* RETURN  */
+  T_TRUE = 283,           /* T_TRUE  */
+  T_FALSE = 284,          /* T_FALSE  */
+  IF_TOKEN = 285,         /* IF_TOKEN  */
+  ELSE_TOKEN = 286,       /* ELSE_TOKEN  */
+  LOWEST_PRECEDENCE = 287 /* LOWEST_PRECEDENCE  */
 };
 typedef enum yytokentype yytoken_kind_t;
 #endif

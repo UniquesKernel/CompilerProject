@@ -25,7 +25,7 @@ build_project() {
   execute "rm -rf lexer.cpp" ""
   execute "rm -rf parser.cpp parser.hpp"
   execute "flex -o lexer.cpp lexer.l" "could not create Lexer"
-  execute "bison -o parser.cpp -d parser.y" "could not create Parser"
+  execute "bison -Wcounterexample -o parser.cpp -d parser.y" "could not create Parser"
   echo "Lexer Complete"
   execute "popd > /dev/null" ""
   

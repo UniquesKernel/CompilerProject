@@ -1,17 +1,11 @@
-
-
-fn int createFloat(int input, float test){
- let float a = test;
- let int i = input;
- return i;
+fn int factorial(int n) {
+  if (n < 2) {
+    return n;
+  }
+  let bool m = true;
+  return n * factorial(n + 1);
 }
 
 fn int main() {
-  let float a = 3.1;
-  let float i = 1.1;
-
-  let float b = a / i;
-
-  return 0;
-
+  factorial(6);
 }

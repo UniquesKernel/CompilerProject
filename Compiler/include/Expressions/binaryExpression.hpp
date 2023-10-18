@@ -5,23 +5,24 @@
 #include <memory>
 
 #include <iostream>
+#include <string>
 
 class BinaryExpression : public BaseExpression {
 private:
   std::unique_ptr<BaseExpression> lhs;
   std::unique_ptr<BaseExpression> rhs;
-  char op;
+  std::string op;
 
 public:
-  BinaryExpression(std::unique_ptr<BaseExpression> lhs, char op,
+  BinaryExpression(std::unique_ptr<BaseExpression> lhs, std::string op,
                    std::unique_ptr<BaseExpression> rhs)
       : lhs(std::move(lhs)), op(op), rhs(std::move(rhs)) {}
   BaseExpression *getLHS() { return lhs.get(); }
   BaseExpression *getRHS() { return rhs.get(); }
-  char getOPType() { return op; }
+  std::string getOPType() { return op; }
   void accept(BaseVisitor *visitor) override;
 
   static BinaryExpression *createBinaryExpression(BaseExpression *lhs_raw,
-                                                  char op,
+                                                  std::string op,
                                                   BaseExpression *rhs_raw);
 };

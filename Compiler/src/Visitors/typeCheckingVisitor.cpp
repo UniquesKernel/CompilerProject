@@ -24,8 +24,15 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
   expression->getRHS()->accept(this);
   std::string rhsType = type;
 
+  std::vector<std::string> boolOperators = {">","<", "==", "!="};
+
   if (lhsType == rhsType) {
-    type = lhsType;
+    if (std::find(boolOperators.begin(), boolOperators.end(), expression->getOPType()) != boolOperators.end()){ // check if operator is a conditional operator
+      std::cout << "debug \n";
+      type = "boolean";
+    }else{
+      type = lhsType;
+    }
     expression->setType(lhsType);
   } else {
     throw std::invalid_argument("Binary operation with mismatching types: " +

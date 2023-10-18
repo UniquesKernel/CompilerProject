@@ -87,18 +87,19 @@ enum yytokentype {
   FUNCTION = 273,         /* FUNCTION  */
   KW_VAR = 274,           /* KW_VAR  */
   KW_MUT = 275,           /* KW_MUT  */
-  LPAREN = 276,           /* LPAREN  */
-  RPAREN = 277,           /* RPAREN  */
-  LBRACE = 278,           /* LBRACE  */
-  RBRACE = 279,           /* RBRACE  */
-  END_OF_LINE = 280,      /* END_OF_LINE  */
-  END_OF_FILE = 281,      /* END_OF_FILE  */
-  RETURN = 282,           /* RETURN  */
-  T_TRUE = 283,           /* T_TRUE  */
-  T_FALSE = 284,          /* T_FALSE  */
-  IF_TOKEN = 285,         /* IF_TOKEN  */
-  ELSE_TOKEN = 286,       /* ELSE_TOKEN  */
-  LOWEST_PRECEDENCE = 287 /* LOWEST_PRECEDENCE  */
+  COLON = 276,            /* COLON  */
+  LPAREN = 277,           /* LPAREN  */
+  RPAREN = 278,           /* RPAREN  */
+  LBRACE = 279,           /* LBRACE  */
+  RBRACE = 280,           /* RBRACE  */
+  END_OF_LINE = 281,      /* END_OF_LINE  */
+  END_OF_FILE = 282,      /* END_OF_FILE  */
+  RETURN = 283,           /* RETURN  */
+  T_TRUE = 284,           /* T_TRUE  */
+  T_FALSE = 285,          /* T_FALSE  */
+  IF_TOKEN = 286,         /* IF_TOKEN  */
+  ELSE_TOKEN = 287,       /* ELSE_TOKEN  */
+  LOWEST_PRECEDENCE = 288 /* LOWEST_PRECEDENCE  */
 };
 typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -128,7 +129,7 @@ union YYSTYPE {
   std::vector<std::pair<std::string, std::string>> *argList;
   std::vector<BaseExpression *> *exprList;
 
-#line 125 "parser.hpp"
+#line 135 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
 #define YYSTYPE_IS_TRIVIAL 1

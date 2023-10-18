@@ -77,6 +77,7 @@
 %token '='
 %token KW_VAR
 %token KW_MUT
+%token COLON
 %token LPAREN RPAREN
 %token LBRACE RBRACE
 %token END_OF_LINE
@@ -110,28 +111,28 @@ function_list:
 ;
 
 function_decl:
-    FUNCTION TYPE IDENTIFIER LPAREN arg_list RPAREN exprBlock {
-        std::string type = *$2;
-        std::string identifier = *$3;
-        if ($5) {
-            $$ = new FunctionDeclaration(identifier, type, $7, *$5);
+    FUNCTION IDENTIFIER LPAREN arg_list RPAREN COLON TYPE exprBlock {
+        std::string type = *$7;
+        std::string identifier = *$2;
+        if ($4) {
+            $$ = new FunctionDeclaration(identifier, type, $8, *$4);
         } else {
-            $$ = new FunctionDeclaration(identifier, type, $7);
+            $$ = new FunctionDeclaration(identifier, type, $8);
         }
     }
 ;
 
 arg_list:
     { $$ = nullptr; }
-|   arg_list ',' TYPE IDENTIFIER {
-        std::string type = *$3;
-        std::string identifier = *$4;
+|   arg_list ',' IDENTIFIER COLON TYPE {
+        std::string type = *$5;
+        std::string identifier = *$3;
         $1->push_back(std::make_pair(type, identifier));
         $$ = $1;
     }
-|   TYPE IDENTIFIER {
-        std::string type = *$1;
-        std::string identifier = *$2;
+|   IDENTIFIER COLON TYPE {
+        std::string type = *$3;
+        std::string identifier = *$1;
         auto list = new std::vector<std::pair<std::string, std::string>>();
         list->push_back(std::make_pair(type, identifier));
         $$ = list;
@@ -214,13 +215,13 @@ terminal:
 ;
 
 variableAssignment:
-    KW_VAR TYPE variable '=' expr {
-        std::string varType = *$2;
-        $$ = new VariableAssignmentExpression($5, $3, false, varType); 
+    KW_VAR variable COLON TYPE '=' expr {
+        std::string varType = *$4;
+        $$ = new VariableAssignmentExpression($6, $2, false, varType); 
         }
-|   KW_VAR KW_MUT TYPE variable '=' expr {
-        std::string varType = *$3;
-        $$  = new VariableAssignmentExpression($6, $4, true, varType); 
+|   KW_VAR KW_MUT variable COLON TYPE '=' expr {
+        std::string varType = *$5;
+        $$  = new VariableAssignmentExpression($7, $3, true, varType); 
         }
 
 variableReassignment:

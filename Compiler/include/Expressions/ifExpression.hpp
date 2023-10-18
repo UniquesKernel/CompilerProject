@@ -17,8 +17,7 @@ private:
 public:
   IfExpression(BaseExpression *condition, BlockExpression *thenBlock,
                BaseExpression *elseBlock)
-      : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
-  }
+      : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {}
 
   BaseExpression *getCondition() { return condition; }
   BlockExpression *getThenBlock() { return thenBlock; }

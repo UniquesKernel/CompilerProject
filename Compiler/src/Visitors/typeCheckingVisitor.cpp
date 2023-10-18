@@ -24,12 +24,14 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
   expression->getRHS()->accept(this);
   std::string rhsType = type;
 
-  std::vector<std::string> boolOperators = {">","<", "==", "!="};
+  std::vector<std::string> boolOperators = {">", "<", "==", "!="};
 
   if (lhsType == rhsType) {
-    if (std::find(boolOperators.begin(), boolOperators.end(), expression->getOPType()) != boolOperators.end()){ // check if operator is a conditional operator
+    if (std::find(boolOperators.begin(), boolOperators.end(),
+                  expression->getOPType()) !=
+        boolOperators.end()) { // check if operator is a conditional operator
       type = "bool";
-    }else{
+    } else {
       type = lhsType;
     }
     expression->setType(lhsType);
@@ -101,11 +103,11 @@ void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
   IfExpr->getCondition()->accept(this);
   if (type != "bool") {
     throw std::invalid_argument("Conditionals must be of type 'bool'");
-  }  
+  }
   std::string thenType, elseType;
   IfExpr->getThenBlock()->accept(this);
   thenType = type;
-  if(IfExpr->getElseBlock() != nullptr){
+  if (IfExpr->getElseBlock() != nullptr) {
     IfExpr->getElseBlock()->accept(this);
   }
   elseType = type;
@@ -124,10 +126,10 @@ void typeCheckingVisitor::visitFunctionDeclaration(
   for (auto &arg : FuncDeclExpr->getArgs()) {
     argTypes.push_back(arg.first);
     typeTable.top()[arg.second] = arg.first;
-  } 
+  }
   functionTypes[FuncDeclExpr->getName()] = FuncDeclExpr->getReturnType();
   FuncDeclExpr->getBody()->accept(this);
-  if (FuncDeclExpr->getReturnType() != type){
+  if (FuncDeclExpr->getReturnType() != type) {
     throw std::invalid_argument(
         "Function declared type does not match block type: " +
         FuncDeclExpr->getReturnType() + ", " + type);

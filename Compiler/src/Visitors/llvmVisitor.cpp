@@ -67,25 +67,25 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
     }
   } else if (type == "<") {
     if (expression->getType() != "float") {
-    llvm_result = Builder->CreateICmpSLT(L, R, "lttmp");
+      llvm_result = Builder->CreateICmpSLT(L, R, "lttmp");
     } else {
       llvm_result = Builder->CreateFCmpOLT(L, R, "lttmp");
     }
   } else if (type == ">") {
     if (expression->getType() != "float") {
-    llvm_result = Builder->CreateICmpSGT(L, R, "gttmp");
+      llvm_result = Builder->CreateICmpSGT(L, R, "gttmp");
     } else {
       llvm_result = Builder->CreateFCmpOGT(L, R, "gttmp");
     }
   } else if (type == "==") {
     if (expression->getType() != "float") {
-    llvm_result = Builder->CreateICmpEQ(L, R, "eqtmp");
+      llvm_result = Builder->CreateICmpEQ(L, R, "eqtmp");
     } else {
       llvm_result = Builder->CreateFCmpOEQ(L, R, "eqtmp");
     }
   } else if (type == "!=") {
     if (expression->getType() != "float") {
-    llvm_result = Builder->CreateICmpNE(L, R, "netmp");
+      llvm_result = Builder->CreateICmpNE(L, R, "netmp");
     } else {
       llvm_result = Builder->CreateFCmpONE(L, R, "netmp");
     }

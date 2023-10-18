@@ -45,6 +45,8 @@
 
 [;] { return END_OF_LINE; }
 
+":" { return COLON;}
+
 [,] { return ','; }
 
 [0-9]+ { yylval.num = atoi(yytext); return TOKEN_INT; }

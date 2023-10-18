@@ -68,11 +68,8 @@
 %token<identifier> IDENTIFIER
 %token<identifier> MAIN
 %token<type> TYPE
-%token '*'
-%token '/'
-%token '+'
-%token '-'
-%token '%'
+%token PLUS MINUS MUL DIV MOD
+%token LT GT EQ NEQ
 %token ','
 %token FUNCTION
 %token '='
@@ -86,13 +83,12 @@
 %token<boolean> T_TRUE T_FALSE
 %token IF_TOKEN ELSE_TOKEN
 
+%left PLUS MINUS 
+%left MUL DIV MOD
+%nonassoc '='
 %nonassoc LOWEST_PRECEDENCE
 %nonassoc IF_TOKEN
-%left '-'
-%left '+'
-%left '%'
-%left '/'
-%left '*'
+%nonassoc NEQ EQ LT GT
 %nonassoc LPAREN RPAREN
 %nonassoc LBRACE RBRACE
 
@@ -112,20 +108,19 @@ function_list:
 ;
 
 function_decl:
-    FUNCTION TYPE IDENTIFIER LPAREN RPAREN exprBlock {
+    FUNCTION TYPE IDENTIFIER LPAREN arg_list RPAREN exprBlock {
         std::string type = *$2;
         std::string identifier = *$3;
-        $$ = new FunctionDeclaration(identifier, type, $6);
-    }
-|   FUNCTION TYPE IDENTIFIER LPAREN arg_list RPAREN exprBlock {
-        std::string type = *$2;
-        std::string identifier = *$3;
-        $$ = new FunctionDeclaration(identifier, type, $7, *$5);
+        if ($5) {
+            $$ = new FunctionDeclaration(identifier, type, $7, *$5);
+        } else {
+            $$ = new FunctionDeclaration(identifier, type, $7);
+        }
     }
 ;
 
 arg_list:
-    { $$ = new std::vector<std::pair<std::string, std::string>>(); }
+    { $$ = nullptr; }
 |   arg_list ',' TYPE IDENTIFIER {
         std::string type = *$3;
         std::string identifier = *$4;
@@ -142,18 +137,18 @@ arg_list:
 ;
 
 functionCall:
-    IDENTIFIER LPAREN RPAREN {
-        $$ = new FunctionCall(*$1);
-    }
-|   IDENTIFIER LPAREN call_list RPAREN {
-        std::vector<BaseExpression*> args = *$3;
+    IDENTIFIER LPAREN call_list RPAREN {
         std::string identifier = *$1;
-        $$ = new FunctionCall(identifier, args);
+        if ($3) {
+            $$ = new FunctionCall(identifier, *$3);
+        } else {
+            $$ = new FunctionCall(identifier);
+        }
     }
 ;
 
 call_list:
-    { $$ = new std::vector<BaseExpression*>(); }
+    { $$ = nullptr; }
 |   call_list ',' expr {
         $1->push_back($3);
         $$ = $1;
@@ -196,13 +191,13 @@ expr_list:
 ;
 
 ifExpr:
-    IF_TOKEN LPAREN terminal RPAREN exprBlock {
+    IF_TOKEN LPAREN expr RPAREN exprBlock {
         $$ = new IfExpression($3, $5, nullptr);
     }
-|   IF_TOKEN LPAREN terminal RPAREN exprBlock ELSE_TOKEN exprBlock {
+|   IF_TOKEN LPAREN expr RPAREN exprBlock ELSE_TOKEN exprBlock {
         $$ = new IfExpression($3, $5, $7);
     }
-|   IF_TOKEN LPAREN terminal RPAREN exprBlock ELSE_TOKEN ifExpr {
+|   IF_TOKEN LPAREN expr RPAREN exprBlock ELSE_TOKEN ifExpr {
         $$ = new IfExpression($3, $5, $7);
     }
 ;
@@ -232,20 +227,32 @@ variable:
 ;
 
 arith_expr:
-    expr '+' expr { 
-        $$ = BinaryExpression::createBinaryExpression($1, '+', $3);
+    expr PLUS expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "+", $3);
         }
-|   expr '-' expr { 
-        $$ = BinaryExpression::createBinaryExpression($1, '-', $3);
+|   expr MINUS expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "-", $3);
         }
-|   expr '*' expr { 
-        $$ = BinaryExpression::createBinaryExpression($1, '*', $3);
+|   expr MUL expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "*", $3);
         }
-|   expr '/' expr { 
-        $$ = BinaryExpression::createBinaryExpression($1, '/', $3);
+|   expr DIV expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "/", $3);
         }
-|   expr '%' expr { 
-        $$ = BinaryExpression::createBinaryExpression($1, '%', $3);
+|   expr MOD expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "%", $3);
+        }
+|   expr LT expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "<", $3);
+        }
+|   expr GT expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, ">", $3);
+        }
+|   expr EQ expr { 
+        $$ = BinaryExpression::createBinaryExpression($1, "==", $3);
+        }
+|   expr NEQ expr {
+        $$ = BinaryExpression::createBinaryExpression($1, "!=", $3);
         }
 ;
 

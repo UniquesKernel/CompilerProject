@@ -114,6 +114,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  if (!llvm::verifyModule(*visitor.TheModule, &llvm::errs())) {
+    std::cout << "Module verified" << std::endl;
+  }
+
   pass.run(*visitor.TheModule);
   dest.flush();
 

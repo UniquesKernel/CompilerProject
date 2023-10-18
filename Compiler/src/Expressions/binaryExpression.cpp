@@ -5,7 +5,7 @@ void BinaryExpression::accept(LLVM_Visitor *visitor) {
 }
 
 BinaryExpression *
-BinaryExpression::createBinaryExpression(BaseExpression *lhs_raw, char op,
+BinaryExpression::createBinaryExpression(BaseExpression *lhs_raw, std::string op,
                                          BaseExpression *rhs_raw) {
   std::unique_ptr<BaseExpression> lhs(lhs_raw);
   std::unique_ptr<BaseExpression> rhs(rhs_raw);

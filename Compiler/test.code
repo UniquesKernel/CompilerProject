@@ -1,22 +1,12 @@
 fn int factorial(int n) {
-  if (true) {
+  if (n < 2) {
     return n;
   }
-  return n * factorial(n-1);
-}
-
-fn int test(int n) {
-  if (true) {
-    return n;
-  }
-  return n * test();
+  let bool m = true;
+  return n * factorial(n + 1);
 }
 
 fn int main() {
-  let int a = 1;
-  if (true) {
-    let int a = 2;
-  }
-  a;
+  factorial(6);
 }
 

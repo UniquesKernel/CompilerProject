@@ -17,6 +17,7 @@
 #include <llvm-18/llvm/IR/DerivedTypes.h>
 #include <llvm-18/llvm/IR/Function.h>
 #include <llvm-18/llvm/IR/Instruction.h>
+#include <llvm-18/llvm/IR/Instructions.h>
 #include <llvm-18/llvm/IR/Verifier.h>
 #include <optional>
 #include <stdexcept>
@@ -24,30 +25,36 @@
 #include <unordered_map>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
-  char type = expression->getOPType();
+  std::string type = expression->getOPType();
   expression->getRHS()->accept(this);
   llvm::Value *R = llvm_result;
   expression->getLHS()->accept(this);
   llvm::Value *L = llvm_result;
 
-  switch (type) {
-  case '+':
+  if (L == nullptr || R == nullptr) {
+    throw std::invalid_argument("Null pointer argument");
+  }
+
+  if (type == "+") {
     llvm_result = Builder->CreateAdd(L, R, "addtmp");
-    break;
-  case '-':
+  } else if (type == "-") {
     llvm_result = Builder->CreateSub(L, R, "subtmp");
-    break;
-  case '*':
+  } else if (type == "*") {
     llvm_result = Builder->CreateMul(L, R, "multmp");
-    break;
-  case '/':
+  } else if (type == "/") {
     llvm_result = Builder->CreateSDiv(L, R, "divtmp");
-    break;
-  case '%':
+  } else if (type == "%") {
     llvm_result = Builder->CreateSRem(L, R, "modtmp");
-    break;
-  default:
-    throw std::invalid_argument("PANIC");
+  } else if (type == "<") {
+    llvm_result = Builder->CreateICmpSLT(L, R, "lttmp");
+  } else if (type == ">") {
+    llvm_result = Builder->CreateICmpSGT(L, R, "gttmp");
+  } else if (type == "==") {
+    llvm_result = Builder->CreateICmpEQ(L, R, "eqtmp");
+  } else if (type == "!=") {
+    llvm_result = Builder->CreateICmpNE(L, R, "netmp");
+  } else {
+    throw std::invalid_argument("Invalid operator");
   }
 }
 
@@ -80,48 +87,73 @@ void LLVM_Visitor::visitReturnExpression(ReturnExpression *returnExpr) {
 }
 
 void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
-  llvm::Function *function = Builder->GetInsertBlock()->getParent();
+    llvm::Function *function = Builder->GetInsertBlock()->getParent();
 
-  ifExpression->getCondition()->accept(this);
-  llvm::Value *cond = llvm_result;
+    if (!ifExpression->getElseBlock()) {
+        ifExpression->getCondition()->accept(this);
+        llvm::Value *cond = llvm_result;
 
-  llvm::BasicBlock *thenBB =
-      llvm::BasicBlock::Create(*TheContext, "then", function);
-  llvm::BasicBlock *mergeBB =
-      llvm::BasicBlock::Create(*TheContext, "mergeBB", function);
-  llvm::BasicBlock *elseBB = nullptr;
+        llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*TheContext, "then", function);
+        llvm::BasicBlock *afterIfBB = llvm::BasicBlock::Create(*TheContext, "afterIf", function);
 
-  if (ifExpression->getElseBlock()) {
-    llvm::BasicBlock *elseBB =
-        llvm::BasicBlock::Create(*TheContext, "else", function);
-    Builder->CreateCondBr(cond, thenBB, elseBB);
-  } else {
-    Builder->CreateCondBr(cond, thenBB, mergeBB);
-  }
+        Builder->CreateCondBr(cond, thenBB, afterIfBB);
 
-  Builder->SetInsertPoint(thenBB);
-  ifExpression->getThenBlock()->accept(this);
+        Builder->SetInsertPoint(thenBB);
+        ifExpression->getThenBlock()->accept(this);
+        Builder->CreateBr(afterIfBB);
 
-  llvm::Value *thenValue = llvm_result;
-  Builder->CreateBr(mergeBB);
+        Builder->SetInsertPoint(afterIfBB);
+        // Assuming you have a default value if the if condition is not true.
+        llvm_result = cond;
+        return;
+    }
 
-  if (elseBB != nullptr) {
-    Builder->SetInsertPoint(elseBB);
-    ifExpression->getElseBlock()->accept(this);
-    llvm::Value *elseValue = llvm_result;
-    Builder->CreateBr(mergeBB);
+    llvm::BasicBlock *finalMergeBB = llvm::BasicBlock::Create(*TheContext, "finalMerge", function);
 
-    Builder->SetInsertPoint(mergeBB);
-    llvm::PHINode *phi =
-        Builder->CreatePHI(llvm::Type::getInt64Ty(*TheContext), 2, "iftmp");
-    phi->addIncoming(thenValue, thenBB);
-    phi->addIncoming(elseValue, elseBB);
+    // Vectors to track blocks and their corresponding values.
+    std::vector<llvm::BasicBlock*> blocks;
+    std::vector<llvm::Value*> values;
+
+    while (ifExpression) {
+        ifExpression->getCondition()->accept(this);
+        llvm::Value *cond = llvm_result;
+
+        llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*TheContext, "then", function);
+        llvm::BasicBlock *nextCondBB = llvm::BasicBlock::Create(*TheContext, "nextCond", function);
+
+        Builder->CreateCondBr(cond, thenBB, nextCondBB);
+
+        // Handle the 'then' part.
+        Builder->SetInsertPoint(thenBB);
+        ifExpression->getThenBlock()->accept(this);
+        llvm::Value *thenValue = llvm_result;
+        blocks.push_back(thenBB);
+        values.push_back(thenValue);
+        Builder->CreateBr(finalMergeBB);
+
+        // Process the 'else' part.
+        Builder->SetInsertPoint(nextCondBB);
+        if (IfExpression *elseIfExpr = dynamic_cast<IfExpression*>(ifExpression->getElseBlock())) {
+            ifExpression = elseIfExpr; 
+        } else {
+            if (ifExpression->getElseBlock()) {
+                ifExpression->getElseBlock()->accept(this);
+                blocks.push_back(nextCondBB);
+                values.push_back(llvm_result);
+            }
+            Builder->CreateBr(finalMergeBB);
+            break;
+        }
+    }
+
+    // Final PHI node creation.
+    Builder->SetInsertPoint(finalMergeBB);
+    llvm::PHINode *phi = Builder->CreatePHI(llvm::Type::getInt64Ty(*TheContext), blocks.size(), "iftmp");
+    for (size_t i = 0; i < blocks.size(); i++) {
+        phi->addIncoming(values[i], blocks[i]);
+    }
 
     llvm_result = phi;
-  } else {
-    Builder->SetInsertPoint(mergeBB);
-    llvm_result = thenValue;
-  }
 }
 
 void LLVM_Visitor::visitVariableAssignmentExpression(

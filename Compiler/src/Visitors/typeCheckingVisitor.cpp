@@ -7,9 +7,9 @@
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
+#include "Expressions/programExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
-#include "Expressions/programExpression.hpp"
 
 #include "iostream"
 
@@ -110,7 +110,7 @@ void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
 
 void typeCheckingVisitor::visitFunctionDeclaration(
     FunctionDeclaration *FuncDeclExpr) {
-  typeTable.push({}); 
+  typeTable.push({});
   std::vector<std::string> argTypes;
   for (auto &arg : FuncDeclExpr->getArgs()) {
     argTypes.push_back(arg.first);
@@ -127,7 +127,7 @@ void typeCheckingVisitor::visitFunctionDeclaration(
   }
 
   typeTable.pop();
-  functionArgTypes[FuncDeclExpr->getName()] = argTypes; 
+  functionArgTypes[FuncDeclExpr->getName()] = argTypes;
 }
 
 void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
@@ -137,34 +137,32 @@ void typeCheckingVisitor::visitFunctionCall(FunctionCall *FuncCallExpr) {
     arg->accept(this);
     argInputTypes.push_back(type);
   }
-  for (int i = 0; i< argTypes.size(); i++){
+  for (int i = 0; i < argTypes.size(); i++) {
     if (argTypes[i] != argInputTypes[i]) {
       throw std::invalid_argument(
           "Function called with incorrect argument types");
-    } 
+    }
   }
   type = functionTypes[FuncCallExpr->getName()];
 
   FuncCallExpr->setType(type);
 }
 
-
-  void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program){
-    for (auto funcDecl : program->getFunctions()) {
-        funcDecl->accept(this);
-      }
-    program->setType(type);
+void typeCheckingVisitor::visitProgramExpression(ProgramExpression *program) {
+  for (auto funcDecl : program->getFunctions()) {
+    funcDecl->accept(this);
   }
+  program->setType(type);
+}
 
-  void typeCheckingVisitor::visitVariableReassignmentExpression(VariableReassignmentExpression *variable){
+void typeCheckingVisitor::visitVariableReassignmentExpression(
+    VariableReassignmentExpression *variable) {
 
-    variable->getVariable()->accept(this);    
-    variable->getValueExpression()->accept(this);
-    if(variable->getVariable()->getType() == type){
-      variable->setType(type);
-    }else{
-      throw std::invalid_argument(
-        "Variable reassingment to different type");
-    }
-
+  variable->getVariable()->accept(this);
+  variable->getValueExpression()->accept(this);
+  if (variable->getVariable()->getType() == type) {
+    variable->setType(type);
+  } else {
+    throw std::invalid_argument("Variable reassingment to different type");
   }
+}

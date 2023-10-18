@@ -7,10 +7,11 @@ fn int createFloat(int input, float test){
 }
 
 fn int main() {
-  let int i = 1;
-  let float a = 1.4;
-  let mut char e = 'e';
-  e = e + 'f';
+  let float a = 3.1;
+  let float i = 1.1;
 
-  return createFloat(i,a);
+  let float b = a / i;
+
+  return 0;
+
 }

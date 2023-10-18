@@ -32,19 +32,39 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
 
   switch (type) {
   case '+':
-    llvm_result = Builder->CreateAdd(L, R, "addtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateAdd(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFAdd(L, R, "subtmp");
+    }
     break;
   case '-':
-    llvm_result = Builder->CreateSub(L, R, "subtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSub(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFSub(L, R, "subtmp");
+    }
     break;
   case '*':
-    llvm_result = Builder->CreateMul(L, R, "multmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateMul(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFMul(L, R, "subtmp");
+    }
     break;
   case '/':
-    llvm_result = Builder->CreateSDiv(L, R, "divtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSDiv(L, R, "divtmp");
+    } else {
+      llvm_result = Builder->CreateFDiv(L, R, "subtmp");
+    }
     break;
   case '%':
-    llvm_result = Builder->CreateSRem(L, R, "modtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSRem(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFRem(L, R, "subtmp");
+    }
     break;
   default:
     throw std::invalid_argument("Unknown Binary opperator");

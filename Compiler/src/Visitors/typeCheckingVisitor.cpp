@@ -79,7 +79,9 @@ void typeCheckingVisitor::visitBlockExpression(BlockExpression *block) {
       }
     }
   }
-  if ( blockType == ""){ blockType = type;}
+  if (blockType == "") {
+    blockType = type;
+  }
   block->setType(blockType);
   typeTable.pop();
 }

@@ -14,7 +14,7 @@ public:
   BlockExpression() {}
 
   std::vector<BaseExpression *> getInstructions() { return instructions; }
-  void accept(LLVM_Visitor *visitor) override {
+  void accept(BaseVisitor *visitor) override {
     visitor->visitBlockExpression(this);
   }
 };

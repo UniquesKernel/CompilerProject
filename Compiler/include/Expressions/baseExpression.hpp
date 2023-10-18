@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-class LLVM_Visitor;
+class BaseVisitor;
 
 enum TerminalType {
   INT,
@@ -15,9 +15,10 @@ const std::string TerminalTypeStrings[4] = {"int", "bool", "float", "char"};
 
 class BaseExpression {
 protected:
-  TerminalType type;
+  std::string type;
 
 public:
-  virtual void accept(LLVM_Visitor *visitor) = 0;
-  TerminalType getType() { return type; }
+  virtual void accept(BaseVisitor *visitor) = 0;
+  std::string getType() { return type; }
+  void setType(std::string type) { this->type = type; }
 };

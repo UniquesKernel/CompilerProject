@@ -5,6 +5,7 @@
 #include "Expressions/terminalExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 #include "Visitors/llvmVisitor.hpp"
+#include "Visitors/typeCheckingVisitor.hpp"
 #include <iostream>
 
 #include <stdio.h>
@@ -53,6 +54,8 @@ int main(int argc, char **argv) {
 
   LLVM_Visitor visitor;
 
+  typeCheckingVisitor typeChecker;
+
   yyparse();
 
   fclose(yyin);
@@ -61,8 +64,11 @@ int main(int argc, char **argv) {
     std::cout << "AST is null" << std::endl;
     return 1;
   }
-
+  std::cout << "debug: AST done \n";
+  rootAST->accept(&typeChecker);
+  std::cout << "debug: Typecheck done \n";
   rootAST->accept(&visitor);
+  std::cout << "debug: llvm done \n";
 
   visitor.TheModule->dump();
 

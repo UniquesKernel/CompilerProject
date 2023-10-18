@@ -6,7 +6,7 @@ public:
   ReturnExpression(BaseExpression *expr) : expr(expr) {}
   BaseExpression *getExpr() { return expr; }
 
-  void accept(LLVM_Visitor *visitor) { visitor->visitReturnExpression(this); }
+  void accept(BaseVisitor *visitor) { visitor->visitReturnExpression(this); }
 
 private:
   BaseExpression *expr;

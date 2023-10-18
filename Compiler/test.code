@@ -1,22 +1,17 @@
-fn int factorial(int n) {
-  if (true) {
-    return n;
-  }
-  return n * factorial(n-1);
-}
 
-fn int test(int n) {
-  if (true) {
-    return n;
-  }
-  return n * test();
+
+fn int createFloat(int input, float test){
+ let float a = test;
+ let int i = input;
+ return i;
 }
 
 fn int main() {
-  let int a = 1;
-  if (true) {
-    let int a = 2;
-  }
-  a;
-}
+  let float a = 3.1;
+  let float i = 1.1;
 
+  let float b = a / i;
+
+  return 0;
+
+}

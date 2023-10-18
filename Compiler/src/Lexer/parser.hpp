@@ -111,6 +111,7 @@ union YYSTYPE {
   BaseExpression *base;
   VariableExpression *var;
   VariableAssignmentExpression *varAssign;
+  VariableReassignmentExpression *varReassign;
   BlockExpression *blockExpr;
   std::vector<BaseExpression *> *block;
   std::vector<FunctionDeclaration *> *funcList;
@@ -118,7 +119,7 @@ union YYSTYPE {
   std::vector<std::pair<std::string, std::string>> *argList;
   std::vector<BaseExpression *> *exprList;
 
-#line 124 "parser.hpp"
+#line 125 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
 #define YYSTYPE_IS_TRIVIAL 1

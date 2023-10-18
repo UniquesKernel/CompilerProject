@@ -32,40 +32,64 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
 
   switch (type) {
   case '+':
-    llvm_result = Builder->CreateAdd(L, R, "addtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateAdd(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFAdd(L, R, "subtmp");
+    }
     break;
   case '-':
-    llvm_result = Builder->CreateSub(L, R, "subtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSub(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFSub(L, R, "subtmp");
+    }
     break;
   case '*':
-    llvm_result = Builder->CreateMul(L, R, "multmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateMul(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFMul(L, R, "subtmp");
+    }
     break;
   case '/':
-    llvm_result = Builder->CreateSDiv(L, R, "divtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSDiv(L, R, "divtmp");
+    } else {
+      llvm_result = Builder->CreateFDiv(L, R, "subtmp");
+    }
     break;
   case '%':
-    llvm_result = Builder->CreateSRem(L, R, "modtmp");
+    if (expression->getType() != "float") {
+      llvm_result = Builder->CreateSRem(L, R, "subtmp");
+    } else {
+      llvm_result = Builder->CreateFRem(L, R, "subtmp");
+    }
     break;
   default:
-    throw std::invalid_argument("PANIC");
+    throw std::invalid_argument("Unknown Binary opperator");
   }
 }
 
 void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
-  switch (terminal->getType()) {
-  case INT:
+  if (terminal->getType() == "int") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
-    break;
-  case BOOLEAN:
+  } else if (terminal->getType() == "boolean") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(1, terminal->getBoolValue()));
-    break;
+  } else if (terminal->getType() == "float") {
+    llvm_result = llvm::ConstantFP::get(
+        *TheContext, llvm::APFloat(terminal->getFloatValue()));
+  } else if (terminal->getType() == "char") {
+    llvm_result = llvm::ConstantInt::get(
+        *TheContext, llvm::APInt(8, terminal->getBoolValue()));
   }
 }
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
   symbolTableStack.push({});
+  mutableVars.push({});
   for (auto &expr : block->getInstructions()) {
     expr->accept(this);
     if (dynamic_cast<ReturnExpression *>(expr) != nullptr) {
@@ -73,6 +97,7 @@ void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
     }
   }
   symbolTableStack.pop();
+  mutableVars.pop();
 }
 
 void LLVM_Visitor::visitReturnExpression(ReturnExpression *returnExpr) {
@@ -126,24 +151,22 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
 
 void LLVM_Visitor::visitVariableAssignmentExpression(
     VariableAssignmentExpression *variable) {
-  std::cout << "visit var assign \n";
   // get value to be stored
   BaseExpression *variableValue = variable->getValueExpression();
   variableValue->accept(this);
   std::string variableName = variable->getVariable()->getName();
   // create variable in memmory
-  // llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
+  llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  llvm::AllocaInst *varAllocation = (*Builder).CreateAlloca(
-      llvm::Type::getInt64Ty(*TheContext), nullptr,
-      variableName); // CreateEntryBlockAlloca(parentFunction, variableName);
+  llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(
+      parentFunction, variableName, getLLVMType(variable->getType()));
   symbolTableStack.top()[variableName] = varAllocation;
 
   // store value in variable
   Builder->CreateStore(llvm_result, varAllocation);
 
   if (variable->isVarMutable()) {
-    mutableVars.insert(variableName);
+    mutableVars.top().insert(variableName);
   }
 }
 
@@ -173,6 +196,7 @@ void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
 
 void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
   symbolTableStack.push({});
+  mutableVars.push({});
 
   std::vector<llvm::Type *> argTypes;
   std::vector<std::string> argNames;
@@ -196,9 +220,10 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 
   auto Idx = 0;
   for (auto &arg : function->args()) {
+    llvm::Type *argType = argTypes[Idx];
     arg.setName(argNames[Idx++]);
     llvm::AllocaInst *alloca =
-        CreateEntryBlockAlloca(function, std::string(arg.getName()));
+        CreateEntryBlockAlloca(function, std::string(arg.getName()), argType);
     Builder->CreateAlignedStore(&arg, alloca, llvm::Align(8));
     symbolTableStack.top()[std::string(arg.getName())] = alloca;
   }
@@ -210,6 +235,7 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
   llvm::verifyFunction(*function);
 
   symbolTableStack.pop();
+  mutableVars.pop();
 }
 
 void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
@@ -256,9 +282,48 @@ void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   llvm::verifyFunction(*entryFunc);
 }
 
+void LLVM_Visitor::visitVariableReassignmentExpression(
+    VariableReassignmentExpression *variable) {
+  variable->getValueExpression()->accept(this);
+
+  llvm::AllocaInst *loadedVar = nullptr;
+
+  std::stack<std::unordered_map<std::string, llvm::AllocaInst *>> tmpStack =
+      symbolTableStack;
+  std::stack<std::unordered_set<std::string>> tmpMutableVars = mutableVars;
+
+  while (!tmpStack.empty()) {
+    if (tmpStack.top().find(variable->getVariable()->getName()) !=
+        tmpStack.top().end()) {
+      loadedVar = tmpStack.top()[variable->getVariable()->getName()];
+      if (tmpMutableVars.top().find(variable->getVariable()->getName()) ==
+          tmpMutableVars.top().end()) {
+        throw std::runtime_error("Reassignment of immutable variable.");
+      }
+      break;
+    }
+    tmpStack.pop();
+    tmpMutableVars.pop();
+  }
+
+  if (!loadedVar) {
+    throw std::invalid_argument("Variable with name: '" +
+                                variable->getVariable()->getName() +
+                                "' not found");
+  }
+
+  Builder->CreateStore(llvm_result, loadedVar);
+}
+
 llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
+  } else if (type == "float") {
+    return llvm::Type::getFP128Ty(*TheContext);
+  } else if (type == "char") {
+    return llvm::Type::getInt8Ty(*TheContext);
+  } else if (type == "boolean") {
+    return llvm::Type::getInt1Ty(*TheContext);
   } else {
     throw std::runtime_error("Unknown Type:" + type);
   }

@@ -110,26 +110,27 @@ union YYSTYPE
 {
 #line 29 "parser.y"
 
-    int num;
-    std::string* identifier;
-    std::string* type;
-    std::string* str;
-    bool boolean;
-    char chr;
-    float flt;
-    TerminalExpression* terminal;
-    BinaryExpression* binary;
-    BaseExpression* base;
-    VariableExpression* var;
-    VariableAssignmentExpression* varAssign;
-    BlockExpression* blockExpr;
-    std::vector<BaseExpression*>* block;
-    std::vector<FunctionDeclaration*>* funcList;
-    ProgramExpression* programExpr;
-    std::vector<std::pair<std::string, std::string>>* argList;
-    std::vector<BaseExpression*>* exprList;
+  int num;
+  std::string *identifier;
+  std::string *type;
+  std::string *str;
+  bool boolean;
+  char chr;
+  float flt;
+  TerminalExpression *terminal;
+  BinaryExpression *binary;
+  BaseExpression *base;
+  VariableExpression *var;
+  VariableAssignmentExpression *varAssign;
+  VariableReassignmentExpression *varReassign;
+  BlockExpression *blockExpr;
+  std::vector<BaseExpression *> *block;
+  std::vector<FunctionDeclaration *> *funcList;
+  ProgramExpression *programExpr;
+  std::vector<std::pair<std::string, std::string>> *argList;
+  std::vector<BaseExpression *> *exprList;
 
-#line 133 "parser.hpp"
+#line 125 "parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

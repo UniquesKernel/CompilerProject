@@ -39,6 +39,7 @@
     BaseExpression* base;
     VariableExpression* var;
     VariableAssignmentExpression* varAssign;
+    VariableReassignmentExpression* varReassign;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
     std::vector<FunctionDeclaration*>* funcList;
@@ -58,6 +59,7 @@
 %type<block> expr_list
 %type<base> arith_expr
 %type<varAssign> variableAssignment
+%type<varReassign> variableReassignment
 %type<var> variable
 %type<base> ifExpr
 %type<base> function_decl
@@ -169,6 +171,7 @@ expr:
 |   terminal { $$ = $1; }
 |   functionCall { $$ = $1; }
 |   variableAssignment { $$ = $1; }
+|   variableReassignment { $$ = $1; }
 |   variable { $$ = $1; }
 ;
 
@@ -216,9 +219,13 @@ variableAssignment:
         $$ = new VariableAssignmentExpression($5, $3, false, varType); 
         }
 |   KW_VAR KW_MUT TYPE variable '=' expr {
-        std::cout << "parse var assign \n";
         std::string varType = *$3;
         $$  = new VariableAssignmentExpression($6, $4, true, varType); 
+        }
+
+variableReassignment:
+    variable '=' expr {
+        $$  = new VariableReassignmentExpression($3, $1); 
         }
 ;
 

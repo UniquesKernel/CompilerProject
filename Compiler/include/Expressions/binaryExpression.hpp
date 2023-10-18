@@ -21,7 +21,7 @@ public:
   BaseExpression *getLHS() { return lhs.get(); }
   BaseExpression *getRHS() { return rhs.get(); }
   std::string getOPType() { return op; }
-  void accept(LLVM_Visitor *visitor) override;
+  void accept(BaseVisitor *visitor) override;
 
   static BinaryExpression *createBinaryExpression(BaseExpression *lhs_raw,
                                                   std::string op,

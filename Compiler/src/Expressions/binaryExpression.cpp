@@ -1,6 +1,6 @@
 #include "Expressions/binaryExpression.hpp"
 
-void BinaryExpression::accept(LLVM_Visitor *visitor) {
+void BinaryExpression::accept(BaseVisitor *visitor) {
   visitor->visitBinaryExpression(this);
 }
 

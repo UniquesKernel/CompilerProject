@@ -9,4 +9,3 @@ fn int factorial(int n) {
 fn int main() {
   factorial(6);
 }
-

@@ -17,7 +17,7 @@ public:
       : name(name), args(args) {}
   std::string getName() { return name; }
   std::vector<BaseExpression *> getArgs() { return args; }
-  void accept(LLVM_Visitor *visitor) override {
+  void accept(BaseVisitor *visitor) override {
     visitor->visitFunctionCall(this);
   }
 };

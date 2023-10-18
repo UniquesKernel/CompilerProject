@@ -11,7 +11,7 @@ public:
   BlockExpression(std::vector<BaseExpression *> inner)
       : innerExpressions(inner) {}
 
-  void accept(LLVM_Visitor *visitor) { visitor->visitBlockExpression(this); };
+  void accept(BaseVisitor *visitor) { visitor->visitBlockExpression(this); };
 
   std::vector<BaseExpression *> getInnerExpressions() {
     return innerExpressions;

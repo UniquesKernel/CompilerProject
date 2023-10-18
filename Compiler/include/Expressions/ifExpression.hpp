@@ -19,7 +19,7 @@ public:
                BaseExpression *elseBlock)
       : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
 
-    if (condition->getType() != TerminalType::BOOLEAN) {
+    if (condition->getType() != "boolean") {
       std::invalid_argument("Expected a boolean expression");
     }
   }
@@ -28,7 +28,7 @@ public:
   BlockExpression *getThenBlock() { return thenBlock; }
   BaseExpression *getElseBlock() { return elseBlock; }
 
-  void accept(LLVM_Visitor *visitor) override {
+  void accept(BaseVisitor *visitor) override {
     visitor->visitIfExpression(this);
   }
 };

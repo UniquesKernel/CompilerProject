@@ -63,45 +63,45 @@ extern int yydebug;
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    TOKEN_INT = 258,               /* TOKEN_INT  */
-    TOKEN_CHAR = 259,              /* TOKEN_CHAR  */
-    TOKEN_FLOAT = 260,             /* TOKEN_FLOAT  */
-    IDENTIFIER = 261,              /* IDENTIFIER  */
-    MAIN = 262,                    /* MAIN  */
-    TYPE = 263,                    /* TYPE  */
-    PLUS = 264,                    /* PLUS  */
-    MINUS = 265,                   /* MINUS  */
-    MUL = 266,                     /* MUL  */
-    DIV = 267,                     /* DIV  */
-    MOD = 268,                     /* MOD  */
-    LT = 269,                      /* LT  */
-    GT = 270,                      /* GT  */
-    EQ = 271,                      /* EQ  */
-    NEQ = 272,                     /* NEQ  */
-    FUNCTION = 273,                /* FUNCTION  */
-    KW_VAR = 274,                  /* KW_VAR  */
-    KW_MUT = 275,                  /* KW_MUT  */
-    LPAREN = 276,                  /* LPAREN  */
-    RPAREN = 277,                  /* RPAREN  */
-    LBRACE = 278,                  /* LBRACE  */
-    RBRACE = 279,                  /* RBRACE  */
-    END_OF_LINE = 280,             /* END_OF_LINE  */
-    END_OF_FILE = 281,             /* END_OF_FILE  */
-    RETURN = 282,                  /* RETURN  */
-    T_TRUE = 283,                  /* T_TRUE  */
-    T_FALSE = 284,                 /* T_FALSE  */
-    IF_TOKEN = 285,                /* IF_TOKEN  */
-    ELSE_TOKEN = 286,              /* ELSE_TOKEN  */
-    LOWEST_PRECEDENCE = 287        /* LOWEST_PRECEDENCE  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
+#define YYTOKENTYPE
+enum yytokentype {
+  YYEMPTY = -2,
+  YYEOF = 0,              /* "end of file"  */
+  YYerror = 256,          /* error  */
+  YYUNDEF = 257,          /* "invalid token"  */
+  TOKEN_INT = 258,        /* TOKEN_INT  */
+  TOKEN_CHAR = 259,       /* TOKEN_CHAR  */
+  TOKEN_FLOAT = 260,      /* TOKEN_FLOAT  */
+  IDENTIFIER = 261,       /* IDENTIFIER  */
+  MAIN = 262,             /* MAIN  */
+  TYPE = 263,             /* TYPE  */
+  PLUS = 264,             /* PLUS  */
+  MINUS = 265,            /* MINUS  */
+  MUL = 266,              /* MUL  */
+  DIV = 267,              /* DIV  */
+  MOD = 268,              /* MOD  */
+  LT = 269,               /* LT  */
+  GT = 270,               /* GT  */
+  EQ = 271,               /* EQ  */
+  NEQ = 272,              /* NEQ  */
+  FUNCTION = 273,         /* FUNCTION  */
+  KW_VAR = 274,           /* KW_VAR  */
+  KW_MUT = 275,           /* KW_MUT  */
+  COLON = 276,            /* COLON  */
+  LPAREN = 277,           /* LPAREN  */
+  RPAREN = 278,           /* RPAREN  */
+  LBRACE = 279,           /* LBRACE  */
+  RBRACE = 280,           /* RBRACE  */
+  END_OF_LINE = 281,      /* END_OF_LINE  */
+  END_OF_FILE = 282,      /* END_OF_FILE  */
+  RETURN = 283,           /* RETURN  */
+  T_TRUE = 284,           /* T_TRUE  */
+  T_FALSE = 285,          /* T_FALSE  */
+  IF_TOKEN = 286,         /* IF_TOKEN  */
+  ELSE_TOKEN = 287,       /* ELSE_TOKEN  */
+  LOWEST_PRECEDENCE = 288 /* LOWEST_PRECEDENCE  */
+};
+typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
@@ -132,6 +132,7 @@ union YYSTYPE
 
 #line 134 "parser.hpp"
 
+#line 135 "parser.hpp"
 };
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1

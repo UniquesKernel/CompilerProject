@@ -112,73 +112,80 @@ void LLVM_Visitor::visitReturnExpression(ReturnExpression *returnExpr) {
 }
 
 void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
-    llvm::Function *function = Builder->GetInsertBlock()->getParent();
+  llvm::Function *function = Builder->GetInsertBlock()->getParent();
 
-    if (!ifExpression->getElseBlock()) {
-        ifExpression->getCondition()->accept(this);
-        llvm::Value *cond = llvm_result;
+  if (!ifExpression->getElseBlock()) {
+    ifExpression->getCondition()->accept(this);
+    llvm::Value *cond = llvm_result;
 
-        llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*TheContext, "then", function);
-        llvm::BasicBlock *afterIfBB = llvm::BasicBlock::Create(*TheContext, "afterIf", function);
+    llvm::BasicBlock *thenBB =
+        llvm::BasicBlock::Create(*TheContext, "then", function);
+    llvm::BasicBlock *afterIfBB =
+        llvm::BasicBlock::Create(*TheContext, "afterIf", function);
 
-        Builder->CreateCondBr(cond, thenBB, afterIfBB);
+    Builder->CreateCondBr(cond, thenBB, afterIfBB);
 
-        Builder->SetInsertPoint(thenBB);
-        ifExpression->getThenBlock()->accept(this);
-        Builder->CreateBr(afterIfBB);
+    Builder->SetInsertPoint(thenBB);
+    ifExpression->getThenBlock()->accept(this);
+    Builder->CreateBr(afterIfBB);
 
-        Builder->SetInsertPoint(afterIfBB);
-        // Assuming you have a default value if the if condition is not true.
-        llvm_result = cond;
-        return;
+    Builder->SetInsertPoint(afterIfBB);
+    // Assuming you have a default value if the if condition is not true.
+    llvm_result = cond;
+    return;
+  }
+
+  llvm::BasicBlock *finalMergeBB =
+      llvm::BasicBlock::Create(*TheContext, "finalMerge", function);
+
+  // Vectors to track blocks and their corresponding values.
+  std::vector<llvm::BasicBlock *> blocks;
+  std::vector<llvm::Value *> values;
+
+  while (ifExpression) {
+    ifExpression->getCondition()->accept(this);
+    llvm::Value *cond = llvm_result;
+
+    llvm::BasicBlock *thenBB =
+        llvm::BasicBlock::Create(*TheContext, "then", function);
+    llvm::BasicBlock *nextCondBB =
+        llvm::BasicBlock::Create(*TheContext, "nextCond", function);
+
+    Builder->CreateCondBr(cond, thenBB, nextCondBB);
+
+    // Handle the 'then' part.
+    Builder->SetInsertPoint(thenBB);
+    ifExpression->getThenBlock()->accept(this);
+    llvm::Value *thenValue = llvm_result;
+    blocks.push_back(thenBB);
+    values.push_back(thenValue);
+    Builder->CreateBr(finalMergeBB);
+
+    // Process the 'else' part.
+    Builder->SetInsertPoint(nextCondBB);
+    if (IfExpression *elseIfExpr =
+            dynamic_cast<IfExpression *>(ifExpression->getElseBlock())) {
+      ifExpression = elseIfExpr;
+    } else {
+      if (ifExpression->getElseBlock()) {
+        ifExpression->getElseBlock()->accept(this);
+        blocks.push_back(nextCondBB);
+        values.push_back(llvm_result);
+      }
+      Builder->CreateBr(finalMergeBB);
+      break;
     }
+  }
 
-    llvm::BasicBlock *finalMergeBB = llvm::BasicBlock::Create(*TheContext, "finalMerge", function);
+  // Final PHI node creation.
+  Builder->SetInsertPoint(finalMergeBB);
+  llvm::PHINode *phi = Builder->CreatePHI(getLLVMType(ifExpression->getType()),
+                                          blocks.size(), "iftmp");
+  for (size_t i = 0; i < blocks.size(); i++) {
+    phi->addIncoming(values[i], blocks[i]);
+  }
 
-    // Vectors to track blocks and their corresponding values.
-    std::vector<llvm::BasicBlock*> blocks;
-    std::vector<llvm::Value*> values;
-
-    while (ifExpression) {
-        ifExpression->getCondition()->accept(this);
-        llvm::Value *cond = llvm_result;
-
-        llvm::BasicBlock *thenBB = llvm::BasicBlock::Create(*TheContext, "then", function);
-        llvm::BasicBlock *nextCondBB = llvm::BasicBlock::Create(*TheContext, "nextCond", function);
-
-        Builder->CreateCondBr(cond, thenBB, nextCondBB);
-
-        // Handle the 'then' part.
-        Builder->SetInsertPoint(thenBB);
-        ifExpression->getThenBlock()->accept(this);
-        llvm::Value *thenValue = llvm_result;
-        blocks.push_back(thenBB);
-        values.push_back(thenValue);
-        Builder->CreateBr(finalMergeBB);
-
-        // Process the 'else' part.
-        Builder->SetInsertPoint(nextCondBB);
-        if (IfExpression *elseIfExpr = dynamic_cast<IfExpression*>(ifExpression->getElseBlock())) {
-            ifExpression = elseIfExpr; 
-        } else {
-            if (ifExpression->getElseBlock()) {
-                ifExpression->getElseBlock()->accept(this);
-                blocks.push_back(nextCondBB);
-                values.push_back(llvm_result);
-            }
-            Builder->CreateBr(finalMergeBB);
-            break;
-        }
-    }
-
-    // Final PHI node creation.
-    Builder->SetInsertPoint(finalMergeBB);
-    llvm::PHINode *phi = Builder->CreatePHI(getLLVMType(ifExpression->getType()), blocks.size(), "iftmp");
-    for (size_t i = 0; i < blocks.size(); i++) {
-        phi->addIncoming(values[i], blocks[i]);
-    }
-
-    llvm_result = phi;
+  llvm_result = phi;
 }
 
 void LLVM_Visitor::visitVariableAssignmentExpression(

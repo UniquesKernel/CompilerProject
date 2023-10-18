@@ -4,9 +4,8 @@ void BinaryExpression::accept(BaseVisitor *visitor) {
   visitor->visitBinaryExpression(this);
 }
 
-BinaryExpression *
-BinaryExpression::createBinaryExpression(BaseExpression *lhs_raw, std::string op,
-                                         BaseExpression *rhs_raw) {
+BinaryExpression *BinaryExpression::createBinaryExpression(
+    BaseExpression *lhs_raw, std::string op, BaseExpression *rhs_raw) {
   std::unique_ptr<BaseExpression> lhs(lhs_raw);
   std::unique_ptr<BaseExpression> rhs(rhs_raw);
 

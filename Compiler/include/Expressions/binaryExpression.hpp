@@ -16,8 +16,7 @@ private:
 public:
   BinaryExpression(std::unique_ptr<BaseExpression> lhs, std::string op,
                    std::unique_ptr<BaseExpression> rhs)
-      : lhs(std::move(lhs)), op(op), rhs(std::move(rhs)) {
-  }
+      : lhs(std::move(lhs)), op(op), rhs(std::move(rhs)) {}
   BaseExpression *getLHS() { return lhs.get(); }
   BaseExpression *getRHS() { return rhs.get(); }
   std::string getOPType() { return op; }

@@ -66,13 +66,29 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
       llvm_result = Builder->CreateFRem(L, R, "subtmp");
     }
   } else if (type == "<") {
+    if (expression->getType() != "float") {
     llvm_result = Builder->CreateICmpSLT(L, R, "lttmp");
+    } else {
+      llvm_result = Builder->CreateFCmpOLT(L, R, "lttmp");
+    }
   } else if (type == ">") {
+    if (expression->getType() != "float") {
     llvm_result = Builder->CreateICmpSGT(L, R, "gttmp");
+    } else {
+      llvm_result = Builder->CreateFCmpOGT(L, R, "gttmp");
+    }
   } else if (type == "==") {
+    if (expression->getType() != "float") {
     llvm_result = Builder->CreateICmpEQ(L, R, "eqtmp");
+    } else {
+      llvm_result = Builder->CreateFCmpOEQ(L, R, "eqtmp");
+    }
   } else if (type == "!=") {
+    if (expression->getType() != "float") {
     llvm_result = Builder->CreateICmpNE(L, R, "netmp");
+    } else {
+      llvm_result = Builder->CreateFCmpONE(L, R, "netmp");
+    }
   } else {
     throw std::invalid_argument("Unknown operator");
   }
@@ -82,7 +98,7 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
   if (terminal->getType() == "int") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
-  } else if (terminal->getType() == "boolean") {
+  } else if (terminal->getType() == "bool") {
     llvm_result = llvm::ConstantInt::get(
         *TheContext, llvm::APInt(1, terminal->getBoolValue()));
   } else if (terminal->getType() == "float") {
@@ -361,7 +377,7 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
     return llvm::Type::getFP128Ty(*TheContext);
   } else if (type == "char") {
     return llvm::Type::getInt8Ty(*TheContext);
-  } else if (type == "boolean") {
+  } else if (type == "bool") {
     return llvm::Type::getInt1Ty(*TheContext);
   } else {
     throw std::runtime_error("Unknown Type:" + type);

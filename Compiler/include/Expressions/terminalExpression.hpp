@@ -13,7 +13,7 @@ private:
 
 public:
   TerminalExpression(int value) : intValue(value) { type = "int"; }
-  TerminalExpression(bool value) : boolValue(value) { type = "boolean"; }
+  TerminalExpression(bool value) : boolValue(value) { type = "bool"; }
   TerminalExpression(float value) : floatValue(value) { type = "float"; }
   TerminalExpression(char value) : charValue(value) { type = "char"; }
   int getIntValue() { return intValue; }

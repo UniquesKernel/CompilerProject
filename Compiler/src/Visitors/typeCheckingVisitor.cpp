@@ -24,8 +24,16 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
   expression->getRHS()->accept(this);
   std::string rhsType = type;
 
+  std::vector<std::string> boolOperators = {">", "<", "==", "!="};
+
   if (lhsType == rhsType) {
-    type = lhsType;
+    if (std::find(boolOperators.begin(), boolOperators.end(),
+                  expression->getOPType()) !=
+        boolOperators.end()) { // check if operator is a conditional operator
+      type = "bool";
+    } else {
+      type = lhsType;
+    }
     expression->setType(lhsType);
   } else {
     throw std::invalid_argument("Binary operation with mismatching types: " +
@@ -93,15 +101,16 @@ void typeCheckingVisitor::visitReturnExpression(ReturnExpression *returnExpr) {
 
 void typeCheckingVisitor::visitIfExpression(IfExpression *IfExpr) {
   IfExpr->getCondition()->accept(this);
-  if (type != "boolean") {
-    throw std::invalid_argument("Conditionals must be of type 'boolean'");
+  if (type != "bool") {
+    throw std::invalid_argument("Conditionals must be of type 'bool'");
   }
   std::string thenType, elseType;
   IfExpr->getThenBlock()->accept(this);
   thenType = type;
-  IfExpr->getElseBlock()->accept(this);
+  if (IfExpr->getElseBlock() != nullptr) {
+    IfExpr->getElseBlock()->accept(this);
+  }
   elseType = type;
-
   if (thenType == elseType) {
     IfExpr->setType(thenType);
     type = thenType;
@@ -118,16 +127,14 @@ void typeCheckingVisitor::visitFunctionDeclaration(
     argTypes.push_back(arg.first);
     typeTable.top()[arg.second] = arg.first;
   }
+  functionTypes[FuncDeclExpr->getName()] = FuncDeclExpr->getReturnType();
   FuncDeclExpr->getBody()->accept(this);
-  if (FuncDeclExpr->getReturnType() == type) {
-    FuncDeclExpr->setType(type);
-    functionTypes[FuncDeclExpr->getName()] = type;
-  } else {
+  if (FuncDeclExpr->getReturnType() != type) {
     throw std::invalid_argument(
         "Function declared type does not match block type: " +
         FuncDeclExpr->getReturnType() + ", " + type);
   }
-
+  FuncDeclExpr->setType(type);
   typeTable.pop();
   functionArgTypes[FuncDeclExpr->getName()] = argTypes;
 }

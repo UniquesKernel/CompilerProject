@@ -17,12 +17,7 @@ private:
 public:
   IfExpression(BaseExpression *condition, BlockExpression *thenBlock,
                BaseExpression *elseBlock)
-      : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {
-
-    if (condition->getType() != "boolean") {
-      std::invalid_argument("Expected a boolean expression");
-    }
-  }
+      : condition(condition), thenBlock(thenBlock), elseBlock(elseBlock) {}
 
   BaseExpression *getCondition() { return condition; }
   BlockExpression *getThenBlock() { return thenBlock; }

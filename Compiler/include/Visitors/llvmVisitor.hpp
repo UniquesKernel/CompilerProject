@@ -44,15 +44,17 @@ public:
     // Create a new builder for the module.
     Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
 
-    llvm::Function* func_printf = TheModule->getFunction("printf");
+    llvm::Function *func_printf = TheModule->getFunction("printf");
     if (!func_printf) {
-        llvm::PointerType* Pty = llvm::PointerType::get(llvm::IntegerType::get(TheModule->getContext(), 8), 0);
-        llvm::FunctionType* FuncTy9 = llvm::FunctionType::get(llvm::IntegerType::get(TheModule->getContext(), 32), true);
+      llvm::PointerType *Pty = llvm::PointerType::get(
+          llvm::IntegerType::get(TheModule->getContext(), 8), 0);
+      llvm::FunctionType *FuncTy9 = llvm::FunctionType::get(
+          llvm::IntegerType::get(TheModule->getContext(), 32), true);
 
-        func_printf = llvm::Function::Create(FuncTy9, llvm::GlobalValue::ExternalLinkage, "printf",*TheModule);
-        func_printf->setCallingConv(llvm::CallingConv::C);
+      func_printf = llvm::Function::Create(
+          FuncTy9, llvm::GlobalValue::ExternalLinkage, "printf", *TheModule);
+      func_printf->setCallingConv(llvm::CallingConv::C);
     }
-
   }
 
   void visitTerminalExpression(TerminalExpression *terminal) override;

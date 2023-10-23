@@ -1,11 +1,12 @@
 fn factorial(n: int): int {
-  if (n < 2) {
+  if (n > 2) {
     return n;
   }
-  let m: bool = true;
-  return n * factorial(n + 1);
+
+  return (n * factorial(n-1));
 }
 
 fn main(): int {
   factorial(6);
+  return 0;
 }

@@ -111,11 +111,16 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
 }
 
 void LLVM_Visitor::visitBlockExpression(BlockExpression *block) {
+  if (Builder->GetInsertBlock()->getTerminator()) {
+    return;
+  }
+
   symbolTableStack.push({});
   mutableVars.push({});
   for (auto &expr : block->getInstructions()) {
     expr->accept(this);
     if (dynamic_cast<ReturnExpression *>(expr) != nullptr) {
+      Builder->CreateRet(llvm_result);
       break;
     }
   }
@@ -143,11 +148,14 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
 
     Builder->SetInsertPoint(thenBB);
     ifExpression->getThenBlock()->accept(this);
+
     Builder->CreateBr(afterIfBB);
 
     Builder->SetInsertPoint(afterIfBB);
+
     // Assuming you have a default value if the if condition is not true.
     llvm_result = cond;
+
     return;
   }
 
@@ -285,8 +293,6 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 
   funcDeclExpr->getBody()->accept(this);
 
-  Builder->CreateRet(llvm_result);
-
   llvm::verifyFunction(*function);
 
   symbolTableStack.pop();
@@ -315,26 +321,25 @@ void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   for (auto funcDecl : program->getFunctions()) {
     funcDecl->accept(this);
   }
+  /*
+    llvm::Function *mainFunc = TheModule->getFunction("main");
+    if (!mainFunc) {
+      throw std::runtime_error("missing main function");
+    }
 
-  llvm::Function *mainFunc = TheModule->getFunction("main");
-  if (!mainFunc) {
-    throw std::runtime_error("missing main function");
-  }
+    llvm::FunctionType *entryFuncType =
+        llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false);
+    llvm::Function *entryFunc =
+        llvm::Function::Create(entryFuncType, llvm::Function::ExternalLinkage,
+                               "_start", TheModule.get());
 
-  llvm::FunctionType *entryFuncType =
-      llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false);
-  llvm::Function *entryFunc =
-      llvm::Function::Create(entryFuncType, llvm::Function::ExternalLinkage,
-                             "_start", TheModule.get());
+    llvm::BasicBlock *entryBlock =
+        llvm::BasicBlock::Create(*TheContext, "entry", entryFunc);
+    Builder->SetInsertPoint(entryBlock);
 
-  llvm::BasicBlock *entryBlock =
-      llvm::BasicBlock::Create(*TheContext, "entry", entryFunc);
-  Builder->SetInsertPoint(entryBlock);
-
-  Builder->CreateCall(mainFunc);
-  Builder->CreateRetVoid();
-
-  llvm::verifyFunction(*entryFunc);
+    Builder->CreateCall(mainFunc);
+    llvm::verifyFunction(*entryFunc);
+    */
 }
 
 void LLVM_Visitor::visitVariableReassignmentExpression(

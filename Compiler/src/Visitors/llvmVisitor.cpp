@@ -149,7 +149,9 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
     Builder->SetInsertPoint(thenBB);
     ifExpression->getThenBlock()->accept(this);
 
-    Builder->CreateBr(afterIfBB);
+    if (!Builder->GetInsertBlock()->getTerminator()) {
+      Builder->CreateBr(afterIfBB);
+    }
 
     Builder->SetInsertPoint(afterIfBB);
 
@@ -180,10 +182,13 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
     // Handle the 'then' part.
     Builder->SetInsertPoint(thenBB);
     ifExpression->getThenBlock()->accept(this);
-    llvm::Value *thenValue = llvm_result;
-    blocks.push_back(thenBB);
-    values.push_back(thenValue);
-    Builder->CreateBr(finalMergeBB);
+
+    if (!Builder->GetInsertBlock()->getTerminator()) {
+      llvm::Value *thenValue = llvm_result;
+      blocks.push_back(thenBB);
+      values.push_back(thenValue);
+      Builder->CreateBr(finalMergeBB);
+    }
 
     // Process the 'else' part.
     Builder->SetInsertPoint(nextCondBB);
@@ -191,12 +196,12 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
             dynamic_cast<IfExpression *>(ifExpression->getElseBlock())) {
       ifExpression = elseIfExpr;
     } else {
-      if (ifExpression->getElseBlock()) {
-        ifExpression->getElseBlock()->accept(this);
+      ifExpression->getElseBlock()->accept(this);
+      if (!Builder->GetInsertBlock()->getTerminator()) {
         blocks.push_back(nextCondBB);
         values.push_back(llvm_result);
+        Builder->CreateBr(finalMergeBB);
       }
-      Builder->CreateBr(finalMergeBB);
       break;
     }
   }
@@ -207,6 +212,10 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
                                           blocks.size(), "iftmp");
   for (size_t i = 0; i < blocks.size(); i++) {
     phi->addIncoming(values[i], blocks[i]);
+  }
+
+  if (Builder->GetInsertBlock()->getTerminator()) {
+    Builder->CreateRet(phi);
   }
 
   llvm_result = phi;
@@ -321,25 +330,6 @@ void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   for (auto funcDecl : program->getFunctions()) {
     funcDecl->accept(this);
   }
-  /*
-    llvm::Function *mainFunc = TheModule->getFunction("main");
-    if (!mainFunc) {
-      throw std::runtime_error("missing main function");
-    }
-
-    llvm::FunctionType *entryFuncType =
-        llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false);
-    llvm::Function *entryFunc =
-        llvm::Function::Create(entryFuncType, llvm::Function::ExternalLinkage,
-                               "_start", TheModule.get());
-
-    llvm::BasicBlock *entryBlock =
-        llvm::BasicBlock::Create(*TheContext, "entry", entryFunc);
-    Builder->SetInsertPoint(entryBlock);
-
-    Builder->CreateCall(mainFunc);
-    llvm::verifyFunction(*entryFunc);
-    */
 }
 
 void LLVM_Visitor::visitVariableReassignmentExpression(

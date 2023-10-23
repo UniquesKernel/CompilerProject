@@ -374,7 +374,7 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
   } else if (type == "float") {
-    return llvm::Type::getFP128Ty(*TheContext);
+    return llvm::Type::getFloatTy(*TheContext);
   } else if (type == "char") {
     return llvm::Type::getInt8Ty(*TheContext);
   } else if (type == "bool") {

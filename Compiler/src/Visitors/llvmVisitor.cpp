@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <bits/stdc++.h>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   std::string type = expression->getOPType();
@@ -106,7 +107,7 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
         *TheContext, llvm::APFloat(terminal->getFloatValue()));
   } else if (terminal->getType() == "char") {
     llvm_result = llvm::ConstantInt::get(
-        *TheContext, llvm::APInt(8, terminal->getBoolValue()));
+        *TheContext, llvm::APInt(8, terminal->getCharValue()));
   }
 }
 
@@ -300,8 +301,15 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 }
 
 void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
-  llvm::Function *function = TheModule->getFunction(funcCallExpr->getName());
 
+  if (funcCallExpr->getName() == "printf"){
+    funcCallExpr->getArgs().front()->accept(this);
+    char format[] = "%d\n";
+    callPrintFunction(format, llvm_result);
+    return;
+  }
+
+  llvm::Function *function = TheModule->getFunction(funcCallExpr->getName());
   std::cout << "retrieved test function" << std::endl;
 
   if (!function) {
@@ -315,6 +323,35 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
   }
 
   llvm_result = Builder->CreateCall(function, args, "calltmp");
+}
+
+void LLVM_Visitor::callPrintFunction(char *format, ...){
+  llvm::Function *func_printf = TheModule->getFunction("printf");
+  llvm::Value *str = Builder->CreateGlobalStringPtr(format);
+  std::vector <llvm::Value *> int32_call_params;
+  int32_call_params.push_back(str);
+
+  va_list ap;
+  va_start(ap, format);
+
+  char *str_ptr = va_arg(ap, char*);
+  llvm::Value *format_ptr = Builder->CreateGlobalStringPtr(str_ptr);
+  int32_call_params.push_back(format_ptr);
+
+  std::vector<llvm::Value*> extra;
+  do {
+      llvm::Value *op = va_arg(ap, llvm::Value*);
+      if (op) {
+          int32_call_params.push_back(op);
+      } else {
+          break;
+      }
+  } while (1);
+  va_end(ap);
+    std::cout << "debug \n";
+
+  llvm_result = Builder->CreateCall(func_printf, int32_call_params, "call");
+
 }
 
 void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {

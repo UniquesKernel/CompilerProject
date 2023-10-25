@@ -4,6 +4,7 @@
 
 #include "Expressions/baseExpression.hpp"
 
+#include "llvm/IR/Attributes.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
@@ -49,11 +50,14 @@ public:
       llvm::PointerType *Pty = llvm::PointerType::get(
           llvm::IntegerType::get(TheModule->getContext(), 8), 0);
       llvm::FunctionType *FuncTy9 = llvm::FunctionType::get(
-          llvm::IntegerType::get(TheModule->getContext(), 32), true);
+          llvm::IntegerType::get(TheModule->getContext(), 64), true);
 
       func_printf = llvm::Function::Create(
           FuncTy9, llvm::GlobalValue::ExternalLinkage, "printf", *TheModule);
       func_printf->setCallingConv(llvm::CallingConv::C);
+      
+      llvm::AttributeList func_printf_PAL;
+      func_printf->setAttributes(func_printf_PAL);
     }
   }
 
@@ -82,4 +86,6 @@ public:
   }
 
   llvm::Type *getLLVMType(std::string type);
+
+  void callPrintFunction(char *format, ...);
 };

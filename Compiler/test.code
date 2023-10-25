@@ -8,5 +8,6 @@ fn factorial(n: int): int {
 
 fn main(): int {
   factorial(6);
+  printf('f');
   return 0;
 }

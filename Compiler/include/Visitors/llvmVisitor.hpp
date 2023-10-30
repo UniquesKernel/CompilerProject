@@ -4,9 +4,9 @@
 
 #include "Expressions/baseExpression.hpp"
 
-#include "llvm/IR/Attributes.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
+#include "llvm/IR/Attributes.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -55,7 +55,7 @@ public:
       func_printf = llvm::Function::Create(
           FuncTy9, llvm::GlobalValue::ExternalLinkage, "printf", *TheModule);
       func_printf->setCallingConv(llvm::CallingConv::C);
-      
+
       llvm::AttributeList func_printf_PAL;
       func_printf->setAttributes(func_printf_PAL);
     }
@@ -87,5 +87,5 @@ public:
 
   llvm::Type *getLLVMType(std::string type);
 
-  void callPrintFunction(char *format, llvm::Value * input);
+  void callPrintFunction(char *format, llvm::Value *input);
 };

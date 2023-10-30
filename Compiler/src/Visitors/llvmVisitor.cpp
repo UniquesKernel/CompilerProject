@@ -12,7 +12,9 @@
 #include "Expressions/programExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 
+#include <bits/stdc++.h>
 #include <iostream>
+#include <llvm-18/llvm/ADT/APFloat.h>
 #include <llvm-18/llvm/IR/BasicBlock.h>
 #include <llvm-18/llvm/IR/DerivedTypes.h>
 #include <llvm-18/llvm/IR/Function.h>
@@ -20,13 +22,11 @@
 #include <llvm-18/llvm/IR/Instructions.h>
 #include <llvm-18/llvm/IR/Verifier.h>
 #include <llvm-18/llvm/Support/raw_os_ostream.h>
-#include <llvm-18/llvm/ADT/APFloat.h>
 #include <optional>
 #include <stdexcept>
+#include <string.h>
 #include <string>
 #include <unordered_map>
-#include <bits/stdc++.h>
-#include <string.h>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   std::string type = expression->getOPType();
@@ -153,7 +153,9 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
     Builder->SetInsertPoint(thenBB);
     ifExpression->getThenBlock()->accept(this);
 
-    Builder->CreateBr(afterIfBB);
+    if (!Builder->GetInsertBlock()->getTerminator()) {
+      Builder->CreateBr(afterIfBB);
+    }
 
     Builder->SetInsertPoint(afterIfBB);
 
@@ -184,10 +186,13 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
     // Handle the 'then' part.
     Builder->SetInsertPoint(thenBB);
     ifExpression->getThenBlock()->accept(this);
-    llvm::Value *thenValue = llvm_result;
-    blocks.push_back(thenBB);
-    values.push_back(thenValue);
-    Builder->CreateBr(finalMergeBB);
+
+    if (!Builder->GetInsertBlock()->getTerminator()) {
+      llvm::Value *thenValue = llvm_result;
+      blocks.push_back(thenBB);
+      values.push_back(thenValue);
+      Builder->CreateBr(finalMergeBB);
+    }
 
     // Process the 'else' part.
     Builder->SetInsertPoint(nextCondBB);
@@ -195,12 +200,12 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
             dynamic_cast<IfExpression *>(ifExpression->getElseBlock())) {
       ifExpression = elseIfExpr;
     } else {
-      if (ifExpression->getElseBlock()) {
-        ifExpression->getElseBlock()->accept(this);
+      ifExpression->getElseBlock()->accept(this);
+      if (!Builder->GetInsertBlock()->getTerminator()) {
         blocks.push_back(nextCondBB);
         values.push_back(llvm_result);
+        Builder->CreateBr(finalMergeBB);
       }
-      Builder->CreateBr(finalMergeBB);
       break;
     }
   }
@@ -211,6 +216,10 @@ void LLVM_Visitor::visitIfExpression(IfExpression *ifExpression) {
                                           blocks.size(), "iftmp");
   for (size_t i = 0; i < blocks.size(); i++) {
     phi->addIncoming(values[i], blocks[i]);
+  }
+
+  if (Builder->GetInsertBlock()->getTerminator()) {
+    Builder->CreateRet(phi);
   }
 
   llvm_result = phi;
@@ -305,23 +314,21 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 
 void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
 
-  if (funcCallExpr->getName() == "printf"){
+  if (funcCallExpr->getName() == "printf") {
     funcCallExpr->getArgs().front()->accept(this);
     std::string inputType = funcCallExpr->getArgs().front()->getType();
-    
+
     char format[5];
 
-    if (inputType == "float"){
-      strcpy(format,"%lg\n");
-    }else if(inputType == "char"){
-      strcpy(format,"%c\n");
-    }else{
-      strcpy(format,"%d\n");
+    if (inputType == "float") {
+      strcpy(format, "%lg\n");
+    } else if (inputType == "char") {
+      strcpy(format, "%c\n");
+    } else {
+      strcpy(format, "%d\n");
     }
-      callPrintFunction(format, llvm_result);
-      
-    
-    
+    callPrintFunction(format, llvm_result);
+
     return;
   }
 
@@ -341,18 +348,19 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
   llvm_result = Builder->CreateCall(function, args, "calltmp");
 }
 
-void LLVM_Visitor::callPrintFunction(char *format, llvm::Value * input){
+void LLVM_Visitor::callPrintFunction(char *format, llvm::Value *input) {
 
   llvm::Function *func_printf = TheModule->getFunction("printf");
   llvm::Value *str = Builder->CreateGlobalStringPtr(format);
-  std::vector <llvm::Value *> int32_call_params;
+  std::vector<llvm::Value *> int32_call_params;
   int32_call_params.push_back(str);
 
-  
-  llvm::AllocaInst *inputptr = Builder->CreateAlloca(input->getType()->getPointerTo(), nullptr, "out_ptr");
+  llvm::AllocaInst *inputptr = Builder->CreateAlloca(
+      input->getType()->getPointerTo(), nullptr, "out_ptr");
   Builder->CreateAlignedStore(input, inputptr, llvm::Align(64));
 
-  llvm::Value *input_ptr = Builder->CreateAlignedLoad(input->getType(), inputptr, llvm::Align(64), "outPtr");
+  llvm::Value *input_ptr = Builder->CreateAlignedLoad(
+      input->getType(), inputptr, llvm::Align(64), "outPtr");
 
   int32_call_params.push_back(input_ptr);
 
@@ -363,25 +371,6 @@ void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   for (auto funcDecl : program->getFunctions()) {
     funcDecl->accept(this);
   }
-  /*https://www.youtube.com/watch?v=GrW6epBAz9Q
-    llvm::Function *mainFunc = TheModule->getFunction("main");
-    if (!mainFunc) {
-      throw std::runtime_error("missing main function");
-    }
-
-    llvm::FunctionType *entryFuncType =
-        llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false);
-    llvm::Function *entryFunc =
-        llvm::Function::Create(entryFuncType, llvm::Function::ExternalLinkage,
-                               "_start", TheModule.get());
-
-    llvm::BasicBlock *entryBlock =
-        llvm::BasicBlock::Create(*TheContext, "entry", entryFunc);
-    Builder->SetInsertPoint(entryBlock);
-
-    Builder->CreateCall(mainFunc);
-    llvm::verifyFunction(*entryFunc);
-    */
 }
 
 void LLVM_Visitor::visitVariableReassignmentExpression(

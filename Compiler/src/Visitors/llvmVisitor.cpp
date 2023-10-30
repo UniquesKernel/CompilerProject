@@ -19,11 +19,14 @@
 #include <llvm-18/llvm/IR/Instruction.h>
 #include <llvm-18/llvm/IR/Instructions.h>
 #include <llvm-18/llvm/IR/Verifier.h>
+#include <llvm-18/llvm/Support/raw_os_ostream.h>
+#include <llvm-18/llvm/ADT/APFloat.h>
 #include <optional>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <bits/stdc++.h>
+#include <string.h>
 
 void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   std::string type = expression->getOPType();
@@ -101,7 +104,7 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
   } else if (terminal->getType() == "bool") {
     llvm_result = llvm::ConstantInt::get(
-        *TheContext, llvm::APInt(1, terminal->getBoolValue()));
+        *TheContext, llvm::APInt(64, terminal->getBoolValue()));
   } else if (terminal->getType() == "float") {
     llvm_result = llvm::ConstantFP::get(
         *TheContext, llvm::APFloat(terminal->getFloatValue()));
@@ -227,7 +230,7 @@ void LLVM_Visitor::visitVariableAssignmentExpression(
   symbolTableStack.top()[variableName] = varAllocation;
 
   // store value in variable
-  Builder->CreateStore(llvm_result, varAllocation);
+  Builder->CreateAlignedStore(llvm_result, varAllocation, llvm::Align(8));
 
   if (variable->isVarMutable()) {
     mutableVars.top().insert(variableName);
@@ -304,8 +307,21 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
 
   if (funcCallExpr->getName() == "printf"){
     funcCallExpr->getArgs().front()->accept(this);
-    char format[] = "%d\n";
-    callPrintFunction(format, llvm_result);
+    std::string inputType = funcCallExpr->getArgs().front()->getType();
+    
+    char format[5];
+
+    if (inputType == "float"){
+      strcpy(format,"%lg\n");
+    }else if(inputType == "char"){
+      strcpy(format,"%c\n");
+    }else{
+      strcpy(format,"%d\n");
+    }
+      callPrintFunction(format, llvm_result);
+      
+    
+    
     return;
   }
 
@@ -325,40 +341,29 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
   llvm_result = Builder->CreateCall(function, args, "calltmp");
 }
 
-void LLVM_Visitor::callPrintFunction(char *format, ...){
+void LLVM_Visitor::callPrintFunction(char *format, llvm::Value * input){
+
   llvm::Function *func_printf = TheModule->getFunction("printf");
   llvm::Value *str = Builder->CreateGlobalStringPtr(format);
   std::vector <llvm::Value *> int32_call_params;
   int32_call_params.push_back(str);
 
-  va_list ap;
-  va_start(ap, format);
+  
+  llvm::AllocaInst *inputptr = Builder->CreateAlloca(input->getType()->getPointerTo(), nullptr, "out_ptr");
+  Builder->CreateAlignedStore(input, inputptr, llvm::Align(64));
 
-  char *str_ptr = va_arg(ap, char*);
-  llvm::Value *format_ptr = Builder->CreateGlobalStringPtr(str_ptr);
-  int32_call_params.push_back(format_ptr);
+  llvm::Value *input_ptr = Builder->CreateAlignedLoad(input->getType(), inputptr, llvm::Align(64), "outPtr");
 
-  std::vector<llvm::Value*> extra;
-  do {
-      llvm::Value *op = va_arg(ap, llvm::Value*);
-      if (op) {
-          int32_call_params.push_back(op);
-      } else {
-          break;
-      }
-  } while (1);
-  va_end(ap);
-    std::cout << "debug \n";
+  int32_call_params.push_back(input_ptr);
 
   llvm_result = Builder->CreateCall(func_printf, int32_call_params, "call");
-
 }
 
 void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
   for (auto funcDecl : program->getFunctions()) {
     funcDecl->accept(this);
   }
-  /*
+  /*https://www.youtube.com/watch?v=GrW6epBAz9Q
     llvm::Function *mainFunc = TheModule->getFunction("main");
     if (!mainFunc) {
       throw std::runtime_error("missing main function");
@@ -416,11 +421,11 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
   } else if (type == "float") {
-    return llvm::Type::getFloatTy(*TheContext);
+    return llvm::Type::getDoubleTy(*TheContext);
   } else if (type == "char") {
     return llvm::Type::getInt8Ty(*TheContext);
   } else if (type == "bool") {
-    return llvm::Type::getInt1Ty(*TheContext);
+    return llvm::Type::getInt64Ty(*TheContext);
   } else {
     throw std::runtime_error("Unknown Type:" + type);
   }

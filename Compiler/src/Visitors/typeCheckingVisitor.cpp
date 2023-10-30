@@ -35,7 +35,12 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
       type = lhsType;
     }
     expression->setType(lhsType);
-  } else {
+  } 
+  else if((lhsType == "int" && rhsType == "char") || (lhsType == "char" && rhsType == "int")){
+    type = "char";
+    expression->setType("char");
+  }
+  else{
     throw std::invalid_argument("Binary operation with mismatching types: " +
                                 lhsType + " and " + rhsType + "\n");
   }

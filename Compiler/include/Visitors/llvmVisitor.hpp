@@ -87,5 +87,5 @@ public:
 
   llvm::Type *getLLVMType(std::string type);
 
-  void callPrintFunction(char *format, ...);
+  void callPrintFunction(char *format, llvm::Value * input);
 };

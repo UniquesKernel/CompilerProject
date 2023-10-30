@@ -8,17 +8,17 @@ class TerminalExpression : public BaseExpression {
 private:
   int intValue;
   bool boolValue;
-  float floatValue;
+  double floatValue;
   char charValue;
 
 public:
   TerminalExpression(int value) : intValue(value) { type = "int"; }
   TerminalExpression(bool value) : boolValue(value) { type = "bool"; }
-  TerminalExpression(float value) : floatValue(value) { type = "float"; }
+  TerminalExpression(double value) : floatValue(value) { type = "float"; }
   TerminalExpression(char value) : charValue(value) { type = "char"; }
   int getIntValue() { return intValue; }
   bool getBoolValue() { return boolValue; }
-  float getFloatValue() { return floatValue; }
+  double getFloatValue() { return floatValue; }
   char getCharValue() { return charValue; }
   void accept(BaseVisitor *visitor) override;
 };

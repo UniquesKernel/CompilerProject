@@ -37,7 +37,7 @@
 
 '[a-zA-Z]' { yylval.chr = yytext[1]; return TOKEN_CHAR; }
 
-[0-9]+\.[0-9]+ { yylval.flt = atof(yytext); return TOKEN_FLOAT; }
+[0-9]+\.[0-9]+ { yylval.flt = std::stod(yytext); return TOKEN_FLOAT; }
 
 "{" { return LBRACE; }
 

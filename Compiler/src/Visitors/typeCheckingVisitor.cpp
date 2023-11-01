@@ -29,7 +29,7 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
 
   if (lhsType == rhsType || (lhsType == "int" && rhsType == "&int") ||
       (lhsType == "&int" && rhsType == "int")) { // should cover all mixes of
-      // types and references.
+    // types and references.
     if (std::find(boolOperators.begin(), boolOperators.end(),
                   expression->getOPType()) !=
         boolOperators.end()) { // check if operator is a conditional operator
@@ -183,6 +183,5 @@ void typeCheckingVisitor::visitVariableReassignmentExpression(
   }
 }
 
-void typeCheckingVisitor::visitReferenceAssignmentExpression(ReferenceAssignmentExpression* expression) {
-
-}
+void typeCheckingVisitor::visitReferenceAssignmentExpression(
+    ReferenceAssignmentExpression *expression) {}

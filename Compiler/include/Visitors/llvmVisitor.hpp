@@ -28,8 +28,8 @@ private:
   llvm::Value *llvm_result;
   void initializeBinaryOperatorFunctionTable();
   llvm::Type *getLLVMType(std::string type);
-  
- public:
+
+public:
   llvm::Value *getResult() { return llvm_result; }
 
   std::unique_ptr<llvm::LLVMContext> TheContext;
@@ -38,7 +38,11 @@ private:
   std::stack<std::unordered_map<std::string, llvm::AllocaInst *>>
       symbolTableStack;
   std::stack<std::unordered_set<std::string>> mutableVars;
-  std::unordered_map<std::string, std::unordered_map<std::string, std::function<llvm::Value*(llvm::Value*, llvm::Value*)>>> dispatchTable;
+  std::unordered_map<
+      std::string,
+      std::unordered_map<std::string, std::function<llvm::Value *(
+                                          llvm::Value *, llvm::Value *)>>>
+      dispatchTable;
 
   LLVM_Visitor() {
     // Open a new context and module.
@@ -86,5 +90,4 @@ private:
                            TheFunction->getEntryBlock().begin());
     return TmpB.CreateAlloca(varType, nullptr, VarName);
   }
-
 };

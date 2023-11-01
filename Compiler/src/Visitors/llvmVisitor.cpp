@@ -1,15 +1,15 @@
 #include "Visitors/llvmVisitor.hpp"
+#include "Expressions/ReturnExpression.hpp"
 #include "Expressions/baseExpression.hpp"
 #include "Expressions/binaryExpression.hpp"
-#include "Expressions/terminalExpression.hpp"
-#include "Expressions/variableExpression.hpp"
-#include "Expressions/referenceAssignmentExpression.hpp"
-#include "Expressions/ReturnExpression.hpp"
 #include "Expressions/blockExpression.hpp"
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
 #include "Expressions/programExpression.hpp"
+#include "Expressions/referenceAssignmentExpression.hpp"
+#include "Expressions/terminalExpression.hpp"
+#include "Expressions/variableExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 
 #include <iostream>
@@ -45,25 +45,28 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   }
 
   if (L->getType()->isPointerTy()) {
-    L = Builder->CreatePointerCast(L, getLLVMType(expression->getLHS()->getType()), L->getName().str() + "_casted");
+    L = Builder->CreatePointerCast(L,
+                                   getLLVMType(expression->getLHS()->getType()),
+                                   L->getName().str() + "_casted");
   }
- 
+
   if (R->getType()->isPointerTy()) {
-    R = Builder->CreatePointerCast(L, getLLVMType(expression->getRHS()->getType()), R->getName().str() + "_casted");
+    R = Builder->CreatePointerCast(L,
+                                   getLLVMType(expression->getRHS()->getType()),
+                                   R->getName().str() + "_casted");
   }
 
   auto dispatchMapIt = dispatchTable.find(type);
   if (dispatchMapIt != dispatchTable.end()) {
     auto typeIt = dispatchMapIt->second.find(exprType);
     if (typeIt != dispatchMapIt->second.end()) {
-      llvm_result = typeIt->second(L,R);
+      llvm_result = typeIt->second(L, R);
     } else {
       throw std::invalid_argument("Unknown Expression Type");
     }
   } else {
     throw std::invalid_argument("Unknown Operator");
   }
-
 }
 
 void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
@@ -200,10 +203,12 @@ void LLVM_Visitor::visitVariableAssignmentExpression(
   variableValue->accept(this);
   std::string variableName = variable->getVariable()->getName();
   // create variable in memmory
-  
+
   if (llvm_result->getType()->isPointerTy()) {
     llvm_result->dump();
-    llvm_result = Builder->CreatePointerCast(llvm_result, getLLVMType(variable->getType()), variable->getVariable()->getName().c_str());
+    llvm_result = Builder->CreatePointerCast(
+        llvm_result, getLLVMType(variable->getType()),
+        variable->getVariable()->getName().c_str());
     llvm_result->dump();
     std::cout << variable->getType() << std::endl;
   }
@@ -222,12 +227,16 @@ void LLVM_Visitor::visitVariableAssignmentExpression(
   }
 }
 
-void LLVM_Visitor::visitReferenceAssignmentExpression(ReferenceAssignmentExpression* expression) {
+void LLVM_Visitor::visitReferenceAssignmentExpression(
+    ReferenceAssignmentExpression *expression) {
   llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  llvm::Value* referenceValue = symbolTableStack.top()[expression->getReferenceIdentifier()];
+  llvm::Value *referenceValue =
+      symbolTableStack.top()[expression->getReferenceIdentifier()];
 
-  llvm::AllocaInst* pointerToReference = Builder->CreateAlloca(referenceValue->getType()->getPointerTo(), 0, expression->getIdentifier().c_str());
+  llvm::AllocaInst *pointerToReference =
+      Builder->CreateAlloca(referenceValue->getType()->getPointerTo(), 0,
+                            expression->getIdentifier().c_str());
 
   Builder->CreateStore(referenceValue, pointerToReference);
 
@@ -260,11 +269,16 @@ void LLVM_Visitor::visitVariableExpression(VariableExpression *variable) {
                                 "' not found");
   }
 
-  if (loadedVar->getAllocatedType()->isPointerTy() || variable->getIsReference()) {
-    llvm::Value* tmp = Builder->CreateLoad(loadedVar->getType(), loadedVar, variable->getName().c_str());
-    llvm_result = Builder->CreateLoad(tmp->getType(), tmp, variable->getName().c_str());
+  if (loadedVar->getAllocatedType()->isPointerTy() ||
+      variable->getIsReference()) {
+    llvm::Value *tmp = Builder->CreateLoad(loadedVar->getType(), loadedVar,
+                                           variable->getName().c_str());
+    llvm_result =
+        Builder->CreateLoad(tmp->getType(), tmp, variable->getName().c_str());
   } else {
-    llvm_result = Builder->CreateAlignedLoad(loadedVar->getAllocatedType(), loadedVar, llvm::Align(8), variable->getName().c_str());
+    llvm_result =
+        Builder->CreateAlignedLoad(loadedVar->getAllocatedType(), loadedVar,
+                                   llvm::Align(8), variable->getName().c_str());
   }
 }
 
@@ -369,8 +383,11 @@ void LLVM_Visitor::visitVariableReassignmentExpression(
                                 "' not found");
   }
 
-  if (loadedVar->getAllocatedType()->isPointerTy() || variable->getVariable()->getIsReference()) {
-    llvm::Value* tmp = Builder->CreateLoad(loadedVar->getType(), loadedVar, variable->getVariable()->getName().c_str());
+  if (loadedVar->getAllocatedType()->isPointerTy() ||
+      variable->getVariable()->getIsReference()) {
+    llvm::Value *tmp =
+        Builder->CreateLoad(loadedVar->getType(), loadedVar,
+                            variable->getVariable()->getName().c_str());
     Builder->CreateStore(llvm_result, tmp);
   } else {
     Builder->CreateStore(llvm_result, loadedVar);
@@ -391,7 +408,7 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   } else if (type == "&float") {
     return llvm::Type::getFloatTy(*TheContext);
   } else if (type == "&char") {
-    return llvm::Type::getInt8Ty(*TheContext); 
+    return llvm::Type::getInt8Ty(*TheContext);
   } else if (type == "&bool") {
     return llvm::Type::getInt64Ty(*TheContext);
   } else {
@@ -400,51 +417,121 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   return llvm::Type::getVoidTy(*TheContext);
 }
 
+void LLVM_Visitor::initializeBinaryOperatorFunctionTable() {
+  dispatchTable["+"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateAdd(L, R, "addtmp");
+  };
+  dispatchTable["+"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateAdd(L, R, "addtmp");
+  };
+  dispatchTable["+"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateAdd(L, R, "addtmp");
+  };
+  dispatchTable["+"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFAdd(L, R, "addtmp");
+  };
 
- void LLVM_Visitor::initializeBinaryOperatorFunctionTable() {
-    dispatchTable["+"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateAdd(L, R, "addtmp"); };
-    dispatchTable["+"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateAdd(L, R, "addtmp"); };
-    dispatchTable["+"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateAdd(L, R, "addtmp"); };
-    dispatchTable["+"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFAdd(L, R, "addtmp"); };
+  dispatchTable["-"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSub(L, R, "subtmp");
+  };
+  dispatchTable["-"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSub(L, R, "subtmp");
+  };
+  dispatchTable["-"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSub(L, R, "subtmp");
+  };
+  dispatchTable["-"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFSub(L, R, "subtmp");
+  };
 
-    dispatchTable["-"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSub(L, R, "subtmp"); };
-    dispatchTable["-"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSub(L, R, "subtmp"); };
-    dispatchTable["-"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSub(L, R, "subtmp"); };
-    dispatchTable["-"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFSub(L, R, "subtmp"); };
+  dispatchTable["*"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateMul(L, R, "multmp");
+  };
+  dispatchTable["*"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateMul(L, R, "multmp");
+  };
+  dispatchTable["*"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateMul(L, R, "multmp");
+  };
+  dispatchTable["*"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFMul(L, R, "multmp");
+  };
 
-    dispatchTable["*"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateMul(L, R, "multmp"); };
-    dispatchTable["*"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateMul(L, R, "multmp"); };
-    dispatchTable["*"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateMul(L, R, "multmp"); };
-    dispatchTable["*"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFMul(L, R, "multmp"); };
+  dispatchTable["/"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSDiv(L, R, "divtmp");
+  };
+  dispatchTable["/"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSDiv(L, R, "divtmp");
+  };
+  dispatchTable["/"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSDiv(L, R, "divtmp");
+  };
+  dispatchTable["/"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFDiv(L, R, "divtmp");
+  };
 
-    dispatchTable["/"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSDiv(L, R, "divtmp"); };
-    dispatchTable["/"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSDiv(L, R, "divtmp"); };
-    dispatchTable["/"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSDiv(L, R, "divtmp"); };
-    dispatchTable["/"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFDiv(L, R, "divtmp"); };
+  dispatchTable["%"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSRem(L, R, "modtmp");
+  };
+  dispatchTable["%"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSRem(L, R, "modtmp");
+  };
+  dispatchTable["%"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateSRem(L, R, "modtmp");
+  };
+  dispatchTable["%"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFRem(L, R, "modtmp");
+  };
 
-    dispatchTable["%"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSRem(L, R, "modtmp"); };
-    dispatchTable["%"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSRem(L, R, "modtmp"); };
-    dispatchTable["%"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateSRem(L, R, "modtmp"); };
-    dispatchTable["%"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFRem(L, R, "modtmp"); };
+  dispatchTable["<"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSLT(L, R, "lltmp");
+  };
+  dispatchTable["<"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSLT(L, R, "lltmp");
+  };
+  dispatchTable["<"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSLT(L, R, "lltmp");
+  };
+  dispatchTable["<"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFCmpOLT(L, R, "lltmp");
+  };
 
-    dispatchTable["<"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSLT(L, R, "lltmp"); };
-    dispatchTable["<"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSLT(L, R, "lltmp"); };
-    dispatchTable["<"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSLT(L, R, "lltmp"); }; 
-    dispatchTable["<"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFCmpOLT(L, R, "lltmp"); };
-  
-    dispatchTable[">"]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSGT(L, R, "gttmp"); };
-    dispatchTable[">"]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSGT(L, R, "gttmp"); };
-    dispatchTable[">"]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpSGT(L, R, "gttmp"); };
-    dispatchTable[">"]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFCmpOGT(L, R, "gttmp"); };
-    
-    dispatchTable["=="]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpEQ(L, R, "eqtmp"); };
-    dispatchTable["=="]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpEQ(L, R, "eqtmp"); };
-    dispatchTable["=="]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpEQ(L, R, "eqtmp"); };
-    dispatchTable["=="]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFCmpOEQ(L, R, "eqtmp"); };
-    
-    dispatchTable["!="]["int"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpNE(L, R, "neqtmp"); };
-    dispatchTable["!="]["bool"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpNE(L, R, "gttmp"); };
-    dispatchTable["!="]["char"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateICmpNE(L, R, "gttmp"); };
-    dispatchTable["!="]["float"] = [this](llvm::Value* L, llvm::Value* R){ return Builder->CreateFCmpONE(L, R, "neqtmp"); };
-  }
+  dispatchTable[">"]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSGT(L, R, "gttmp");
+  };
+  dispatchTable[">"]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSGT(L, R, "gttmp");
+  };
+  dispatchTable[">"]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpSGT(L, R, "gttmp");
+  };
+  dispatchTable[">"]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFCmpOGT(L, R, "gttmp");
+  };
 
+  dispatchTable["=="]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpEQ(L, R, "eqtmp");
+  };
+  dispatchTable["=="]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpEQ(L, R, "eqtmp");
+  };
+  dispatchTable["=="]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpEQ(L, R, "eqtmp");
+  };
+  dispatchTable["=="]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFCmpOEQ(L, R, "eqtmp");
+  };
+
+  dispatchTable["!="]["int"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpNE(L, R, "neqtmp");
+  };
+  dispatchTable["!="]["bool"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpNE(L, R, "gttmp");
+  };
+  dispatchTable["!="]["char"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateICmpNE(L, R, "gttmp");
+  };
+  dispatchTable["!="]["float"] = [this](llvm::Value *L, llvm::Value *R) {
+    return Builder->CreateFCmpONE(L, R, "neqtmp");
+  };
+}

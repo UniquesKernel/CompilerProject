@@ -18,7 +18,8 @@ public:
   void visitBinaryExpression(BinaryExpression *expression) override;
   void visitVariableAssignmentExpression(
       VariableAssignmentExpression *variable) override;
-  void visitReferenceAssignmentExpression(ReferenceAssignmentExpression *reference) override;
+  void visitReferenceAssignmentExpression(
+      ReferenceAssignmentExpression *reference) override;
   void visitVariableExpression(VariableExpression *variable) override;
   void visitBlockExpression(BlockExpression *block) override;
   void visitReturnExpression(ReturnExpression *returnExpr) override;

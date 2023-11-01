@@ -251,15 +251,17 @@ referenceAssignment:
         std::string identifier = *$2;
         std::string referenceIdentifier = *$7;
         std::string varType = *$4;
+        VariableExpression* expr = new VariableExpression(*$7);
         $$ = new ReferenceAssignmentExpression(identifier,
-        referenceIdentifier, varType, false);
+        referenceIdentifier, varType, expr, false);
     }
 |   KW_VAR IDENTIFIER COLON TYPE_REF '=' KW_MUT_REF IDENTIFIER {
         std::string identifier = *$2;
         std::string referenceIdentifier = *$7;
         std::string varType = *$4;
+        VariableExpression* expr = new VariableExpression(*$7);
         $$ = new ReferenceAssignmentExpression(identifier,
-        referenceIdentifier, varType, true);
+        referenceIdentifier, varType, expr, true);
     }
 ;
 

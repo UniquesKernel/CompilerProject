@@ -98,4 +98,3 @@ public:
 
   void callPrintFunction(char *format, llvm::Value *input);
 };
-

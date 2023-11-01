@@ -26,10 +26,14 @@ public:
 class VariableExpression : public BaseExpression {
 private:
   const std::string name;
+  bool isReference = false;
 
 public:
   VariableExpression(std::string name) : name(name) {}
+  VariableExpression(std::string name, bool isReference)
+      : name(name), isReference(isReference) {}
   std::string getName() { return name; }
+  bool getIsReference() { return isReference; }
   void accept(BaseVisitor *visitor) override;
 };
 

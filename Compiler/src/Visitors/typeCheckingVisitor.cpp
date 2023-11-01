@@ -11,6 +11,7 @@
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
 
+#include "Visitors/baseVisitor.hpp"
 #include "iostream"
 
 void typeCheckingVisitor::visitTerminalExpression(
@@ -26,7 +27,9 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
 
   std::vector<std::string> boolOperators = {">", "<", "==", "!="};
 
-  if (lhsType == rhsType) {
+  if (lhsType == rhsType || (lhsType == "int" && rhsType == "&int") ||
+      (lhsType == "&int" && rhsType == "int")) { // should cover all mixes of
+      // types and references.
     if (std::find(boolOperators.begin(), boolOperators.end(),
                   expression->getOPType()) !=
         boolOperators.end()) { // check if operator is a conditional operator
@@ -63,7 +66,11 @@ void typeCheckingVisitor::visitVariableExpression(
 
   while (!tmpStack.empty()) {
     if (tmpStack.top().find(variable->getName()) != tmpStack.top().end()) {
-      type = tmpStack.top()[variable->getName()];
+      if (variable->getIsReference()) {
+        type = "&" + tmpStack.top()[variable->getName()];
+      } else {
+        type = tmpStack.top()[variable->getName()];
+      }
       break;
     }
     tmpStack.pop();
@@ -174,4 +181,8 @@ void typeCheckingVisitor::visitVariableReassignmentExpression(
   } else {
     throw std::invalid_argument("Variable reassingment to different type");
   }
+}
+
+void typeCheckingVisitor::visitReferenceAssignmentExpression(ReferenceAssignmentExpression* expression) {
+
 }

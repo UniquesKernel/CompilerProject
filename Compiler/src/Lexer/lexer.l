@@ -28,6 +28,14 @@
 
 "mut" { return KW_MUT; }
 
+"&" { return KW_REF; }
+
+"&mut" { return KW_MUT_REF; }
+
+"&int" { yylval.type = new std::string(yytext); return TYPE_REF; }
+"&bool" { yylval.type = new std::string(yytext); return TYPE_REF; }
+"&float" { yylval.type = new std::string(yytext); return TYPE_REF; }
+"&char" { yylval.type = new std::string(yytext); return TYPE_REF; }
 "int" { yylval.type = new std::string(yytext); return TYPE; }
 "bool" { yylval.type = new std::string(yytext); return TYPE; }
 "float" { yylval.type = new std::string(yytext); return TYPE; }

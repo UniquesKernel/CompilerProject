@@ -26,15 +26,4 @@ public:
   void accept(BaseVisitor *visitor) override {
     visitor->visitReferenceAssignmentExpression(this);
   }
-
-  // std::string mapToType() {
-  //   if (referenceValue->getType()->isIntegerTy(64)) {
-  //     return "&int";
-  //   } else if (referenceValue->getType()->isFloatTy()) {
-  //     return "&float";
-  //   } else if (referenceValue->getType()->isIntegerTy(8)) {
-  //     return "&char";
-  //   }
-  //   return "";
-  // }
 };

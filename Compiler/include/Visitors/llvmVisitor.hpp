@@ -94,7 +94,6 @@ public:
                            TheFunction->getEntryBlock().begin());
     return TmpB.CreateAlloca(varType, nullptr, VarName);
   }
-  llvm::Type *getLLVMType(std::string type);
 
   void callPrintFunction(char *format, llvm::Value *input);
 };

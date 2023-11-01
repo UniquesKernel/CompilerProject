@@ -34,6 +34,7 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   std::string type = expression->getOPType();
   std::string exprType = expression->getType();
 
+
   if (dispatchTable.empty()) {
     initializeBinaryOperatorFunctionTable();
   }
@@ -242,8 +243,6 @@ void LLVM_Visitor::visitReferenceAssignmentExpression(
                             expression->getIdentifier().c_str());
 
   Builder->CreateStore(referenceValue, pointerToReference);
-
-  expression->setReferenceValue(pointerToReference);
 
   symbolTableStack.top()[expression->getIdentifier()] = pointerToReference;
 

@@ -16,6 +16,7 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
+#include <llvm-18/llvm/IR/IRBuilder.h>
 #include <llvm/IR/Verifier.h>
 #include <memory>
 
@@ -26,6 +27,8 @@
 class LLVM_Visitor : public BaseVisitor {
 private:
   llvm::Value *llvm_result;
+  void initializeBinaryOperatorFunctionTable();
+  llvm::Type *getLLVMType(std::string type);
 
 public:
   llvm::Value *getResult() { return llvm_result; }
@@ -36,6 +39,11 @@ public:
   std::stack<std::unordered_map<std::string, llvm::AllocaInst *>>
       symbolTableStack;
   std::stack<std::unordered_set<std::string>> mutableVars;
+  std::unordered_map<
+      std::string,
+      std::unordered_map<std::string, std::function<llvm::Value *(
+                                          llvm::Value *, llvm::Value *)>>>
+      dispatchTable;
 
   LLVM_Visitor() {
     // Open a new context and module.
@@ -65,6 +73,8 @@ public:
   void visitBinaryExpression(BinaryExpression *expression) override;
   void visitVariableAssignmentExpression(
       VariableAssignmentExpression *variable) override;
+  void visitReferenceAssignmentExpression(
+      ReferenceAssignmentExpression *variable) override;
   void visitVariableExpression(VariableExpression *variable) override;
   void visitBlockExpression(BlockExpression *block) override;
   void visitReturnExpression(ReturnExpression *returnExpr) override;
@@ -84,7 +94,6 @@ public:
                            TheFunction->getEntryBlock().begin());
     return TmpB.CreateAlloca(varType, nullptr, VarName);
   }
-
   llvm::Type *getLLVMType(std::string type);
 
   void callPrintFunction(char *format, llvm::Value *input);

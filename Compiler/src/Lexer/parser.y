@@ -23,6 +23,7 @@
     #include "Expressions/functionDeclaration.hpp"
     #include "Expressions/functionCall.hpp"
     #include "Expressions/programExpression.hpp"
+    #include "Expressions/referenceAssignmentExpression.hpp"
     #include <memory>
 }
 
@@ -39,6 +40,7 @@
     BaseExpression* base;
     VariableExpression* var;
     VariableAssignmentExpression* varAssign;
+    ReferenceAssignmentExpression* refAssign;
     VariableReassignmentExpression* varReassign;
     BlockExpression* blockExpr;
     std::vector<BaseExpression*>* block;
@@ -60,6 +62,7 @@
 %type<base> arith_expr
 %type<varAssign> variableAssignment
 %type<varReassign> variableReassignment
+%type<refAssign> referenceAssignment
 %type<var> variable
 %type<base> ifExpr
 %type<base> function_decl
@@ -69,7 +72,7 @@
 %type<exprList> call_list
 %token<identifier> IDENTIFIER
 %token<identifier> MAIN
-%token<type> TYPE
+%token<type> TYPE TYPE_REF
 %token PLUS MINUS MUL DIV MOD
 %token LT GT EQ NEQ
 %token ','
@@ -77,6 +80,8 @@
 %token '='
 %token KW_VAR
 %token KW_MUT
+%token KW_MUT_REF
+%token KW_REF
 %token COLON
 %token LPAREN RPAREN
 %token LBRACE RBRACE
@@ -86,10 +91,10 @@
 %token<boolean> T_TRUE T_FALSE
 %token IF_TOKEN ELSE_TOKEN
 
+%nonassoc LOWEST_PRECEDENCE
+%nonassoc '='
 %left PLUS MINUS 
 %left MUL DIV MOD
-%nonassoc '='
-%nonassoc LOWEST_PRECEDENCE
 %nonassoc IF_TOKEN
 %nonassoc NEQ EQ LT GT
 %nonassoc LPAREN RPAREN
@@ -130,7 +135,20 @@ arg_list:
         $1->push_back(std::make_pair(type, identifier));
         $$ = $1;
     }
+|   arg_list ',' IDENTIFIER COLON TYPE_REF {
+        std::string type = *$5;
+        std::string identifier = *$3;
+        $1->push_back(std::make_pair(type, identifier));
+        $$ = $1;
+    }
 |   IDENTIFIER COLON TYPE {
+        std::string type = *$3;
+        std::string identifier = *$1;
+        auto list = new std::vector<std::pair<std::string, std::string>>();
+        list->push_back(std::make_pair(type, identifier));
+        $$ = list;
+}   
+|   IDENTIFIER COLON TYPE_REF {
         std::string type = *$3;
         std::string identifier = *$1;
         auto list = new std::vector<std::pair<std::string, std::string>>();
@@ -173,6 +191,7 @@ expr:
 |   functionCall { $$ = $1; }
 |   variableAssignment { $$ = $1; }
 |   variableReassignment { $$ = $1; }
+|   referenceAssignment { $$ = $1; }
 |   variable { $$ = $1; }
 ;
 
@@ -215,23 +234,45 @@ terminal:
 ;
 
 variableAssignment:
-    KW_VAR variable COLON TYPE '=' expr {
+    KW_VAR IDENTIFIER COLON TYPE '=' expr {
         std::string varType = *$4;
-        $$ = new VariableAssignmentExpression($6, $2, false, varType); 
-        }
-|   KW_VAR KW_MUT variable COLON TYPE '=' expr {
+        VariableExpression* expr = new VariableExpression(*$2);
+        $$ = new VariableAssignmentExpression($6, expr, false, varType); 
+    }
+|   KW_VAR KW_MUT IDENTIFIER COLON TYPE '=' expr {
         std::string varType = *$5;
-        $$  = new VariableAssignmentExpression($7, $3, true, varType); 
-        }
+        VariableExpression* expr = new VariableExpression(*$3);
+        $$  = new VariableAssignmentExpression($7, expr, true, varType); 
+    }
+;
+
+referenceAssignment:
+    KW_VAR IDENTIFIER COLON TYPE_REF '=' KW_REF IDENTIFIER {
+        std::string identifier = *$2;
+        std::string referenceIdentifier = *$7;
+        std::string varType = *$4;
+        $$ = new ReferenceAssignmentExpression(identifier,
+        referenceIdentifier, varType, false);
+    }
+|   KW_VAR IDENTIFIER COLON TYPE_REF '=' KW_MUT_REF IDENTIFIER {
+        std::string identifier = *$2;
+        std::string referenceIdentifier = *$7;
+        std::string varType = *$4;
+        $$ = new ReferenceAssignmentExpression(identifier,
+        referenceIdentifier, varType, true);
+    }
+;
 
 variableReassignment:
-    variable '=' expr {
-        $$  = new VariableReassignmentExpression($3, $1); 
+    IDENTIFIER '=' expr {
+        VariableExpression* expr = new VariableExpression(*$1);
+        $$  = new VariableReassignmentExpression($3, expr); 
         }
 ;
 
 variable:
     IDENTIFIER { $$ = new VariableExpression(*$1); }
+|   KW_REF IDENTIFIER { $$ = new VariableExpression(*$2, true); }
 ;
 
 arith_expr:

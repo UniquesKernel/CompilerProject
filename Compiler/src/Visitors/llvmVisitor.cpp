@@ -12,6 +12,7 @@
 #include "Expressions/variableExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
 
+#include <bits/stdc++.h>
 #include <iostream>
 #include <llvm-18/llvm/ADT/APFloat.h>
 #include <llvm-18/llvm/IR/BasicBlock.h>
@@ -22,8 +23,10 @@
 #include <llvm-18/llvm/IR/Instruction.h>
 #include <llvm-18/llvm/IR/Instructions.h>
 #include <llvm-18/llvm/IR/Verifier.h>
+#include <llvm-18/llvm/Support/raw_os_ostream.h>
 #include <optional>
 #include <stdexcept>
+#include <string.h>
 #include <string>
 #include <unordered_map>
 
@@ -75,13 +78,13 @@ void LLVM_Visitor::visitTerminalExpression(TerminalExpression *terminal) {
         *TheContext, llvm::APInt(64, terminal->getIntValue()));
   } else if (terminal->getType() == "bool") {
     llvm_result = llvm::ConstantInt::get(
-        *TheContext, llvm::APInt(1, terminal->getBoolValue()));
+        *TheContext, llvm::APInt(64, terminal->getBoolValue()));
   } else if (terminal->getType() == "float") {
     llvm_result = llvm::ConstantFP::get(
         *TheContext, llvm::APFloat(terminal->getFloatValue()));
   } else if (terminal->getType() == "char") {
     llvm_result = llvm::ConstantInt::get(
-        *TheContext, llvm::APInt(8, terminal->getBoolValue()));
+        *TheContext, llvm::APInt(8, terminal->getCharValue()));
   }
 }
 
@@ -330,8 +333,26 @@ void LLVM_Visitor::visitFunctionDeclaration(FunctionDeclaration *funcDeclExpr) {
 }
 
 void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
-  llvm::Function *function = TheModule->getFunction(funcCallExpr->getName());
 
+  if (funcCallExpr->getName() == "printf") {
+    funcCallExpr->getArgs().front()->accept(this);
+    std::string inputType = funcCallExpr->getArgs().front()->getType();
+
+    char format[5];
+
+    if (inputType == "float") {
+      strcpy(format, "%lg\n");
+    } else if (inputType == "char") {
+      strcpy(format, "%c\n");
+    } else {
+      strcpy(format, "%d\n");
+    }
+    callPrintFunction(format, llvm_result);
+
+    return;
+  }
+
+  llvm::Function *function = TheModule->getFunction(funcCallExpr->getName());
   std::cout << "retrieved test function" << std::endl;
 
   if (!function) {
@@ -345,6 +366,25 @@ void LLVM_Visitor::visitFunctionCall(FunctionCall *funcCallExpr) {
   }
 
   llvm_result = Builder->CreateCall(function, args, "calltmp");
+}
+
+void LLVM_Visitor::callPrintFunction(char *format, llvm::Value *input) {
+
+  llvm::Function *func_printf = TheModule->getFunction("printf");
+  llvm::Value *str = Builder->CreateGlobalStringPtr(format);
+  std::vector<llvm::Value *> int32_call_params;
+  int32_call_params.push_back(str);
+
+  llvm::AllocaInst *inputptr = Builder->CreateAlloca(
+      input->getType()->getPointerTo(), nullptr, "out_ptr");
+  Builder->CreateAlignedStore(input, inputptr, llvm::Align(64));
+
+  llvm::Value *input_ptr = Builder->CreateAlignedLoad(
+      input->getType(), inputptr, llvm::Align(64), "outPtr");
+
+  int32_call_params.push_back(input_ptr);
+
+  llvm_result = Builder->CreateCall(func_printf, int32_call_params, "call");
 }
 
 void LLVM_Visitor::visitProgramExpression(ProgramExpression *program) {
@@ -398,7 +438,7 @@ llvm::Type *LLVM_Visitor::getLLVMType(std::string type) {
   if (type == "int") {
     return llvm::Type::getInt64Ty(*TheContext);
   } else if (type == "float") {
-    return llvm::Type::getFloatTy(*TheContext);
+    return llvm::Type::getDoubleTy(*TheContext);
   } else if (type == "char") {
     return llvm::Type::getInt8Ty(*TheContext);
   } else if (type == "bool") {

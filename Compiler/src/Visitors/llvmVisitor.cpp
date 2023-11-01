@@ -34,7 +34,6 @@ void LLVM_Visitor::visitBinaryExpression(BinaryExpression *expression) {
   std::string type = expression->getOPType();
   std::string exprType = expression->getType();
 
-
   if (dispatchTable.empty()) {
     initializeBinaryOperatorFunctionTable();
   }

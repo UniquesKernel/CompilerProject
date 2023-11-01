@@ -8,9 +8,9 @@
 #include "Expressions/functionDeclaration.hpp"
 #include "Expressions/ifExpression.hpp"
 #include "Expressions/programExpression.hpp"
+#include "Expressions/referenceAssignmentExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Expressions/variableExpression.hpp"
-#include "Expressions/referenceAssignmentExpression.hpp"
 
 #include "Visitors/baseVisitor.hpp"
 #include "iostream"
@@ -29,16 +29,14 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
 
   std::vector<std::string> boolOperators = {">", "<", "==", "!="};
 
-  if(lhsType.find("&")!=std::string::npos){
-    lhsType.erase(lhsType.begin(), lhsType.begin() + lhsType.find("&")+1);
-    isRef = true;
-  } 
-  if(rhsType.find("&")!=std::string::npos){
-    rhsType.erase(rhsType.begin(), rhsType.begin() + rhsType.find("&")+1);
+  if (lhsType.find("&") != std::string::npos) {
+    lhsType.erase(lhsType.begin(), lhsType.begin() + lhsType.find("&") + 1);
     isRef = true;
   }
-
-
+  if (rhsType.find("&") != std::string::npos) {
+    rhsType.erase(rhsType.begin(), rhsType.begin() + rhsType.find("&") + 1);
+    isRef = true;
+  }
 
   if (lhsType == rhsType) { // should cover all mixes of
     // types and references.
@@ -47,9 +45,9 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
         boolOperators.end()) { // check if operator is a conditional operator
       type = "bool";
     } else {
-      if(isRef){
-        type = "&"+lhsType;
-      }else{
+      if (isRef) {
+        type = "&" + lhsType;
+      } else {
         type = lhsType;
       }
     }
@@ -206,17 +204,15 @@ void typeCheckingVisitor::visitVariableReassignmentExpression(
 void typeCheckingVisitor::visitReferenceAssignmentExpression(
     ReferenceAssignmentExpression *variable) {
 
-    variable->getReferenceValue()->accept(this);
+  variable->getReferenceValue()->accept(this);
 
-    if (variable->getType() != "&"+type) {
-      throw std::invalid_argument(
-          "variable assignment operation with mismatching types: " +
-          variable->getType() + " and " + type + "\n");
-    } else {
+  if (variable->getType() != "&" + type) {
+    throw std::invalid_argument(
+        "variable assignment operation with mismatching types: " +
+        variable->getType() + " and " + type + "\n");
+  } else {
 
-      typeTable.top().insert(
-          {variable->getIdentifier(), variable->getType()});
-      variable->setType(type);
-    }
-
-    }
+    typeTable.top().insert({variable->getIdentifier(), variable->getType()});
+    variable->setType(type);
+  }
+}

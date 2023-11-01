@@ -13,9 +13,10 @@ class ReferenceAssignmentExpression : public BaseExpression {
 public:
   ReferenceAssignmentExpression(std::string identifier,
                                 std::string referenceIdentifier,
-                                std::string type,  BaseExpression *referenceValue, bool isMutable)
-      : identifier(identifier), referenceIdentifier(referenceIdentifier), referenceValue(referenceValue), 
-        isMutable(isMutable) {
+                                std::string type,
+                                BaseExpression *referenceValue, bool isMutable)
+      : identifier(identifier), referenceIdentifier(referenceIdentifier),
+        referenceValue(referenceValue), isMutable(isMutable) {
     this->type = type;
   }
   std::string getIdentifier() { return identifier; }

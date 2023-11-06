@@ -243,8 +243,6 @@ void LLVM_Visitor::visitReferenceAssignmentExpression(
 
   Builder->CreateStore(referenceValue, pointerToReference);
 
-  expression->setReferenceValue(pointerToReference);
-
   symbolTableStack.top()[expression->getIdentifier()] = pointerToReference;
 
   if (expression->isVarMutable()) {

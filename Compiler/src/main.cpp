@@ -4,6 +4,7 @@
 #include "Expressions/blockExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
 #include "Visitors/baseVisitor.hpp"
+#include "Visitors/borrowChecker.hpp"
 #include "Visitors/llvmVisitor.hpp"
 #include "Visitors/typeCheckingVisitor.hpp"
 #include <iostream>
@@ -56,6 +57,8 @@ int main(int argc, char **argv) {
 
   typeCheckingVisitor typeChecker;
 
+  BorrowChecker borrowChecker;
+
   yyparse();
 
   fclose(yyin);
@@ -67,6 +70,8 @@ int main(int argc, char **argv) {
   std::cout << "debug: AST done \n";
   rootAST->accept(&typeChecker);
   std::cout << "debug: Typecheck done \n";
+  rootAST->accept(&borrowChecker);
+  std::cout << "debug: Ownership, lifecycle and borrowing check done \n";
   rootAST->accept(&visitor);
   std::cout << "debug: llvm done \n";
 

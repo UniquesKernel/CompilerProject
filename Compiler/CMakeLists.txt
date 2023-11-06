@@ -41,6 +41,6 @@ set_target_properties(compilerLib PROPERTIES CMAKE_CXX_CLANG_TIDY
 # Add tests executable
 file(GLOB TEST_SOURCES "test/**/*.cpp")
 add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests PRIVATE compilerLib Catch2::Catch2)
+target_link_libraries(tests PRIVATE compilerLib Catch2::Catch2 LLVM)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 

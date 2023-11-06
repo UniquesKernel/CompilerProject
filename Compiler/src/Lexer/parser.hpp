@@ -119,7 +119,7 @@ union YYSTYPE {
   std::string *str;
   bool boolean;
   char chr;
-  float flt;
+  double flt;
   TerminalExpression *terminal;
   BinaryExpression *binary;
   BaseExpression *base;

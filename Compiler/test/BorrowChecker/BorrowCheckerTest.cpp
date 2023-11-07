@@ -1,9 +1,11 @@
 #include "Visitors/borrowChecker.hpp"
-#include "Expressions/ReturnExpression.hpp"
+#include "../../src/Lexer/parser.hpp"
 #include "Expressions/baseExpression.hpp"
+#include "Expressions/binaryExpression.hpp"
 #include "Expressions/blockExpression.hpp"
 #include "Expressions/functionCall.hpp"
 #include "Expressions/functionDeclaration.hpp"
+#include "Expressions/ifExpression.hpp"
 #include "Expressions/programExpression.hpp"
 #include "Expressions/referenceAssignmentExpression.hpp"
 #include "Expressions/terminalExpression.hpp"
@@ -17,310 +19,270 @@ using ArgumentList = std::vector<std::pair<std::string, std::string>>;
 using InstructionList = std::vector<BaseExpression *>;
 using ProgramFunctions = std::vector<FunctionDeclaration *>;
 
-void setupProgram() {}
+extern ProgramExpression *rootAST;
+extern FILE *yyin;
 
-TEST_CASE("BorrowChecker", "[Assignment]") {
-  SECTION("Empty Main Program") {
-    /*
-     *  fn main(): int {
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
-    TerminalExpression *returnExpression = new TerminalExpression(0);
-
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-
-    ArgumentList args = ArgumentList();
-
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
-
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-
-    ProgramExpression program = ProgramExpression(functionList);
-
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    REQUIRE_NOTHROW(program.accept(borrowChecker));
-
-    delete borrowChecker;
+// The helper function to set up the environment and parse the input file
+void SetUpParserAndParseFile(const char *filename) {
+  FILE *file = fopen(filename, "r");
+  if (!file) {
+    perror("Input file not found");
+    throw std::runtime_error("Failed to open input file");
   }
 
-  SECTION("Main Program With 1 assignment", "[Assignment]") {
-    /*
-     *  fn main(): int {
-     *    let x: int = 0;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+  yyin = file;
+  if (yyparse() != 0) {
+    fclose(file);
+    throw std::runtime_error("Parsing failed");
+  }
+  fclose(file);
+}
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), false, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
+// A fixture class that you can use to set up and tear down each test case
+struct ParserFixture {
+  ProgramExpression *rootAST;
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
-
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
-
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    // Assert
-    REQUIRE_NOTHROW(program.accept(borrowChecker));
-
-    // clean up
-    delete borrowChecker;
+  ParserFixture() : rootAST(nullptr) {
+    // Initialize your parser here if needed
   }
 
+  ~ParserFixture() { rootAST = nullptr; }
+
+  void parseInput(const char *filename) {
+    SetUpParserAndParseFile(filename);
+    // Assume yyin and rootAST are set by the parser
+    rootAST = ::rootAST;
+  }
+};
+
+TEST_CASE_METHOD(ParserFixture, "BorrowCheckers", "[Assignment]") {
+  SECTION("empty Main Program", "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/emptyProgram.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("Main Program with 1 assignment", "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/assignment1.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
   SECTION("main Program with 1 immutable reference assignment",
-          "[assignment]") {
-    /*
-     *  fn main(): int {
-     *    let x: int = 0;
-     *    let y: &int = &x;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/immutableReferenceAssignment.code");
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), false, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
-    ReferenceAssignmentExpression *referenceAssignmentExpression =
-        new ReferenceAssignmentExpression("y", "x", "&int", false);
+    REQUIRE(rootAST != nullptr);
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(referenceAssignmentExpression);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
+    BorrowChecker borrowChecker;
 
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
-
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    // Assert
-    REQUIRE_NOTHROW(program.accept(borrowChecker));
-
-    // clean up
-    delete borrowChecker;
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
   }
 
-  SECTION("main Program with 3 immutable reference assignment",
-          "[assignment]") {
-    /*
-     *  fn main(): int {
-     *    let x: int = 0;
-     *    let a: &int = &x;
-     *    let b: &int = &x;
-     *    let c: &int = &x;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+  SECTION("main Program with 3 immutable refference assignments",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/immutableReferenceAssignment3.code");
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), false, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
-    ReferenceAssignmentExpression *referenceA =
-        new ReferenceAssignmentExpression("a", "x", "&int", false);
-    ReferenceAssignmentExpression *referenceB =
-        new ReferenceAssignmentExpression("b", "x", "&int", false);
-    ReferenceAssignmentExpression *referenceC =
-        new ReferenceAssignmentExpression("c", "x", "&int", false);
+    REQUIRE(rootAST != nullptr);
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(referenceA);
-    instructionList.push_back(referenceB);
-    instructionList.push_back(referenceC);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
+    BorrowChecker borrowChecker;
 
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
-
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    // Assert
-    REQUIRE_NOTHROW(program.accept(borrowChecker));
-
-    // clean up
-    delete borrowChecker;
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
   }
 
-  SECTION("main Program with 1 mutable reference assignment", "[assignment]") {
-    /*
-     *  fn main(): int {
-     *    let mut x: int = 0;
-     *    let y: &int = &mut x;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+  SECTION("main Program with 1 mutable reference assignment",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/mutableReferenceAssignment.code");
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), true, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
-    ReferenceAssignmentExpression *referenceY =
-        new ReferenceAssignmentExpression("y", "x", "&int", true);
+    REQUIRE(rootAST != nullptr);
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(referenceY);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
+    BorrowChecker borrowChecker;
 
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
-
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    // Assert
-    REQUIRE_NOTHROW(program.accept(borrowChecker));
-
-    // clean up
-    delete borrowChecker;
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
   }
 
-  SECTION("main Program with 1 mutable reference and 1 immutable reference "
-          "assignment",
-          "[assignment]") {
-    /*
-     *  fn main(): int {
-     *    let mut x: int = 0;
-     *    let a: &int = &x;
-     *    let b: &int = &mut x;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+  SECTION("main Profram with 1 mutable reference and 1 immutable reference",
+          "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/mutableAndImmutableReferenceAssignment.code");
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), true, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
-    ReferenceAssignmentExpression *referenceA =
-        new ReferenceAssignmentExpression("a", "x", "&int", false);
-    ReferenceAssignmentExpression *referenceB =
-        new ReferenceAssignmentExpression("b", "x", "&int", true);
+    REQUIRE(rootAST != nullptr);
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(referenceA);
-    instructionList.push_back(referenceB);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
+    BorrowChecker borrowChecker;
 
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
-
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
-
-    // Assert
-    REQUIRE_THROWS_AS(program.accept(borrowChecker), std::invalid_argument);
-
-    // clean up
-    delete borrowChecker;
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
   }
 
-  SECTION("main Program with 2 mutable reference assignment", "[assignment]") {
-    /*
-     *  fn main(): int {
-     *    let mut x: int = 0;
-     *    let a: &int = &mut x;
-     *    let b: &int = &mut x;
-     *    return 0;
-     *  }
-     * */
-    InstructionList instructionList = InstructionList();
+  SECTION("main Program with 2 mutable reference assignment",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/mutableReferenceAssignment2.code");
 
-    // Program Instructins
-    VariableAssignmentExpression *assignment = new VariableAssignmentExpression(
-        new TerminalExpression(0), new VariableExpression("x"), true, "int");
-    ReturnExpression *returnExpression =
-        new ReturnExpression(new TerminalExpression(0));
-    ReferenceAssignmentExpression *referenceA =
-        new ReferenceAssignmentExpression("a", "x", "&int", true);
-    ReferenceAssignmentExpression *referenceB =
-        new ReferenceAssignmentExpression("b", "x", "&int", true);
+    REQUIRE(rootAST != nullptr);
 
-    // adding them to main function declaration together with argument list
-    instructionList.push_back(assignment);
-    instructionList.push_back(referenceA);
-    instructionList.push_back(referenceB);
-    instructionList.push_back(returnExpression);
-    BlockExpression *programInstructionList =
-        new BlockExpression(instructionList);
-    ArgumentList args = ArgumentList();
-    FunctionDeclaration *mainFunction =
-        new FunctionDeclaration("main", "int", programInstructionList);
+    BorrowChecker borrowChecker;
 
-    // Create Program from list of available functions i.e. AST
-    ProgramFunctions functionList = ProgramFunctions();
-    functionList.push_back(mainFunction);
-    ProgramExpression program = ProgramExpression(functionList);
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
 
-    // initialize BorrowChecker
-    BorrowChecker *borrowChecker = new BorrowChecker();
+  SECTION("variable use after ownership change", "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/variableUseAfterOwnershipChange.code");
 
-    // Assert
-    REQUIRE_THROWS_AS(program.accept(borrowChecker), std::invalid_argument);
+    REQUIRE(rootAST != nullptr);
 
-    // clean up
-    delete borrowChecker;
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
+
+  SECTION("variable not used after ownership change", "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/variableNotUsedAfterOwnershipChange.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("variable used after function Borrow", "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/variableUsedAfterFunctionBorrow.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("referemce Assignment after ownership change", "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "referenceAssignmentAfterOwnershipChange.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
+
+  SECTION("variable used after ownership change in nested scope",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "variableUsedAfterOwnershipChangeNestedScope.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
+
+  SECTION("variable used after ownership change of shadowed variable in nested "
+          "scope",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "variableUsedAfterOwnershipChangeNestedScopeShadowed.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("variable reassigned after ownership change", "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/variableReassignedAfterOwnershipChange.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
+
+  SECTION("variable used after borrowing inside nested scope",
+          "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/variableUsedAfterBorrowingNestedScope.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("reference assignment to variable after ownership change of shadowed "
+          "variable",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "referenceAssignmentAfterOwnershipChangeShadowed.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("function call with reference argument after ownership changed with "
+          "function call",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "functionCallWithReferenceArgumentAfterOwnershipChange.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
+  }
+
+  SECTION("function call with reference argument before ownership changed with "
+          "function call",
+          "[BorrowChecker]") {
+    parseInput("test/BorrowChecker/tests/"
+               "functionCallWithReferenceArgumentBeforeOwnershipChange.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("function correctly transfer ownership out of a function",
+          "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/functionCorrectlyTransferOwnershipOut.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_NOTHROW(rootAST->accept(&borrowChecker));
+  }
+
+  SECTION("reference becomes invalid after function call with original "
+          "variable because ownership change",
+          "[BorrowChecker]") {
+    parseInput(
+        "test/BorrowChecker/tests/"
+        "referenceBecomesInvalidAfterFunctionCallWithOriginalVariable.code");
+
+    REQUIRE(rootAST != nullptr);
+
+    BorrowChecker borrowChecker;
+
+    REQUIRE_THROWS_AS(rootAST->accept(&borrowChecker), std::invalid_argument);
   }
 }

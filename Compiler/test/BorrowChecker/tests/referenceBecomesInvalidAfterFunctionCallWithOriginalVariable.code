@@ -1,0 +1,18 @@
+fn factorial(n: int): int {
+  if (n < 2) {
+    return n;
+  }
+
+  return n * factorial(n - 1);
+}
+
+fn main(): int {
+  let mut x: int = factorial(5);
+  let y: &int = &mut x;
+
+  factorial(x);
+
+  y = 2;
+
+  return 0;
+}

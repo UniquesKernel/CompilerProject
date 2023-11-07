@@ -1,0 +1,6 @@
+fn main(): int {
+  let mut x: int = 0;
+  let y: &int = &x;
+  let z: &int = &mut x;
+  return 0;
+}

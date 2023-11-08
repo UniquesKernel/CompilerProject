@@ -3,3 +3,7 @@ build/
 compile_commands.json
 llvm.sh
 .vscode/
+/*.code
+/src/Lexer/parser.cpp
+/src/Lexer/lexer.cpp
+/src/Lexer/parser.hpp

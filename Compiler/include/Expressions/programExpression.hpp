@@ -12,9 +12,7 @@ private:
 
 public:
   ProgramExpression(std::vector<FunctionDeclaration *> functions)
-      : functions(functions) {
-    std::cout << "program creation" << std::endl;
-  }
+      : functions(functions) {}
   bool getHasMainFunction() const { return hasMainFunction; }
   void setHasMainFunction(bool hasMain) { hasMainFunction = hasMain; }
   std::vector<FunctionDeclaration *> getFunctions() { return functions; }

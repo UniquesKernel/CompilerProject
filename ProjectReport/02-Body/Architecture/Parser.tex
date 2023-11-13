@@ -41,13 +41,13 @@ shifting and reducing until it either accepts or errors. In this process it buil
 
 \parserGen{} is a prominent parser generator, part of the GNU project, capable of
 producing parsers for a variety of languages by supporting multiple parsing
-algorithms. \\
+algorithms\cite{BISON}. 
 
 For the \lang{} compiler, \parserGen{} was employed because of its flexibility,
 efficiency, and user-friendliness. It facilitates rapid iterations and adjustments to
 the grammar. Moreover, its robust and modular parser implementation can be easily
 extended. Notably, \parserGen{} integrates natively with \lexerGen{}, ensuring a
-cohesive interaction between the \lexer{} and \parser{}. \\
+cohesive interaction between the \lexer{} and \parser{}.
 
 When configured appropriately, \parserGen{} can generate a \textit{\parserType{}}
 parser using LALR(1), IELR(1), or CLR(1) parsing tables. Its comprehensive

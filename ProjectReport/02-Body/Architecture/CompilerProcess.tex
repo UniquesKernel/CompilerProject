@@ -4,19 +4,36 @@
 
       \node[draw, rectangle, minimum width=4cm] (source) {Source Code};
       \node[draw, rectangle, minimum width=4cm, below=0.7cm of source] (lexer) {\lexer};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of lexer] (parser) {\parser};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of parser] (semantic) {\semantic};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of semantic] (codeGen) {\codeGen};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of codeGen] (output) {Executable};
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of lexer] (parser)
+        {\parser};
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of parser, align=center]
+        (static) {\static\\[0.5em] % Increased height to accommodate inner nodes
+      % Inner nodes for Type Checker and Borrow Checker
+      \begin{tikzpicture}
+        \node[draw, rectangle, minimum width=3.5cm, align=center]
+          (typeChecker) {\typeChecker};
+        \node[draw, rectangle, minimum width=3.5cm, below=0.5cm of
+          typeChecker, align=center] (borrowChecker) {\borrowChecker};
+        \draw[->] (typeChecker) -- (borrowChecker);
+
+
+      \end{tikzpicture}
+      };
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of static]
+      (codeGen) {\codeGen};
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of codeGen]
+      (object) {\gcc};
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of object] (exec) {Executable};
+
 
       \draw[->] (source) -- (lexer) node[midway, right] {Source File};
       \draw[->] (lexer) -- (parser) node[midway, right] {Token Stream};
-      \draw[->] (parser) -- (semantic) node[midway, right] {AST};
-      \draw[->] (semantic) -- (codeGen) node[midway, right] {AST};
-      \draw[->] (codeGen) -- (output) node[midway, right] {IR};
+      \draw[->] (parser) -- (static) node[midway, right] {AST};
+      \draw[->] (static) -- (codeGen) node[midway, right] {AST};
+      \draw[->] (codeGen) -- (object) node[midway, right] {IR Code};
+      \draw[->] (object) -- (exec) node[midway, right] {Binary File}; 
     \end{tikzpicture}
   \end{center}
-  \caption{The \lang{} compiler pipeline, transforming source code into an executable.}
+  \caption{The compiler pipeline, transforming source code into an executable.}
   \label{fig:CompilerProcess}
 \end{figure}
-

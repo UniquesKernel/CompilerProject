@@ -1,16 +1,47 @@
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
   \midsepremove{}
   \begin{tabular}{|l|l|l|}
     \toprule
-    Symbols & Token & Regular Expression \\ 
+    Symbol & Token & Regular Expression \\
     \midrule
-    $0, 1, 2, 3\dots$ & \texttt{INTEGER} & \regex{[1-9][0-9]*|^0\b} \\
-    \midrule
-    $+, -, *, /, \%$ & \texttt{'+', '-', '*', '/', '\%'} & \regex{[+\-*\%]} \\
-    \midrule
-    tabs, spaces and newlines & (Ignored) & \regex{[ \\t\\n\\r]} \\
-    \midrule
+    "fn" & FUNCTION & \regex{"fn"} \\
+    "true", & T\_TRUE & \regex{"true"} \\
+    "false" & T\_FALSE & \regex{"false"} \\
+    "return" & RETURN & \regex{"return"} \\
+    "if"  & IF\_TOKEN & \regex{"if"} \\
+    "else" & ELSE\_TOKEN & \regex{"else"} \\
+    "let" & KW\_VAR & \regex{"let"} \\
+    "mut" & KW\_MUT & \regex{"mut"} \\
+    \hline
+    "\&int" & TYPE\_REF & \regex{"&int"} \\
+    "\&bool" & TYPE\_REF & \regex{"&bool"} \\
+    "\&float" & TYPE\_REF & \regex{"&float"} \\
+    "\&char" & TYPE\_REF & \regex{"&char"} \\
+    "int" & TYPE & \regex{"int"} \\
+    "bool" & TYPE & \regex{"bool"} \\
+    "float" & TYPE & \regex{"float"} \\
+    "char" & TYPE & \regex{"char"} \\
+    "\&" & KW\_REF & \regex{"&"} \\
+    "\&mut" & KW\_MUT\_REF & \regex{"&mut"} \\
+    \hline
+    "==", "!=" & EQ, NEQ & \regex{"=="}, \regex{"!="} \\ 
+    "\l", "\g" & LT, GT & \regex{"<"}, \regex{">"} \\
+    "*", "/" & MUL, DIV & \regex{"*"}, \regex{"/"} \\
+    "+", "-" & PLUS, MINUS & \regex{"+"}, \regex{"-"} \\
+    "\%" & MOD & \regex{"\%"} \\
+    \hline
+    Identifiers & IDENTIFIER & \regex{[a-zA-Z][a-zA-Z0-9]*} \\
+    Character literals & TOKEN\_CHAR & \regex{[a-zA-Z]} \\
+    Floating point numbers & TOKEN\_FLOAT & \regex{[0-9]+\.[0-9]+} \\
+    Integer literals & TOKEN\_INT & \regex{[0-9]+} \\
+    \hline
+    "\{" "\}" & LBRACE, RBRACE & \regex{"{" "}"} \\
+    ";" & END\_OF\_LINE & \regex{[;]} \\
+    ":" & COLON & \regex{":"} \\
+    "," & COMMA & \regex{[,]} \\
+    "(" ")" "=" & LPAREN, RPAREN, ASSIGN & \regex{"("} \regex{")"} \regex{"="} \\
+    tabs, spaces, and newlines & (Ignored) & \regex{[ \\t\\n\\r]} \\
     Anything else & Throws error: "Unknown Token" & \regex{[.]} \\
     \bottomrule
   \end{tabular}

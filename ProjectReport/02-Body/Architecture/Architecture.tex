@@ -1,15 +1,25 @@
 \section{Architecture}
 \label{sec:architecture}
 
-On the topic of architecture, the \lang{} compiler is comprised of four primary
-components: the \lexer, the \parser, the \semantic, and the \codeGen. These
+On the topic of architecture, the \lang{} compiler is comprised of five primary
+components: the \lexer, the \parser, the \static, the \codeGen{} and the \gcc. These
 components form a pipeline, where the output of one component is the input of the
-next; in tandem, they constitute the complete compilation process. 
+next; in tandem, they constitute the complete compilation process. \\
+
+\lang{} is a strong statically typed language with a focus on memory safety. It's
+explicit type system is designed to minimise confusion and obfuscation as each
+variable must be explicitly declared with a type. It's memory safety is heavily
+inspired by Rust, and is achieved through the use of a \borrowChecker{} which enforces
+a subset of Rust's borrow checking rules. \\
 
 \input{02-Body/Architecture/CompilerProcess.tex}
 
+To facilitate the \static{} and \codeGen{} components in way that is both efficient
+and modular, the \lang{} compiler is written using a visitor pattern. This pattern
+effiently enables the modification of the \ast{} without requiring extensive
+modifications to the implementation of the \ast{} itself.
+
 \input{02-Body/Architecture/Lexer.tex}
 \input{02-Body/Architecture/Parser.tex}
+\input{02-Body/Architecture/StaticCodeAnalyser.tex}
 \input{02-Body/Architecture/LLVM-backend.tex}
-
-

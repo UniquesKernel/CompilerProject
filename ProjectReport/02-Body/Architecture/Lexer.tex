@@ -1,11 +1,10 @@
-\newpage 
 \subsection{Lexer}
 
 The \lexer{} processes the source code as a stream of characters. Once it identifies
 a valid lexeme, it emits the corresponding token. Specifically, the \lexer{} follows
-the \textit{Maximal Munch} rule, recognizing the longest verified lexeme, ensuring that tokens
-represent the most appropriate grouping of characters. In fine, the \lexer{}
-transforms a stream of characters into a stream of tokens.
+the \textit{Maximal Munch} rule, recognizing the longest verified lexeme, ensuring
+that tokens represent the most appropriate grouping of characters. In fine, the
+\lexer{} transforms a stream of characters into a stream of tokens.
 
 \input{02-Body/Architecture/SymbolTable.tex}
 
@@ -19,7 +18,7 @@ processing. \\
 The use of \lexerGen{} for the \lang{} project streamlines the process of lexical
 analysis and makes it simple to create or alter the definition of lexemes. Its
 compatibility with \parserGen{} ensures seamless integration between the \lexer{} and
-the \parser{}. Just as with Bison, the choice of \lexerGen{} is reinforced by its
+the \parser. Just as with \parserGen, the choice of \lexerGen{} is reinforced by its
 comprehensive documentation, active community support, and its proven track record in
 various software projects. This makes it a reliable and robust choice for the lexical
 analysis phase of the \lang{} compiler.

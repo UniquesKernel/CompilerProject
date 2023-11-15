@@ -12,9 +12,8 @@
       \begin{tikzpicture}
         \node[draw, rectangle, minimum width=3.5cm, align=center]
           (typeChecker) {\typeChecker};
-        \node[draw, rectangle, minimum width=3.5cm, below=0.5cm of
+        \node[draw, rectangle, minimum width=3.5cm, below=0.2cm of
           typeChecker, align=center] (borrowChecker) {\borrowChecker};
-        \draw[->] (typeChecker) -- (borrowChecker);
 
 
       \end{tikzpicture}
@@ -26,12 +25,12 @@
       \node[draw, rectangle, minimum width=4cm, below=0.7cm of object] (exec) {Executable};
 
 
-      \draw[->] (source) -- (lexer) node[midway, right] {Source File};
-      \draw[->] (lexer) -- (parser) node[midway, right] {Token Stream};
-      \draw[->] (parser) -- (static) node[midway, right] {AST};
-      \draw[->] (static) -- (codeGen) node[midway, right] {AST};
-      \draw[->] (codeGen) -- (object) node[midway, right] {IR Code};
-      \draw[->] (object) -- (exec) node[midway, right] {Binary File}; 
+      \draw[->,thick] (source) -- (lexer) node[midway, right] {Source File};
+      \draw[->,thick] (lexer) -- (parser) node[midway, right] {Token Stream};
+      \draw[->,thick] (parser) -- (static) node[midway, right] {AST};
+      \draw[->,thick] (static) -- (codeGen) node[midway, right] {AST};
+      \draw[->,thick] (codeGen) -- (object) node[midway, right] {Object File};
+      \draw[->,thick] (object) -- (exec) node[midway, right] {Binary File}; 
     \end{tikzpicture}
   \end{center}
   \caption{The compiler pipeline, transforming source code into an executable.}

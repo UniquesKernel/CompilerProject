@@ -1,9 +1,9 @@
 \subsection{Parser}
 
 The \lang{} \parser{} utilizes a \textit{bottom-up} parsing methodology.
-Specifically, it is a \parserType{}\footnote{Look-Ahead LR Parser with 1 symbol of
+Specifically, it is a \parserType{}(1)\footnote{Look-Ahead LR Parser with 1 symbol of
 lookahead} parser that is capable of parsing all deterministic context-free
-grammars (CFGs).
+grammars (CFG).
 
 Given a grammar, the \parser{} synthesizes a \textit{parse table} that is used to
 determine what action to take based on the current \textit{state}\footnote{The tokens
@@ -53,4 +53,3 @@ When configured appropriately, \parserGen{} can generate a \textit{\parserType{}
 parser using LALR(1), IELR(1), or CLR(1) parsing tables. Its comprehensive
 documentation and active community support further cemented its selection as the
 parser generator of choice for the \lang{} compiler.
-

@@ -1,3 +1,27 @@
 \subsection{Borrow Checker}
 
-\newpage
+The \borrowChecker{} is responsible for the second phase of the \static. 
+This involves overall structure of the \ast{} to ensure that the program
+adheres a subset of the same rules that is implemented in the Rust programming
+language\cite{RUST}. \\
+
+The rules are as follows:
+
+\begin{enumerate} 
+  \item Each value must have only a single owner \footnote{An owner is a variable, so
+    each value can only belong to a single variable.}. 
+  
+  \item Each variable must be initialized before use. 
+
+  \item Each variable can have unlimited immutable references\footnote{A reference is
+    a pointer that automatically is cleaned up when it goes out of scope.}.
+
+  \item Each variable can have only one mutable reference at any one time. 
+
+  \item Mutable and immutable references cannot co-exist. 
+
+  \item References cannot outlive the variable they are referencing.
+\end{enumerate}
+
+When enforced together with automatic memory cleanup, these rules ensure the memory
+safety of the program. 

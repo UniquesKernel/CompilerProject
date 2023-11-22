@@ -1,1 +1,5 @@
-s
+\subsection{Type Checker}
+\label{sec:typeCheckerDesign}
+The type checker implements a visitor (see sec \ref{sec:VisitorDesign}). 
+Because its primary purpose is to ensure type safety, the main part of the expression nodes that it accesses it the type field. It of course also accesses the children of the node.\\
+The majority of nodes are created without any explicit type (indeed only variable assignment and terminal expressions can know their own type). This is not immediately a problem, as the type checker is entirely capable of cascading types up through the tree. It is however sometimes necessary to check the type of an expression at a later stage of the compile process (eg. in code generation, when allocation space for a variable). As such we decided that the type checker, since it was already calculating the type of the node, should save the type to the particular node, so that it can be accessed by the following visitors.

@@ -13,21 +13,19 @@ code, while offering robust control over system memory.
 
 \subsection{Problem}
 
-Developers currently can opt for dynamic or weak typing in popular programming
+Developers currently seem to prefer dynamic or weak typing in popular programming
 languages, which may compromise code readability and maintainability due to implicit
-type deduction. This raises challenges in discerning the intentions of the developer
+type inferences. This raises challenges in discerning the intentions of the developer
 solely based on the source code. Moreover, these languages often utilize garbage
 collectors, sacrificing control over system memory.
 
 \subsection{Objectives}
 
-To design and develop a custom programming language that mandates explicit typing for
-all data structures and variables. To implement a compiler for the language that
-performs zero type inference and provides clear error messages where ambiguities or
-mistakes are detected. To achieve a balance between the explicitness of data types
-and the conciseness of the language syntax, promoting readability. To offer precise
-control over system memory while ensuring safety and avoiding the performance
-drawbacks of garbage collection.
-
-
-%We wish to examine how the rust borrow checker can be built
+To design and develop a custom programming language which encourages clarity, offers
+type safety and memory safety while avoiding the issues typically associated with
+garbage collectors. To do so, it will make use of the same system as the Rust programming
+language, which uses a borrow checking and reference based system to ensure memory
+safety\cite{RUST}. To ensure type safety, our language will make use of zero type
+inference, meaning the compiler will never attempt to guess what type a developer
+intends to use. If the typechecker cannot identify the type of an expression at
+compile time it will instead throw an error. \\

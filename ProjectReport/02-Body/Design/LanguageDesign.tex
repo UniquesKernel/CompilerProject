@@ -1,6 +1,128 @@
 \subsection{Language Design}
+\label{sec:LanguageDesign}
 
-\lang{} is an expression based language. There are two types of expressions in
-\lang{}; function declarations and expressions statements. 
+\lang{} is an expression based language. This means that nearly every language construct
+evaluates to some value\cite{Expr-Lang}. This is the driving principle behind
+\lang{} together with a principle of immutability which means that every variable in
+\lang{} is immutable unless they are explicitly declared to be mutable. \\ 
 
-\subsubsection {}
+\lang{} further enforces a few rules to ensure the
+type safety and memory safety of \lang{}. First \lang{} is a strongly and statically
+typed language, meaning all types must be knowable at compile time and cannot be
+changed at runtime. Secondly, it enforces the same principles of borrowing and
+references that the Rust programming language enforces, in so far that \lang{}
+currently supports language constructs that require the enforcement of Rust's
+rules\footnote{Example: \lang{} currently does not support heap allocations therefore
+the principles of Rust's borrowing and reference system pertaining to such allocations
+are not yet enforced by \lang{}}.
+
+These principles all together ensures a solid foundation for a language that can
+achieve the goals of this project; to design a language which encourages clarity in
+its code, while also offering type safety and memory safety when dealing with
+allocation of memory.
+
+\subsubsection{Grammar}
+
+The grammar of \lang{} is quite simple, and is heavy inspired by the grammar of the
+Rust language, however its grammar is also influenced by its limited feature set. 
+
+Due to time constraints \lang{} does not support multiple files, this constraint
+influences the way \lang{} is designed. Unlike scripting languages like
+\texttt{Python} and \texttt{JavaScript}, which are capable of running its code without
+a dedicated main function \lang{} organizes its code similarly to procedural
+languages like \texttt{C} in which a main function is required for a standalone
+program. \\
+
+Because \lang{} is entirely constrained to a single file its grammar is designed to
+help and encourage users to modularize their code through the use of functions but it
+also limits its scalability as it becomes impractical to write large application
+using \lang{} as this would lead to an unmanagable large file. \lang{}'s structure
+can be broken down into three levels of abstraction. The \texttt{Program} layer, the
+\texttt{Function} layer, and the \texttt{Expression} layer. Each layer is defined as
+simplification of the layer below it. This will be detailed in the following
+sections, but for a complete overview of the \lang{} grammar and production rules see
+appendix~\ref{sec:syntax}.
+
+\paragraph{Program Layer}\hfill 
+\vspace{.3em} \hfill
+
+The \texttt{program} layer, defines the highest level of abstraction in \lang's grammar. 
+It is considered an expression like all other language constructs and it's values is
+the value of the last expression in the program\footnote{which will typically be the
+return value of the program's main function.}. \\
+
+\newpage
+
+In BNF notation, the grammar associated with the \texttt{program} layer is defined as follows:
+
+\lstset{
+  escapeinside={(*}{*)},
+}
+
+\begin{lstlisting}[caption={Program Layer}, label={lst:ProgramLayer},
+frame={single}]
+  <program> ::= <function_list>
+
+  <function_list> ::= (*$\epsilon$*)
+                  |   <function_list> <function_decl> 
+\end{lstlisting}
+
+At the highest level this generally means a the program will take the following form: 
+
+\begin{lstlisting}[caption={Program layout}, label={lst:ProgramLayout}, frame={single}]
+  fn function1(): int { // implemenation left out for brevity }
+  fn function2(): int { // implemenation left out for brevity }
+  fn main(): int { // implemenation left out for brevity }
+\end{lstlisting}
+
+With the main function being the entry point of the program calling the other
+functions which in turn may be calling each other. It is important to note that
+\lang{} does not support the use of functions before they are declared, meaning that
+the order of the functions in the program is important. Thus \texttt{function1}
+cannot call \texttt{function2} in the example above, but \texttt{function2} can call
+\texttt{function1}. \\
+
+Like other languages, such as \texttt{C} and \texttt{Rust}, where the main function is required for a
+standalone program, \lang{} also mandates a main function. However, in scenarios
+where \lang{} is utilized as a library for \texttt{C} or \texttt{C++} code, the main function is not
+necessary. In such cases, the entry point is provided by the host \texttt{C} or
+\texttt{C++} application, leveraging \lang{}'s functionality without the need for its own main
+function. This distinctive feature, facilitated by the integration with the \gcc{},
+allows for greater versatility in how \lang{} can be applied. More
+details on this integration are provided in Section~\ref{sec:CompilerDesign}.
+
+\paragraph{Function Layer}\hfill 
+\vspace{.3em} \hfill
+
+The \texttt{function} layer defines the second highest level of abstraction in 
+\lang's grammar and togehter with the \texttt{expression} are abit more complicated
+that the program layer. 
+This layer defines how a function is declared and implemented. \\
+
+On a high level, a function declaraction in \lang{} is a way to name what are called
+block expressions, which are blocks of sequentially evaluated expressions that are
+evaluated when the function is called. A function evaluates to the value of its
+return expression(s)\footnote{A function can have multiple return expression in the
+case of conditional return expressions.}. \\
+
+In BNF notation, the grammar associated with the \texttt{function} layer is defined as follows:
+
+\begin{lstlisting}[caption={Function Layer}, label={lst:FunctionLayer}, frame={single}]
+  <function_decl> ::= 
+    FUNCTION IDENTIFIER LPAREN <arg_list> RPAREN COLON TYPE <exprBlock>
+
+  <arg_list> ::= (*$\epsilon$*)
+                | <arg_list> ',' IDENTIFIER COLON TYPE
+                | <arg_list> ',' IDENTIFIER COLON TYPE_REF
+                | IDENTIFIER COLON TYPE
+                | IDENTIFIER COLON TYPE_REF
+
+
+  <exprBlock> ::= LBRACE <expr_list> RBRACE
+
+  <expr_list> ::= (*$\epsilon$*)
+                | <expr_list> <expr> END_OF_LINE
+                | <expr_list> <if_expr>
+\end{lstlisting}
+
+

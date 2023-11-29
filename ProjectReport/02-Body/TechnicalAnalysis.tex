@@ -1,0 +1,97 @@
+\section{Technical Analysis}
+\label{sec:TechAnalysis}
+
+On the topic of technologies, as the \lang{} compiler borrows many features from the
+Rust language, it's worth taking a look at the Rust compiler to see how Rust has
+organized its compiler architecture. 
+
+\begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+
+    % Define the words
+    \def\words{{Input}, {Invocation}, {Lexing}, {Parsing}, {HIR lowering},
+               {MIR lowering}, {Code Generation}, {Output}}
+    \def\datas{{Source Code}, {Source Code}, {Token Stream}, {AST}, {HIR
+    Representation}, {MIR Representation}, {Binary File}}
+ 
+    \node[draw, rectangle, minimum height=1cm, minimum width=3cm] (node1) {Input};
+
+    % Loop through each word
+    \foreach \word [count=\i] in \words {
+            % Node style for HIR and MIR lowering
+      \pgfmathtruncatemacro{\prevIndex}{\i - 1}
+      
+      \ifnum\i=1\relax
+      \else 
+        \ifthenelse{\equal{\word}{HIR lowering} \OR \equal{\word}{MIR lowering}} {
+          \node[draw, rectangle, minimum height=1cm, minimum width=3cm, below=of
+            node\prevIndex, yshift=.5cm, anchor=north] (node\i) {\word};
+        }{
+          \node[draw, rectangle, minimum height=1cm, minimum width=3cm, below=of
+            node\prevIndex, yshift=.5cm] (node\i) {\word};
+        }
+      \fi
+    }
+
+    \foreach \data [count=\i] in \datas {
+      \ifnum\i=0\relax 
+      \else
+        \pgfmathtruncatemacro{\nextIndex}{\i + 1}
+        \draw[->] (node\i) -- node[right]{\data} (node\nextIndex);
+      \fi
+    }
+  \end{tikzpicture}
+  \caption{Diagram architecture of the Rust Compiler}
+\end{figure}
+
+On a high level this is a very typical architecture for a compiler\cite{GEEK}. The
+following sections take a look at each component in more details to determine if the
+\lang{} compiler can benefit from any of these components and which tools, if any,
+might be useful for implementing the specific components.
+
+\subsection{Invocation}
+
+This component deals primarily with the configuration of the Rust compiler. It's a
+step where the Rust compiler is invoked on some source code, typically through the
+\texttt{cargo} CLI tool\cite{RUST_COMPILER}. 
+
+This phase does not directly influence the objectives of \lang{} and so it will not
+be included due to time constraints. It is, however, worth noting the importance of
+intuitive CLI tools when working with a compiler and it is a good candidate for
+future work after the rest of the compiler phases is fully implemented.
+
+\subsection{\lexer{}}
+
+The \lexer{} is hugely important for any compiler as it is responsible for
+reading the source code and producing the necessary tokens for the parser to later
+construct the \ast{} representation of the program. The Rust compiler implements its
+own lexical analyser from scratch, which after some experimentation is not too
+difficult a task to accomplish as this can be done using a character stream along
+with a list of regular expressions to search for each kind of token in the source
+code. This would give create control of the output of the lexer ensuring a perfect
+match to input required by the parser. 
+
+The issue here is that the development of \lang{} is under some time constraints so
+to avoid the lengthy process of writing a \lexer{} from the buttom up its faster and
+safer to use a tool to generate the \lexer{}.
+
+\subsubsection{Flex}
+
+\lexerGen{} is a tool for generating \textit{lexers} or \textit{scanners} and is
+often paired with \parserGen{} to produce \parser{}s and interpreters. It's an
+open-source project and is highly valued for its speed and efficiency in text
+processing. \\
+
+The use of \lexerGen{} for the \lang{} project streamlines the process of lexical
+analysis and makes it simple to create or alter the definition of lexemes. Its
+compatibility with \parserGen{} ensures seamless integration between the \lexer{} and
+the \parser. Just as with \parserGen, the choice of \lexerGen{} is reinforced by its
+comprehensive documentation, active community support, and its proven track record in
+various software projects. This makes it a reliable and robust choice for the lexical
+analysis phase of the \lang{} compiler.
+
+\subsection{Parser}
+
+
+\newpage

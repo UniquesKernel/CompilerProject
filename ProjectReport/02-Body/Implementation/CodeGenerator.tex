@@ -4,16 +4,18 @@ This is where the visitor pattern truly comes into its own. Whereas the borrow a
 When writing the code generator we have taken inspiration from the LLVM tutorial language Kaleidoscope \cite{LLVMTutorial} to see how to set up boilerplate and as a starting point when looking for the correct LLVM function.
 
 \subsubsection{LLVM}
-LLVM works with three iomportant components: a Builder, a Context and a Module. The Builder provides an API to create the program instructions, the Context manages the core global data (types, code blocks and program instructions created by the builder), while the Module stores the functions.
+LLVM works with three important components: a Builder, a Context and a Module. The Builder provides an API to create the program instructions, the Context manages the core global data (types, code blocks and program instructions created by the builder), while the Module stores the functions.
+
 
 \paragraph*{Variables}
-
+When the Builder creates a program instruction, it usually returns an llvm::Value type. It is possible to store these in a symbol table and access them later, but because LLVM creates a static single assignment IR, it is not possible to change the value of the stored variables. To get around this we create an allocation instance (llvm::AllocaInst), which can hold an llvm::Value. We can then store new llvm::Values in the same llvm::AllocaInst, obtaining mutable variables.
 
 \paragraph*{Code blocks and functions}
 
 
 \subsubsection{Scope and variables}
-
+Storing variables 
+We want to be able to create variables with the same name as long as they are not in the same scope. 
 
 \subsubsection{Output}
 Implementing an output posed a new type of challenge, as writing an output is not the responsibility of the compiler, but rather the operating system. As such the challenge went from finding the correct LLVM method to finding out how to use external functions in our program. Because an output is not strictly necessary to answer our problem statement, but more a quality of life, it did become a quick and unappealing implementation, that needs refinement.\\

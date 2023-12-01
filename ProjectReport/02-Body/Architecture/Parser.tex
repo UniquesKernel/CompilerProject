@@ -2,7 +2,7 @@
 
 The \lang{} \parser{} utilizes a \textit{bottom-up} parsing methodology.
 Specifically, it is a \parserType{}(1)\footnote{Look-Ahead LR Parser with 1 symbol of
-lookahead} parser that is capable of parsing all deterministic context-free
+lookahead} parser that is capable of parsing most deterministic context-free
 grammars (CFG).
 
 Given a grammar, the \parser{} synthesizes a \textit{parse table} that is used to
@@ -37,19 +37,3 @@ This means the \parser{} effectively becomes an automaton, cycling through state
 shifting and reducing until it either accepts or errors. In this process it builds an
 \textit{abstract syntax tree} (AST) that represents the structure of the program.
 
-\subsubsection{Bison}
-
-\parserGen{} is a prominent parser generator, part of the GNU project, capable of
-producing parsers for a variety of languages by supporting multiple parsing
-algorithms\cite{BISON}. 
-
-For the \lang{} compiler, \parserGen{} was employed because of its flexibility,
-efficiency, and user-friendliness. It facilitates rapid iterations and adjustments to
-the grammar. Moreover, its robust and modular parser implementation can be easily
-extended. Notably, \parserGen{} integrates natively with \lexerGen{}, ensuring a
-cohesive interaction between the \lexer{} and \parser{}.
-
-When configured appropriately, \parserGen{} can generate a \textit{\parserType{}}
-parser using LALR(1), IELR(1), or CLR(1) parsing tables. Its comprehensive
-documentation and active community support further cemented its selection as the
-parser generator of choice for the \lang{} compiler.

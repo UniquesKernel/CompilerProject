@@ -1,0 +1,81 @@
+\subsection{Appendix B}
+\label{sec:appB}
+
+Here follows a complete list of all production rules provided to the Bison tool to
+generate the parser used by the \lang{} compiler. For reference on the tokens used in
+the production rules see appendix~\ref{sec:appA}
+
+\subsubsection*{Production Rules}
+
+\begin{grammar}
+<program> ::= <function-list> `END_OF_FILE'
+
+<function-list> ::= $\epsilon$
+\alt <function-list> <function-decl>
+
+<function-decl> ::= `FUNCTION' <identifier> `LPAREN' <arg-list> `RPAREN' `COLON' <type> <expr-block>
+
+<arg-list> ::= $\epsilon$
+\alt <arg-list> `,' <identifier> `COLON' <type>
+\alt <arg-list> `,' <identifier> `COLON' `TYPE_REF'
+\alt <identifier> `COLON' <type>
+\alt <identifier> `COLON' `TYPE_REF'
+
+<function-call> ::= <identifier> `LPAREN' <call-list> `RPAREN'
+
+<call-list> ::= $\epsilon$
+\alt <call-list> `,' <expr>
+\alt <expr>
+
+<expr> ::= <return-expr>
+\alt `LPAREN' <expr> `RPAREN'
+\alt <expr-block>
+\alt <if-expr>
+\alt <arith-expr>
+\alt <terminal>
+\alt <function-call>
+\alt <variable-assignment>
+\alt <variable-reassignment>
+\alt <reference-assignment>
+\alt <variable>
+
+<expr-block> ::= `LBRACE' <expr-list> `RBRACE'
+
+<expr-list> ::= $\epsilon$
+\alt <expr-list> <expr> `END_OF_LINE'
+\alt <expr-list> <if-expr>
+
+<if-expr> ::= `IF_TOKEN' `LPAREN' <expr> `RPAREN' <expr-block>
+\alt `IF_TOKEN' `LPAREN' <expr> `RPAREN' <expr-block> `ELSE_TOKEN' <expr-block>
+\alt `IF_TOKEN' `LPAREN' <expr> `RPAREN' <expr-block> `ELSE_TOKEN' <if-expr>
+
+<terminal> ::= `TOKEN_INT'
+\alt `TOKEN_CHAR'
+\alt `TOKEN_FLOAT'
+\alt `T_TRUE'
+\alt `T_FALSE'
+
+<variable-assignment> ::= `KW_VAR' <identifier> `COLON' <type> `=' <expr>
+\alt `KW_VAR' `KW_MUT' <identifier> `COLON' <type> `=' <expr>
+
+<reference-assignment> ::= `KW_VAR' <identifier> `COLON' `TYPE_REF' `=' `KW_REF' <identifier>
+\alt `KW_VAR' <identifier> `COLON' `TYPE_REF' `=' `KW_MUT_REF' <identifier>
+
+<variable-reassignment> ::= <identifier> `=' <expr>
+
+<variable> ::= <identifier>
+\alt `KW_REF' <identifier>
+
+<arith-expr> ::= <expr> `PLUS' <expr>
+\alt <expr> `MINUS' <expr>
+\alt <expr> `MUL' <expr>
+\alt <expr> `DIV' <expr>
+\alt <expr> `MOD' <expr>
+\alt <expr> `LT' <expr>
+\alt <expr> `GT' <expr>
+\alt <expr> `EQ' <expr>
+\alt <expr> `NEQ' <expr>
+
+<return-expr> ::= `RETURN' <expr>
+\end{grammar}
+

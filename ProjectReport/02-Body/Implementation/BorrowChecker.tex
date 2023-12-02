@@ -1,4 +1,26 @@
 \subsection{Borrow Checker}
 \label{sec:BorrowCheckerImpl}
 
+The \borrowChecker{} implements a the visitor pattern, as described in
+section~\ref{sec:VisitorDesign}, and uses two tables a
+\texttt{symbolTable} and a \texttt{referenceTable} to keep track of variables as well
+as keeping track of references, as described in
+Section~\ref{sec:BorrowCheckerDesign}. the \borrowChecker then uses these tables to enforce the
+same ownership, borrowing and reference rules as the rust language as described
+in Section~\ref{sec:LanguageDesign} and Section~\ref{sec:BorrowCheckerDesign}. 
 
+\subsubsection{Implementation status}
+
+The implementation of the \borrowChecker{} is quite difficult and its current state
+does not yet support all features in \lang{}. 
+
+The \borrowChecker{} does a good job tracking ownership and references within
+functions, even across scopes. It it able to accurately track ownership and
+references across internal scopes\footnote{None function call related changes in
+scope, e.g. nested if-else statements and code blocks.} but once a variable is parsed
+to a function as an argument the current implementation of the \borrowChecker{} has
+difficulties keeping track of ownerships, in cases were the ownership of the
+variables need to change, or references in cases were references are parsed as
+arguments to a functions.
+
+This causes tests to fail see section~\ref{sec:tests}.

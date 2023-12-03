@@ -54,7 +54,7 @@ might be useful for implementing the specific components.
 
 This component deals primarily with the configuration of the Rust compiler. It's a
 step where the Rust compiler is invoked on some source code, typically through the
-\texttt{cargo} CLI tool\cite{RUST_COMPILER}. 
+\texttt{cargo} CLI tool\cite{RUST-COMPILER}. 
 
 This phase does not directly influence the objectives of \lang{} and so it will not
 be included due to time constraints. It is, however, worth noting the importance of
@@ -88,7 +88,7 @@ processing. \\
 
 The use of \lexerGen{} for the \lang{} project streamlines the process of lexical
 analysis and makes it simple to create or alter the definition of lexemes. Its
-compatibility with \parserGen{} ensures seamless integration between the \lexer{} and
+compatibility with \parserGen{} (see Section~\ref{sec:bison}) ensures seamless integration between the \lexer{} and
 the \parser. Just as with \parserGen, the choice of \lexerGen{} is reinforced by its
 comprehensive documentation, active community support, and its proven track record in
 various software projects. This makes it a reliable and robust choice for the lexical
@@ -98,7 +98,7 @@ analysis phase of the \lang{} compiler.
 \label{sec:techParser}
 
 The Rust language is build using a recursive decent parser, and just as with its
-\lexer{} Rust implements this from scratch\cite{RUST_COMPILER_SRC}. This is one of
+\lexer{} Rust implements this from scratch\cite{RUST-COMPILER-SRC}. This is one of
 the simplest forms of parsers to write by hand, but it requires quite a lot of
 maintainance if the nature of the syntax changes, or to add new features to a
 language. Writing the parser from scratch does give full control over the input
@@ -109,13 +109,14 @@ objective of \lang{} it was instead decided that it would be better to use a too
 generate a \parser{}.
 
 \subsubsection{\parserGen{}}
+\label{sec:bison}
 
 \parserGen{} is a prominent parser generator, part of the GNU project, capable of
 producing parsers for a variety of languages by supporting multiple parsing
 algorithms\cite{BISON}. 
 
 It works by defining tokens the \lexer{} should generate along with production rules
-following symantics similarly to the Backus–Naur form (BNF). It then generates a
+following symantics similarly to the Backus–Naur form \cite{BNF}. It then generates a
 parser which can parse the specified syntax.
 
 For the \lang{} compiler, \parserGen{} was employed because of its flexibility,

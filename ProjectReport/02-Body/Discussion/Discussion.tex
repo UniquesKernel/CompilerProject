@@ -1,0 +1,33 @@
+\section{Discussion}
+\label{sec:Discussion}
+
+The development of a programming language and compiler is inherently iterative, with
+opportunities for continual optimization and improvement. As is typical in software
+development, each iteration addresses existing bugs while potentially introducing new
+ones. \\
+
+In this context, and considering the project's outcomes in relation to the
+pre-established objectives detailed in section~\ref{sec:Objectives}, this section
+aims to summarize the achievements of the project. Specifically, it examines the
+development of a custom programming language and compiler, designed for type safety
+and memory safety without the use of a garbage collector. \\
+
+The \lang{} language has evolved to support common data types such as integers,
+floating-point numbers, booleans, and characters. These can be stored in variables
+for subsequent use. \lang{} supports essential features like arithmetic operations,
+branching, and loop creation via recursive function calls. It does fall short on the
+ability to take inputs from users as it is limited only producing outputs. \\
+
+A significant emphasis was placed on explicitness in coding. This was realized
+through a static typing system without type inference and by making variables
+immutable by default. Mutable states are allowed only through a specialized keyword,
+ensuring deliberate intentions for mutability. \\
+
+However, the project encountered challenges in fully implementing the Rust-like
+ownership and borrowing rules to ensure memory safety without a garbage collector.
+The \borrowChecker{} managed ownership within functions but faced difficulties with
+ownership transfer between functions. Consequently, this aspect of the project did
+not fully meet the objectives set forth in sections~\ref{sec:Objectives} and
+\ref{sec:Requirements}.
+
+\newpage

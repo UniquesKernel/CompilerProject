@@ -7,12 +7,10 @@ section~\ref{sec:VisitorDesign}, and uses two tables a
 as keeping track of references, as described in
 Section~\ref{sec:BorrowCheckerDesign}. the \borrowChecker{} then uses these tables to enforce the
 same ownership, borrowing and reference rules as the rust language as described
-in Section~\ref{sec:LanguageDesign} and Section~\ref{sec:BorrowCheckerDesign}. 
-
-\subsubsection{Implementation status}
+in Section~\ref{sec:LanguageDesign} and Section~\ref{sec:BorrowCheckerDesign}. \\
 
 The implementation of the \borrowChecker{} is quite difficult and its current state
-does not yet support all features in \lang{}. 
+does not yet support all features in \lang{}. \\
 
 The \borrowChecker{} does a good job tracking ownership and references within
 functions, even across scopes. It it able to accurately track ownership and
@@ -23,4 +21,8 @@ difficulties keeping track of ownerships, in cases were the ownership of the
 variables need to change, or references in cases were references are parsed as
 arguments to a functions.
 
-
+In fine, the \borrowChecker{} is not currently working as intended and due to this
+issue the project does not deliver on its objective to provide memory safety without
+the use of a garbage collector. Further more, due to the issues with the
+\borrowChecker{} the compiler chain (see section~\ref{sec:architecture}) currently
+causes some valid programs to not compile as intended.

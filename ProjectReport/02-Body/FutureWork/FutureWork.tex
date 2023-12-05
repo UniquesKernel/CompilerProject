@@ -1,0 +1,60 @@
+\section{Future Work}
+\label{sec:FutureWork}
+
+Considering the results as laid out in Section~\ref{sec:Discussion}; what work is left
+unfinished and what else can the be added to the scope of the project in the future?
+For a good overview of the possible future work let's split this into three sections;
+unfinished work, feature work and tooling.
+
+\subsubsection{Unfinished Work}
+\label{sec:unfinished}
+
+When looking strictly at the objectives of the project, the \borrowChecker{} is the
+single largest missing piece of work. To fully complete the project's objective the
+current issues with the \borrowChecker{} needs to be fixed. 
+
+Further, while not strictly related to the objectives of the project, having the
+ability to read inputs at runtime, is a major missing feature when considering the
+current state of the project.
+
+\subsubsection{Feature Work}
+\label{sec:feature}
+
+\lang{} is a very minimalistic language and so it lacks many features that is
+currently taken for granted in many languages, amoung these features are loops,
+arrays, and ways to combine associated data types, like algebraic types like
+\texttt{haskell} or structs like \texttt{C}.\\
+
+\lang{} currently lack any support for heap allocated memory which is a very powerful
+feature of most modern programming languages. The inclusion of more data types like
+fixed size array is also a natural next step for \lang's features. With heap
+allocations come a whole new set of rules for the \borrowChecker{} which it would
+need to be extended to handle. \\
+
+To help better organize the code base adding a way of supporting multiple files and
+importing functions and other future features into the files where they are relevant
+would be a huge step when it comes to new features. \\
+
+The creation of a standard library, would help \lang{} significantly as it would help
+trivialize many mundane operations like working with arrays, lists and maps. \\
+
+Error handling is is a concept that \lang{} does not support at all, currently.
+Adding some kind of stucture to handle errors, in the form of monads or exception
+handling would be a crucial feature, and with \lang's focus on explicitness and
+safety it is also a very natural concept to add to the language at large.
+
+One feature related to the use of LLVM which would act as a natural extension to its
+current use would be to allow \lang{} to use its own runtime setup rather than the
+setup provided by \gcc{} which would allow PIE (see section~\ref{sec:Output}) to be
+re-enabled which would be very desirable when the language is extended to allow user
+input as it would help prevent certain vulnerabilities.
+
+\subsubsection{Tooling} \label{sec:tooling}
+
+Any language and compiler needs great tooling to support the ease of using the
+language. Language like Rust have the Cargo tool, \texttt{C/C++} have tools like make
+and cmake, \texttt{haskell} have the stack and cabal tools. When considering any
+future work, tools like these are therefor natural to consider for \lang{} to help
+manage dependencies, install dependencies and configure the compiler, with debugging,
+release, and optimization flags. 
+

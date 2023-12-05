@@ -11,17 +11,18 @@ LLVM works with three important components: a Builder, a Context and a Module. T
 When the Builder creates a program instruction, it usually returns an llvm::Value type. It is possible to store these in a symbol table and access them later, but because LLVM creates a static single assignment IR, it is not possible to change the value of the stored variables. To get around this we create an allocation instance (llvm::AllocaInst), which can hold an llvm::Value. We can then store new llvm::Values in the same llvm::AllocaInst, obtaining mutable variables.
 
 \paragraph*{Functions}
-When using the Builder in LLVM to generate functions declarations the process of
-defining a function in LLVM is eerily similar to how one would expect it to work the
-level of assembly code. Generate first the function using the llvm::Function::Create
-method and then in order push your parameters on to the stack, then push all your
-instructions on to the stack. When calling the function the same process applies,
-here we simply collect the input values and the use llvm::CreateCall to create a
-function call to whatever function name we have just parsed. \\
 
-while LLVM takes care of generating the necesarry IR code and GCC uses this to
-generate the correct assembly and machine code it is interesting to not the
-similarity in working with LLVM on an abstracted level and working with subrutines on
+When using the Builder in LLVM to generate function declarations the process of
+defining a function in LLVM is similar to how one create subroutines it in assembly
+code. Generate first the function using the llvm::Function::Create method and then in
+order push your parameters on to the stack, then push all your instructions on to the
+stack. When calling the function the same process applies, here we simply collect the
+input values and the use llvm::CreateCall to create a function call to whichever
+function one intends to call. \\
+
+While LLVM takes care of generating the necesarry IR code and GCC uses this to
+generate the correct assembly and machine code it is interesting to note the
+similarities in working with LLVM on an abstracted level and working with subroutines on
 assembly level to generate the same effects as a high level function call.
 
 

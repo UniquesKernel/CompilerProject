@@ -2,7 +2,7 @@
 \label{sec:FutureWork}
 
 Considering the results as laid out in Section~\ref{sec:Discussion}; what work is left
-unfinished and what else can the be added to the scope of the project in the future?
+unfinished and what else can then be added to the scope of the project in the future?
 For a good overview of the possible future work let's split this into three sections;
 unfinished work, feature work and tooling.
 
@@ -22,8 +22,8 @@ current state of the project.
 
 \lang{} is a very minimalistic language and so it lacks many features that is
 currently taken for granted in many languages, amoung these features are loops,
-arrays, and ways to combine associated data types, like algebraic types like
-\texttt{haskell} or structs like \texttt{C}.\\
+arrays, and ways to combine associated data types, like algebraic types like in
+\texttt{Haskell} or structs like in \texttt{C}.\\
 
 \lang{} currently lack any support for heap allocated memory which is a very powerful
 feature of most modern programming languages. The inclusion of more data types like
@@ -41,11 +41,11 @@ trivialize many mundane operations like working with arrays, lists and maps. \\
 Error handling is is a concept that \lang{} does not support at all, currently.
 Adding some kind of stucture to handle errors, in the form of monads or exception
 handling would be a crucial feature, and with \lang's focus on explicitness and
-safety it is also a very natural concept to add to the language at large.
+safety it is also a very natural concept to add to the language at large.\\
 
 One feature related to the use of LLVM which would act as a natural extension to its
 current use would be to allow \lang{} to use its own runtime setup rather than the
-setup provided by \gcc{} which would allow PIE (see section~\ref{sec:Output}) to be
+setup provided by the \gcc{} which would allow PIE (see section~\ref{sec:Output}) to be
 re-enabled which would be very desirable when the language is extended to allow user
 input as it would help prevent certain vulnerabilities.
 
@@ -53,7 +53,7 @@ input as it would help prevent certain vulnerabilities.
 
 Any language and compiler needs great tooling to support the ease of using the
 language. Language like Rust have the Cargo tool, \texttt{C/C++} have tools like make
-and cmake, \texttt{haskell} have the stack and cabal tools. When considering any
+and cmake, \texttt{Haskell} have the stack and cabal tools. When considering any
 future work, tools like these are therefor natural to consider for \lang{} to help
 manage dependencies, install dependencies and configure the compiler, with debugging,
 release, and optimization flags. 

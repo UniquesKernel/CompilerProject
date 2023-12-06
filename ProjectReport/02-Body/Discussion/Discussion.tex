@@ -8,9 +8,48 @@ introducing new ones. \\
 
 In this context, and considering the project's outcomes in relation to the
 pre-established objectives detailed in section~\ref{sec:Objectives}, this section
-aims to summarize the achievements of the project. Specifically, it examines the
-development of a custom programming language and compiler, designed for type safety
-and memory safety without the use of a garbage collector. \\
+aims to summarize the current state of the \lang{} compiler, how its current feature
+set solves the projects initial objectives and how future features and tools would
+help in creating a compiler and language design that further helps solve the initial
+objective.
+
+\paragraph*{Current State of \lang{}} \hfill 
+
+The project was initially looking to create design a custom language, which would
+have an explicit syntax, type safety and memory safety at compile time. \lang's
+current state provides must of the features to support a proto-type language for
+solving these issues. \\
+
+It provides all the stable features that one has come to expect for a modern
+programming language; variable, control-flow structure such as if-else expressions,
+functions and the ability to create loops through recursive functions. \\
+
+The \lang{} compiler enforces to features that ensures some form of explicitness in
+\lang{} programs; static typing and immutability. Since \lang{} is statically typed;
+all variables and functions are required to have explicit types provided at compile
+time - this creates codes in which there can never be any doubt about the type of
+data which is being used at any one point in time. The \lang{} compiler also enforces
+immutablity by default, leading to a language where data cannot change unexpectedly;
+the syntax requires that the intend to mutate data be explicit in the code of any
+\lang{} program. These two features help solve the first objective of the project,
+besides the construction of a new language and compiler.\\
+
+Borrow checking was supposed to be \lang's attempt at ensuring that the language
+would be memory safe despite not having a garbage collector and providing access
+system memory through references\footnote{which are a kind of pointer}. It would do
+this by ensuring that certain patterns are followed that would ensure that common
+pitfalls like null pointers, dangling pointers, double free errors etc. could not
+occure thus making the language memory safe without using a garbage collector to
+clean up memory.
+
+Unfortunately the \borrowChecker{} still has certain issues which means \lang{} can't
+yet deliver on its objective to be memory safe, the unit testing of the
+\borrowChecker{} revealed the issues where it some adjustments to the
+\borrowChecker's handling and updating of its internal tables might be suffient for
+\lang{} to deliver on its memory safety objective.
+
+\paragraph*{Future State and its how it furthers the project objectives} \hfill
+
 
 
 \newpage

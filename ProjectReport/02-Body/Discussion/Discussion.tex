@@ -1,55 +1,166 @@
 \section{Discussion}
 \label{sec:Discussion}
 
+The development of \lang{} and its compiler has largely been a heuristic process
+beginning from a state of unfamiliarity with the compilation process and steadily
+building the compiler in small increments while applying newly aquired knowledge to
+new features. This section is largely dedicated to reflecting on the project, its
+results, and the decisions made during development by using the power of hindsight. 
+
+\subsection{The Project}
+
+The Project manages to deliver on most of its objectives, but in hindsight a strong
+case can be made that the decision to attempt to build out a compiled programming
+language, while also implementing a \borrowChecker{} was too ambitious and that focus
+should have been kept on type checking, immutability and new language features. \\
+
+To justify this claim let's take a look at some of the decisions taken during the
+project, their impact and why they end up obscuring that the implementation of a
+\borrowChecker{} is premature to the projects state.
+
+\subsubsection{Borrow Checking}
+
+Early in the project an attempt to write a custom \lexer{} and \parser{} was
+made, which turned out to be very complicated and impeding to the progress of the
+overall project. A decision was made to use tools, such as \lexerGen{} and
+\parserGen{}, to generate the \lexer{} and the \parser{} from specification files.
+This significantly speed of the process of parsing the source code into an \ast{}
+which is the fundamental structure for any further work in interpreting or compiling
+a programming language. This switch turned out to be very beneficial as language
+syntax could now be added very quickly allowing our focus to be turned to code
+generation rather than struggling with syntax implementation. \\ 
+
+Next comes a decision to use the visitor pattern to effectively walk the newly
+generated \ast{}, this decision turns out to be invaluable, as it modulized the code
+to an extend where new features such as the \typeChecker, \borrowChecker{} and
+\codeGen{} could be added in a non intrusive way, that didn't require changing the
+\ast{} and each visitor implementation was loosely coupled from the the others. \\
+
+Coming back to the heuristic nature of development, after the implementation of the
+\codeGen. The next logical step, seems then to add type checking and borrow checking
+to the compiler infastructure, a task that has now been trivialized by the visitor
+pattern. While implementing the \borrowChecker{} is becomes apparent quite late in
+the development process that many of the required lanaguage features necessary for
+the \borrowChecker{} to add value to the language and the compiler - are missing. \\
+
+While the \borrowChecker{} adds a little bit of value to the current state of \lang{}
+in hindsight much of the value of the \borrowChecker{} comes from it's ability to
+prevent issues when dealing with heap allocated memory and concurrency, not when
+dealing with stack allocations as this is automatically clean up when exiting any
+scope. In hindsight many of the restrictions added to stack based memory comes as a side
+effect to the restrictions that the \borrowChecker{} puts on heap allocated memory. \\
+
+The time spent on implementing the \borrowChecker{} would have been better
+spent implementing language features which could benefit from the use of a
+\borrowChecker{} later, as \lang{} matures as a language.
+
+\subsubsection{Type Checking and Immutability}
+
+Unlike the \borrowChecker{} a more neuanced argument can be made for the
+implementation of the \typeChecker{} and Immutability in \lang. On one side the
+\typeChecker{} much like the \borrowChecker{} detracts from the development of
+\lang{} which takes time away from adding much needed features such as the ability
+to read and write to standard output and standard input as well as features such as
+arrays, strings and heap allocations, which when mature better justify the need for a
+\typeChecker{} and a \borrowChecker. \\ 
+
+The argument in favor of the \typeChecker{} is instead that it helps keep the
+language stable as it evolves. The language was always intended to be a statically
+and strongly typed language and so an argument can be made that evolving the
+\typeChecker{} in parallel with each language feature ensures that each new feature
+correctly interact with already existing features in the inteded manner. It can be
+speculated that type checking is an integral enough part of a language that adding it
+afterwards becomes too complicated as the scope of interactions between different
+types is more difficult to handle as an after through. \\ 
+
+\todo{Is immutability interesting here?}
+
+\todo{Is Code Generation interesting?}
+
+\subsubsection{Code Generation and LLVM}
+
+Code generation is a non trivial task, to convert a high level representation like an
+\ast{} in assembly or machine level code would require deep knowledge of the targeted
+architecture and even more modulization if the code generation needs to be platform
+agnostic. The choice here to leverage LLVM as a code generation backend is an
+obvious choice here as it keeps the focus on the implementation logic rather than on
+the complexity of low-level gode generation. Leading to vastly faster development of
+new language features. Most modern compilers today leverage LLVM for this task, with
+the exception of the \texttt{Haskell} compiler and even so it lets you swap in the
+LLVM code generator backend instead of its own native backend should it be necessary.
+
+\begin{lstlisting}[
+  language=c++,
+  frame=single,
+  numbers=left,
+  caption={Code snippet showing how to use llvm to assign values to variables.},
+  label={lst:assignment}
+  ]
+  ...
+  llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
+
+  llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(
+      parentFunction, variableName, getLLVMType(variable->getType()));
+  ...
+  Builder->CreateAlignedStore(llvm_result, varAllocation, llvm::Align(8));
+  ...
+\end{lstlisting}
+
+The code snippet Listing~\ref{lst:assignment} shows in a simplified way how LLVM can
+be used to generate code when dealing with the allocation of variables.
+Here we use the LLVM \texttt{Builder} to retrieve the function to which the variable
+belongs, we create an allocation instruction, with the variables, parent function,
+variable name and variable type. Lastly, we store a value in our variable and we can
+even specify how the variable should be aligned in memory.\\
+
+The LLVM backend then takes care of making sure that the appropriate code is
+generated based on our instructions.
+
+If the project was writting its own code generator from scratch it would have been
+vastly more time consuming to do so, as intimate knowledge is needed about the
+targeted architecture and it would have been impossible to write a platform agnostic
+code generator capable of generating assembly instructions for a wide range of
+architectures. Thus the choice to use LLVM has saved a significant amount of time and
+without doubt ensured more reliable code generation. \\
+
+The downside of LLVM is arguably its vast and very complex API which hides away the
+process of generating code, which depending on a projects need might not be desirable
+but unless a code generator is the code feature of the project this is not so much a
+drawback as an advantage. The really issue is that due to the vastness of the API
+it's impossible to learn all the features that LLVM has to offer which often means
+that as one reads through its documentation, one often stumbles upon features that
+immediately antiquates once implementations. \\
+
+An example is they way scopes are handled by the \lang{} compiler which is very
+manual insertion and removal of value in a stack and map based variable. Later in the
+development it seems that LLVM itself has a way of implementing a symbol table to
+track symbols and scopes. By the time one discovers these new features it's
+impossible to swap to using this new feature without rewritting the code generator.
+
+\subsubsection{Testing}
+
+\todo{Is this necessary - how much should be added here?}
+
+\subsection{The Process}
+
 The development of a programming language and compiler is inherently an iterative
 task, with opportunities for continual optimization and improvement. As is typical in
 software development, each iteration addresses existing bugs while potentially
 introducing new ones. \\
 
-In this context, and considering the project's outcomes in relation to the
-pre-established objectives detailed in section~\ref{sec:Objectives}, this section
-aims to summarize the current state of the \lang{} compiler, how its current feature
-set solves the projects initial objectives and how future features and tools would
-help in creating a compiler and language design that further helps solve the initial
-objective.
+\lang{} was developed with a using a heuristic MVP (minimum viable product) process -
+developing the compiler and language in small iterations each time adding the
+smallest possible feature to solve each objective. \\
 
-\paragraph*{Current State of \lang{}} \hfill 
+Due to the lack of initial domanin knowledge and a need for some structured approach
+to development, an initial roadmap created, with the simplest percieved features
+planned for the beginning of the roadmap and more complex features at the end with
+the possiblity of adjusting the roadmap as new knowledge was aquired. 
 
-The project was initially looking to create design a custom language, which would
-have an explicit syntax, type safety and memory safety at compile time. \lang's
-current state provides must of the features to support a proto-type language for
-solving these issues. \\
-
-It provides all the stable features that one has come to expect for a modern
-programming language; variable, control-flow structure such as if-else expressions,
-functions and the ability to create loops through recursive functions. \\
-
-The \lang{} compiler enforces to features that ensures some form of explicitness in
-\lang{} programs; static typing and immutability. Since \lang{} is statically typed;
-all variables and functions are required to have explicit types provided at compile
-time - this creates codes in which there can never be any doubt about the type of
-data which is being used at any one point in time. The \lang{} compiler also enforces
-immutablity by default, leading to a language where data cannot change unexpectedly;
-the syntax requires that the intend to mutate data be explicit in the code of any
-\lang{} program. These two features help solve the first objective of the project,
-besides the construction of a new language and compiler.\\
-
-Borrow checking was supposed to be \lang's attempt at ensuring that the language
-would be memory safe despite not having a garbage collector and providing access
-system memory through references\footnote{which are a kind of pointer}. It would do
-this by ensuring that certain patterns are followed that would ensure that common
-pitfalls like null pointers, dangling pointers, double free errors etc. could not
-occure thus making the language memory safe without using a garbage collector to
-clean up memory.
-
-Unfortunately the \borrowChecker{} still has certain issues which means \lang{} can't
-yet deliver on its objective to be memory safe, the unit testing of the
-\borrowChecker{} revealed the issues where it some adjustments to the
-\borrowChecker's handling and updating of its internal tables might be suffient for
-\lang{} to deliver on its memory safety objective.
-
-\paragraph*{Future State and its how it furthers the project objectives} \hfill
-
-
+It's arguably the only start development, in an area in which one does not have any
+expertise or knowledge. Perhaps more research was needed before starting development,
+but its arguable the better way of gaining knowledge is to begin development and if
+necessary leverage newly gained experience to fix past mistakes and to inform future
+decisions. \\ 
 
 \newpage

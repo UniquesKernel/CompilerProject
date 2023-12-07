@@ -7,8 +7,6 @@ left to right pattern. It uses two tables a \texttt{symbolTable} and a
 \texttt{referenceTable} to keep track of the scope and the
 references of each variable.
 
-\newpage
-
 \begin{lstlisting}[
   frame=single,
   numbers=left,
@@ -25,7 +23,7 @@ references of each variable.
 
 Consider the example program (see Listing~\ref{lst:BorrowCheckerCode}) and the
 accomanying subtree (see Figure~\ref{fig:astBorrowCheckerDesignCode}). The borrow checker visits each node
-in a depth-first order and at each point it determines based on \texttt{symbolTable}
+in a depth-first order and at each point it determines based on the \texttt{symbolTable}
 and the \texttt{referenceTable} if the
 program is in compliance with the ownership, borrowing and reference rules (see
 section~\ref{par:Ownership}).
@@ -70,12 +68,13 @@ section~\ref{par:Ownership}).
 \end{figure}
 
 In our example prgram, the \borrowChecker{} will add the \texttt{x} variable to the
-symbol table. When it creates a reference to \texttt{x}, it will look up \texttt{x} to ensure
-it is an existing variable that can be referenced, then it will store \texttt{y} in the symbolTable as
+\texttt{symbolTable}. When it creates a reference to \texttt{x}, it will look up \texttt{x} to ensure
+it is an existing variable that can be referenced, then it will store \texttt{y} in
+the \texttt{symbolTable} as
 well as a reference in the \texttt{referenceTable} to determine if future
 references are legal to perform. 
 Once it reaches the last instruction it will look up \texttt{x} in the
-symbolTable, which is fine, but it will determine from the
+\texttt{symbolTable}, which is fine, but it will determine from the
 \texttt{referenceTable} that a mutable reference already exists and thus the last
 instruction is an illegal operation as immutable and mutable references cannot
 exist at the same time (see Section~\ref{par:Ownership}) and inform

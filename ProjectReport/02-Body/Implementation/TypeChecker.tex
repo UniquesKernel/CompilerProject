@@ -1,7 +1,23 @@
 \subsection{Type Checker}
 \label{typecheckImpl}
-The type checker implements a visitor, as described in section \ref{sec:typeCheckerDesign}. To the types available are \textit{int}, \textit{float}, \textit{char} and \textit{bool}. To keep track of the type of each expression, the base expression (that all expressions inherit from) was given an attribute "type", with public get and set functions. The types where denoted with string types. It was considered using an Enumerator, but in order to get usable error messages from the \lang{} compiler, it was necessary to have the types as string anyway. Having the types as strings also allows for easy expansion of the number of permitted types, as only terminal expressions determines type.\\
-Variables are handled with a symbol table that maps the variable identifier to its type. As it is possible to have several variables with the same name if they are in different scopes, the symbol table is actually implemented as a stack of maps, each corresponding to  a single scope. This is explained in more detail in section \ref{sec:CodeGenImplement}, as it is the same technique used in Code Generation.\\
+
+The type checker implements a visitor, as described in section
+\ref{sece:Design}. The types available are \textit{int}, \textit{float},
+\textit{char}, \textit{bool}, \&\textit{int}, \&\textit{float}, \&\textit{char} and
+\&\textit{bool}. To keep track of the type of each expression, the base expression (that all expressions inherit from) was given an attribute "type", with public get and set functions. The types where denoted with string types. It was considered using an Enumerator, but in order to get usable error messages from the \lang{} compiler, it was necessary to have the types as string anyway. Having the types as strings also allows for easy expansion of the number of permitted types, as only terminal expressions determines type.\\
+
+Variables are handled with a symbol table that maps the variable identifier to its type. As it is possible to have several variables with the same name if they are in different scopes, the symbol table is actually implemented as a stack of maps, each corresponding to  a single scope. This is explained in more detail in section \ref{sec:CodeGenImplement}, as it is the same technique used in Code Generation.
+
 \subsubsection{Type in AST}
-The code generator and borrow checker need to know the types of certain expressions, which poses a small problem. Most expressions do not know what their type is. I.e. a binary expression knows only which two expressions to work on, but not what type they are. Only terminal expressions know their own type. In order for the borrow checker and code generator to work, each expression therefore must be given a type. This task falls to the typechecker. As it checks that the type safty is kept, it calculates the type of every expression, and, once certain that the expression does not violate type safety, sets the type field in the expression to the calculated type.\\
-This introduces a bit of coulpling, as the later modules depend on the typechecker setting the types in the AST, but the alternative is to calculate the types when creating the tree, and again in the typechecker, it was decided that a slight coulping was preferable to this double work. It is of coures still possible to use the modularity that the visitor pattern gives, as one can easily still swap the typechecker with another, as long as the new typechecker also writes the types to the AST.
+
+The \codeGen{} and \borrowChecker{} need to know the types of certain expressions,
+which poses a small problem. Most expressions do not know what their type is. I.e. a
+binary expression knows only which two expressions to work on, but not what type they
+are. Only terminal and assignment expressions know their own type. In order for the \borrowChecker{} and \codeGen{} to work, each expression therefore must be given a type. This task falls to the \typeChecker{}. As it checks that the type safty is kept it calculates the type of every expression, and, once certain that the expression does not violate type safety, sets the type field in the expression to the calculated type.\\
+
+This introduces a bit of coupling, as the later modules depend on the \typeChecker{}
+setting the types in the AST, but the alternative is to calculate the types when
+creating the tree, and again in the \typeChecker, it was decided that a slight
+coulping was preferable to this double work. It is of course still possible to use
+the modularity that the visitor pattern gives, as one can easily still swap the
+\typeChecker{} with another, as long as the new \typeChecker{} also writes the types to the AST.

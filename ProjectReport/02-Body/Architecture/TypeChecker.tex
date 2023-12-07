@@ -1,7 +1,7 @@
 \subsubsection{Type Checker}
 
 The \typeChecker{} is responsible for the first phase of the \static. This involves
-checking \ast{} for type consistency. Using a visitor pattern and a bottom-up
+checking the \ast{} for type consistency. Using a visitor pattern and a bottom-up
 approach, it verifies the type of each node in the \ast{} and ensures that the types
 are consistent across the program. This is achieved by traversing the AST and
 verifying that the expected type of each node is consistent with the type of its
@@ -11,3 +11,6 @@ Once the \typeChecker{} verifies the consistency of a node, it annotates the nod
 with the expected type. This is done to facilitate the \codeGen{} component, which
 uses the annotated type information to generate the correct intermediate
 representation of the source code.
+
+\todo{Make list of type checker rules}
+

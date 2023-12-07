@@ -1,57 +1,71 @@
 \newpage
 \section{Requirements}
 \label{sec:Requirements}
-The compiler will compile a custom programming language, that is inspired by Rust.
 
-Requirements for the compiler, and accompanying language is listed below, using MoSCoW prioritisation:
+To meet the objectives of section~\ref{sec:Objectives}, the compiler must meet
+certain requirements as listed in the this section.
 
-\subsection{Language requirements} %functional
+\subsection{Language requirements} 
 
-\begin{itemize}
-\item The language \textbf{must} be Turing complete
-\begin{itemize}
-\item The language \textbf{must} contain loops
-\begin{itemize}
-\item The loops \textbf{could} be recursive functions
-\end{itemize}
-\item The language \textbf{must} contain variables
-\begin{itemize}
-\item The variables \textbf{could} be immutable, unless explicitly made mutable
-\end{itemize}
-\item The language \textbf{must} allow conditional code execution
-\item The language \textbf{must} be able to do basic arithmetic\footnote{Addition, subtraction, multiplication, division and modulus}
-\end{itemize}
-\item The language \textbf{must} contain functions
-\item The language \textbf{must} be strongly typed\footnote{Strongly typed: Variable types does not change, except by explicit casting} and statically typed\footnote{Statically typed: All variables must have an explicit type at initialisation}
-\item The language \textbf{must} allow an output
-\item The language \textbf{must} support the following type primitives:
-\begin{itemize}
-\item 32-bit Integer
-\item 64-bit Floating point
-\item 8-bit Character
-\item Boolean
-\end{itemize}
-\item The language syntax \textbf{must} follow the language specification in appendix
-  \ref{sec:appA} and \ref{sec:appB}
-\item The language \textbf{should} have memory-management with Rust inspired borrow checker
-\item The language \textbf{could} allow a runtime input
-\item The language \textbf{could} have error handling
-\item The language \textbf{could} have native array support
-\item The language \textbf{could} allow access to system resources
-\item The language \textbf{wont} have classes
-\item The language \textbf{wont} have tooling/ecosystem/debugger
-\end{itemize}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|l|}
+\hline
+\rowcolor{gray!50}
+\textbf{Category} & \textbf{Requirements} \\
+\hline
+Must & The language must be Turing complete \\
+     & The language must contain loops \\
+     & The language must contain variables \\
+     & The language must allow conditional code execution \\
+     & The language must be able to do basic arithmetic \\
+     & The language must contain functions \\
+     & The language must be strongly and statically typed \\
+     & The language must allow an output \\
+     & The language must support 64-bit Integer \\
+     & The language must support 64-bit Floating point \\
+     & The language must support 8-bit Character \\
+     & The language must support Booleans \\
+     & The language syntax must follow the language specification (see
+     Appendix~\ref{sec:appB}) \\
+\hline
+Should & The language should have memory-management with a \texttt{Rust} inspired borrow checker \\
+       & The variables could be immutable, unless explicitly made mutable \\
+\hline
+Could & Loops could be recursive functions \\
+     & The language could allow a runtime input \\
+     & The language could support runtime error handling \\
+     & The language could have native array support \\
+     & The language could allow access to system resources \\
+\hline
+Won't & The language won't have classes \\
+\hline
+\end{tabular}
+\caption{Language Requirements Sorted by MoSCoW Method}
+\end{table}
 
 \subsection{Compiler requirements} %non functional
 
-\begin{itemize}
-\item Compiler \textbf{must} be able to compile cross-platform
-\item Compiler \textbf{must} crash on invalid inputs
-\item Compiler \textbf{must} pass all test cases
-\item Compiler \textbf{must} generate an intermediary language from an AST
-\item Compiler \textbf{should} have clear error messages
-\item Compiler \textbf{wont} have intuitive CLI
-\item Compiler \textbf{wont} support several national languages
-\end{itemize}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|l|}
+\hline
+\rowcolor{gray!50}
+\textbf{Category} & \textbf{Requirements} \\
+\hline
+Must & Compiler must be able to compile cross-platform \\
+     & Compiler must crash on invalid inputs \\
+     & Compiler must pass all test cases \\
+     & Compiler must generate an intermediary representation (IR) from an AST \\
+\hline
+Should & Compiler should have clear error messages \\
+\hline
+Won't & Compiler won't have intuitive CLI \\
+      & Compiler won't support build tuning through compiler flags \\
+      & Compiler won't have tooling/ecosystem/debugger \\
+\hline
+\end{tabular}
+\caption{Compiler Requirements Sorted by MoSCoW Method}
+\end{table}
 
 \newpage

@@ -3,17 +3,14 @@
 
 \lang{} is an expression based language. Every language construct, except function
 declarations return a value and can be stored in a variable for later use. To achieve
-our three main goals of clarity, type safety, and memory safety \lang{} is designed
+our three main goals of clarity, type safety, and memory safety, \lang{} is designed
 to require explicit typing, immutability by default and to enforce the same
-borrowing and reference rules as the Rust programming language in so far as they
-cover the current features of \lang\footnote{Example: \lang{} currently does not
-support heap allocations therefore the principles of Rust's borrowing and reference
-system pertaining to such allocations are not yet enforced by \lang{}}.\\
+borrowing and reference rules as the \texttt{Rust} programming language.\\
 
 Due to time constraints \lang{} does not support multiple files, this constraint
 influences the way \lang{} is designed. Unlike scripting languages like
 \texttt{Python} and \texttt{JavaScript}, which are capable of running its code without
-a dedicated main function \lang{} organizes its code similarly to procedural
+a dedicated main function \lang{} organizes its code similar to procedural
 languages like \texttt{C} in which a main function is required for a standalone
 program. \\
 
@@ -26,7 +23,7 @@ using \lang{} as this would lead to an unmanagably large file.
 \label{sec:Grammar}
 
 \lang{} is quite simple, and it's features are heavy inspired by the
-Rust language\cite{RUST}, however it is also influenced by its limited feature set and
+\texttt{Rust} language\cite{RUST}, however it is also influenced by its limited feature set and
 by the objective of the language as set forth in section~\ref{sec:Objectives}. This
 section shall focus on the language design elements which are the most important for
 \lang{}.
@@ -88,7 +85,7 @@ cannot be changed after it's initialization.
   }
 \end{lstlisting}
 
-By forcing developers to be explicit about their intend to change data, \lang{}
+By forcing developers to be explicit about their intend to change data \lang{}
 achieves higher clarity and safety in its code. \\ 
 
 A developer in \texttt{C} can create a variable and it might or might not change at
@@ -103,7 +100,7 @@ runtime and can't do so by accident.
 
 In order to ensure memory safety without the use of a garbage collector as described
 in section~\ref{sec:Objectives} \lang{} enforces the same ownership, borrowing and
-reference rules of the Rust language, to the degree in which it is relevant to \lang.
+reference rules of the \texttt{Rust} language.
 
 \subparagraph{Onwership rules:}
 \begin{enumerate}
@@ -154,7 +151,7 @@ fn main(): int{
 
 Scopes work like one would expect in most programming languages, as \texttt{x} comes into
 scope at line 6 and goes out of scope at line 9. This is as one would expect of
-variables and well in line which is well in-line with rules 1 and 3 of the ownership
+variables and well in line with rules 1 and 3 of the ownership
 rules. \\
 
 Lines 11-12, however, shows something interesting regarding the constraints imposed
@@ -190,14 +187,14 @@ fn main(): int {
 \end{lstlisting}
 
 If one wishes to parse a variable to a function without moving the ownership into the
-function, then we can instead parse a reference to the function instead. This is
+function, then we can instead parse a reference of the varaible to the function instead. This is
 called borrowing and it allows us to parse into the function a reference to the
-memory location of out variable, which the compiler can follow once it needs to value
-of the reference. For all practical purposes references are just pointers, but they
-are governed by special rules and just as with variables they are mutable unless
+memory location of out variable, which the function can follow once it needs the value
+of the its input argument. For all practical purposes references are just pointers, but they
+are governed by special rules and just as with variables they are immutable unless
 explicitly declared to be mutable. \\
 
-The use of references allows \lang{} to be very efficient in its use of memory
+The use of references allows \lang{} to be very efficient in its use of memory as
 duplication of variables aren't necessary. But it's important to understand that
 references do have some limitations in \lang{} as noted in \ref{par:borrowing}. \\
 
@@ -211,18 +208,4 @@ The second rule is more important for \lang{}, the requirement that references m
 always be valid means that functions cannot return references. This is because as per
 the rule of ownership a references goes out of bound when it goes out of scope, so if
 functions could return references it opens up the possiblity of dangling pointers
-which hold severe security issues if allowed.
-
-\subsubsection{Conclusion}
-\label{sec:LangDesignConlusion}
-
-In summarizing \lang{}'s design it achieves its objectives of clarity, type safety, and
-memory safety. Its insistence on explicit typing enhances code readability and error
-prevention, while default immutability ensures stability and predictability. Despite
-the single-file limitation, \lang{}'s adherence to Rust's borrowing and ownership
-principles significantly bolsters memory management. This language design, therefore,
-not only aligns with the broader goals outlined in section~\ref{sec:Objectives} but
-also sets a foundation for reliable and efficient coding practices.
-
-The subsequent sections will explore the design of the compiler on a technical level
-as well as it's implementation.
+which can cause serious security issues if allowed.

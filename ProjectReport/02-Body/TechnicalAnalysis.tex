@@ -1,9 +1,9 @@
 \section{Technical Analysis}
 \label{sec:TechAnalysis}
 
-On the topic of technologies, as the \lang{} compiler borrows many features from the
-Rust language, it's worth taking a look at the Rust compiler to see how Rust has
-organized its compiler architecture. 
+Because the \lang{} compiler borrows many features from the
+\texttt{Rust} language, it's worth taking a look at the \texttt{Rust} compiler to see
+how \texttt{Rust} has organized its compiler architecture. 
 
 \begin{figure}[ht]
   \centering
@@ -42,7 +42,7 @@ organized its compiler architecture.
       \fi
     }
   \end{tikzpicture}
-  \caption{Diagram architecture of the Rust Compiler}
+  \caption{Diagram architecture of the \texttt{Rust} Compiler}
 \end{figure}
 
 On a high level this is a very typical architecture for a compiler\cite{GEEK}. The
@@ -52,9 +52,9 @@ might be useful for implementing the specific components.
 
 \subsection{Invocation}
 
-This component deals primarily with the configuration of the Rust compiler. It's a
-step where the Rust compiler is invoked on some source code, typically through the
-\texttt{cargo} CLI tool\cite{RUST-COMPILER}. 
+This component deals primarily with the configuration of the \texttt{Rust} compiler. It's a
+step where the \texttt{Rust} compiler is invoked on some source code, typically through the
+''Cargo'' CLI tool\cite{RUST-COMPILER}. 
 
 This phase does not directly influence the objectives of \lang{} and so it will not
 be included due to time constraints. It is, however, worth noting the importance of
@@ -65,7 +65,7 @@ future work after the rest of the compiler phases is fully implemented.
 
 The \lexer{} is hugely important for any compiler as it is responsible for
 reading the source code and producing the necessary tokens for the parser to later
-construct the \ast{} representation of the program. The Rust compiler implements its
+construct the \ast{} representation of the program. The \texttt{Rust} compiler implements its
 own lexical analyser from scratch, which after some experimentation is not too
 difficult a task to accomplish as this can be done using a character stream along
 with a list of regular expressions to search for each kind of token in the source
@@ -73,22 +73,23 @@ code. This would give great control of the output of the lexer ensuring a perfec
 match to input required by the parser. 
 
 The issue here is that the development of \lang{} is under some time constraints so
-to avoid the lengthy process of writing and maintaining a \lexer{} from the buttom up
+to avoid the lengthy process of writing and maintaining a \lexer{} from the bottom up
 it's faster and safer to use a tool to generate the \lexer{}. One such tool is the
 \lexerGen{} tool, which is a tool that is configured by providing the regular
-expressions to search for along with the tokens defined in the parser, it is then
-able to generate a token stream containing the specified tools. 
+expressions to search for along with the tokens defined in the parser. \lexerGen{} then
+generates a \lexer{} capable of outputting a token stream which meets the provided
+specifications. 
 
 \subsubsection{Flex}
 
-\lexerGen{} is a tool for generating \textit{lexers} or \textit{scanners} and is
-often paired with \parserGen{} to produce \parser{}s and interpreters. It's an
-open-source project and is highly valued for its speed and efficiency in text
+\lexerGen{} is a tool for generating lexers or scanners and is often paired with
+\parserGen{} (see Section~\ref{sec:bison}) to produce parsers and interpreters.
+It's an open-source project and is highly valued for its speed and efficiency in text
 processing. \\
 
 The use of \lexerGen{} for the \lang{} project streamlines the process of lexical
 analysis and makes it simple to create or alter the definition of lexemes. Its
-compatibility with \parserGen{} (see Section~\ref{sec:bison}) ensures seamless integration between the \lexer{} and
+compatibility with \parserGen{} ensures seamless integration between the \lexer{} and
 the \parser. Just as with \parserGen, the choice of \lexerGen{} is reinforced by its
 comprehensive documentation, active community support, and its proven track record in
 various software projects. This makes it a reliable and robust choice for the lexical
@@ -97,14 +98,15 @@ analysis phase of the \lang{} compiler.
 \subsection{Parser}
 \label{sec:techParser}
 
-The Rust language is build using a recursive decent parser, and just as with its
-\lexer{} Rust implements this from scratch\cite{RUST-COMPILER-SRC}. This is one of
+The \texttt{Rust} language is build using a recursive decent parser, and just as with its
+\lexer{} \texttt{Rust} implements this from scratch\cite{RUST-COMPILER-SRC}. This is one of
 the simplest forms of parsers to write by hand, but it requires quite a lot of
 maintainance if the nature of the syntax changes, or to add new features to a
-language. Writing the parser from scratch does give full control over the input
-and the output \ast{} generated by the \parser{}. For \lang{} this was explored
+language. Writing the parser from scratch does give full control over the required
+input stream
+and the outputted \ast{} generated by the \parser{}. For \lang{} this was explored
 by spending two weeks trying to implement a more flexible CLR(1) parser, but this was
-found to take away too much from the goal of the project. To keep the focus on the
+found to take too much time away from the goal of the project. To keep the focus on the
 objective of \lang{} it was instead decided that it would be better to use a tool to
 generate a \parser{}.
 
@@ -116,7 +118,7 @@ producing parsers for a variety of languages by supporting multiple parsing
 algorithms\cite{BISON}. 
 
 It works by defining tokens the \lexer{} should generate along with production rules
-following symantics similarly to the Backus–Naur form \cite{BNF}. It then generates a
+following symantics similarly to the Backus–Naur form\cite{BNF}. It then generates a
 parser which can parse the specified syntax.
 
 For the \lang{} compiler, \parserGen{} was employed because of its flexibility,
@@ -125,8 +127,7 @@ the grammar. Moreover, its robust and modular parser implementation can be easil
 extended. Notably, \parserGen{} integrates natively with \lexerGen{}, ensuring a
 cohesive interaction between the \lexer{} and \parser{}.
 
-When configured appropriately, \parserGen{} can generate a \textit{\parserType{}}
-parser using LALR(1), IELR(1), CLR(1), or GLR(1) parsing tables these are largly the
+When configured appropriately, \parserGen{} can generate parser using LALR(1), IELR(1), CLR(1), or GLR(1) parsing tables these are largly the
 same types of parsers but some are more general than others. Its comprehensive
 documentation and active community support further cemented its selection as the
 parser generator of choice for the \lang{} compiler.
@@ -134,14 +135,14 @@ parser generator of choice for the \lang{} compiler.
 \subsection{HIR and MIR lowering}
 \label{sec:hirmir}
 
-These steps effectively correspond to a \static{}. Rust, however, takes the approach
+These steps effectively correspond to a \static{}. \texttt{Rust}, however, takes the approach
 to convert it's \ast{} into different intermediate representations namely a
 high-level and medium-level intermediate representation, which it claims makes type
 checking and borrow checking simpler to perform in contrast to working directly on
 the \ast. 
 
 \lang{} doesn't implement these types of conversions and instead works directly with
-the \ast{} when doing type checking and borrow checking and collects these steps on a
+the \ast{} when doing type checking and borrow checking and collects these steps in a
 single architectural step, the \static. This is done to minimize complexity due to
 the limited objectives that \lang{} is attempting to achieve (see
 section~\ref{sec:Objectives}).
@@ -149,25 +150,19 @@ section~\ref{sec:Objectives}).
 \subsection{Code Generation}
 \label{sec:codeGenTech}
 
-Rust makes use of LLVM as its compiler backend to transform its intermediate
-representations into excutable files. LLVM allows us to transform out \ast{} into
+\texttt{Rust} makes use of LLVM as its code generator backend to transform its intermediate
+representations into excutable files. LLVM allows us to transform the \ast{} into
 LLVM IR code which it can then optimize and use to produce object files, executables
 etc. The alternative here is to write a compiler backend from scratch which would be
 incredibly difficult and prevent any form of cross-compilation unless the custom
-backend is written to support multiple different architecture. 
+backend is written to support multiple different architectures. \\
 
 \lang{} will also be using LLVM here for the convenience it provides in transforming
-\ast{} structures into low-level machine instructions. Unlike Rust, which uses LLVM
+\ast{} structures into low-level machine instructions. Unlike \texttt{Rust}, which uses LLVM
 to create it's own runtime, \lang{} will instead use LLVM to build object files which
-can utilize the \gcc{} compiler tool to tab into various standard librarys and
-runtime elements. Further, more by using the \gcc{} this allows \lang{} be linked and
+can utilize the \gcc{} tool to tap into various standard libraries and
+runtime elements. Furthermore, by using the \gcc{} this allows \lang{} to be linked and
 called inside \texttt{C}/\texttt{C++} code. It also allows \lang{} access to various
 optimizations provided by the \gcc.
-
-
-\subsection{Conclusion}
-\label{sec:techCon}
-
-\todo{??}
 
 \newpage

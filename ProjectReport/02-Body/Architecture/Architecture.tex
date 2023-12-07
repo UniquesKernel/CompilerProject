@@ -1,31 +1,18 @@
 \section{Architecture}
 \label{sec:architecture}
 
-On the topic of architecture, the \lang{} compiler is comprised of five primary
+The \lang{} compiler is comprised of five primary
 components: the \lexer, the \parser, the \static, the \codeGen{} and the \gcc. These
 components form a pipeline, where the output of one component is the input of the
 next; in tandem, they constitute the complete compilation process. \\
 
-\lang{} is a strong statically typed language with a focus on memory safety. It's
-explicit type system is designed to minimise confusion and obfuscation as each
-variable must be explicitly declared with a type. It's memory safety is heavily
-inspired by Rust, and is achieved through the use of a \borrowChecker{} which enforces
-a subset of Rust's borrow checking rules\footnote{The subset of rules enforced
-exclude memory on the heap as the language is yet to support heap allocations}. \\
-
 \input{02-Body/Architecture/CompilerProcess.tex}
 
-To facilitate the \static{} and the \codeGen{} in a way that is both efficient and
-modular, the \lang{} compiler is written using a visitor pattern. This pattern
-efficiently enables the modification of the \ast{} without requiring extensive
-modifications to the implementation of the \ast. Thus if changes are made to the
-\lang{} language, such as grammar or syntax modification, it seldom requires the
-\ast{} implementation to be modified. \\
-
-Once the code has passed the \static{}; the \codeGen{} will translate the \ast{} into
-an object file and the \gcc{} will link the object file and produce a machine excutable file.
-
-\newpage
+Considering the findings of section~\ref{sec:TechAnalysis},
+Figure~\ref{fig:CompilerProcess} shows a stripped down version of the \texttt{Rust}
+compiler process, containing only the bare essentials required to meet the
+requirements of section~\ref{sec:Requirements} and \ref{sec:Objectives}. The
+following sections goes more details about each phase of the \lang{} compiler.
 
 \input{02-Body/Architecture/Lexer.tex}
 \input{02-Body/Architecture/Parser.tex}

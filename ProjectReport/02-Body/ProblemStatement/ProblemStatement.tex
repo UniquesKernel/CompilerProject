@@ -3,39 +3,41 @@
 
 \subsection{Background}
 
-As of 2023, the top four most popular programming languages: Python, JavaScript,
-TypeScript, and Java permit, to various degrees, a loose or optional type
+As of 2023, the top four most popular programming languages: \texttt{Python},
+\texttt{JavaScript},
+\texttt{TypeScript}, and \texttt{Java}, permit to various degrees a loose or optional type
 system\cite{STACK}. This flexibility often results in ambiguities that may hinder the
-readability and maintainability of code, as type deductions occur either at compile
+readability and maintainability of code as type deductions occur either at compile
 time or runtime. With increasing complexities in software systems, there is an
 emerging need for a language and compiler that enforce discipline and explicitness in
-code, while offering robust control over system memory.
+code while offering robust control over system memory.
 
 \subsection{Problem}
 
 Developers currently seem to prefer dynamic or weak typing in popular programming
-languages, which may compromise code readability and maintainability due to implicit
+languages\cite{STACK} which may compromise code readability and maintainability due to implicit
 type inferences. This raises challenges in discerning the intentions of the developer
-solely based on the source code. Moreover, these languages often utilize garbage
-collectors, sacrificing control over system memory.
+solely based on the source code. Futhermore, these languages often utilize garbage
+collectors, sacrificing control over system memory, and adding runtime overhead which
+could have been handled at compile time.
 
 \subsection{Objectives}
 \label{sec:Objectives}
 
-To design and develop a custom programming language which encourages clarity, offers
+To design and develop a compiled programming language which encourages clarity, offers
 type safety and memory safety while avoiding the issues typically associated with
-garbage collectors. To do so, it will make use of the same system as the Rust programming
-language, which uses a borrow checking and reference based system to ensure memory
-safety\cite{RUST}. To ensure type safety, our language will make use of zero type
+garbage collectors. It will make use of the same technique as the \texttt{Rust} programming
+language which uses a borrow checking and reference based system to ensure memory
+safety\cite{RUST}. To ensure type safety, our language won't make use of type
 inference, meaning the compiler will never attempt to guess what type a developer
-intends to use. If the typechecker cannot identify the type of an expression at
+intends to use. If the \typeChecker{} cannot identify the type of an expression at
 compile time it will instead throw an error. \\
 
-In summary the following objectives can be summized:
+The following objectives can be summized:
 
-\begin{enumerate}
-  \item development of a custome programming language
-  \item explicitness in code.
+\begin{itemize}
+  \item Development of a compiled programming language.
+  \item Explicitness in code.
   \item Type safety at compile time.
-  \item Memory safety without the use of garbage collection.
-\end{enumerate}
+  \item Memory safety without garbage collection.
+\end{itemize}

@@ -1,14 +1,17 @@
 \subsection{Code Generator}
 \label{sec:CodeGenImplement}
 This is where the visitor pattern truly comes into its own. Whereas the borrow and type checker each performs limited operations on each node, which could feasibly be performed by e.g. the nodes constructors, the code generator is sufficiently complicated that it requires its own structure to avoid loosing the overview. This is of course beside any consideration of coding principles.\\
-When writing the code generator we have taken inspiration from the LLVM tutorial language Kaleidoscope \cite{LLVMTutorial} to see how to set up boilerplate and as a starting point when looking for the correct LLVM function.
+When writing the code generator we have taken inspiration from the LLVM tutorial
+language Kaleidoscope\cite{LLVMTutorial} to see how to set up boilerplate and as a
+starting point when looking for the correct LLVM functions.
 
 \subsubsection{LLVM}
-LLVM works with three important components: a Builder, a Context and a Module. The Builder provides an API to create the program instructions, the Context manages the core global data (types, code blocks and program instructions created by the builder), while the Module stores the functions.
-
+LLVM works with three important components: a Builder, a Context, and a Module. The Builder provides an API to create the program instructions, the Context manages the core global data (types, code blocks and program instructions created by the builder), while the Module stores the functions.
 
 \paragraph*{Variables}
 When the Builder creates a program instruction, it usually returns an llvm::Value type. It is possible to store these in a symbol table and access them later, but because LLVM creates a static single assignment IR, it is not possible to change the value of the stored variables. To get around this we create an allocation instance (llvm::AllocaInst), which can hold an llvm::Value. We can then store new llvm::Values in the same llvm::AllocaInst, obtaining mutable variables.
+
+\todo{please drop in code snippets}
 
 \paragraph*{Functions}
 
@@ -29,11 +32,27 @@ assembly level to generate the same effects as a high level function call.
 \subsubsection{Scope and variables}
 To store variables we need a symbol table. The first solution is to create a map from the variable identifier to the llvm::AllocaInst. This works well as long as no variables have the same name. This is not good enough, as it should be possible to reuse variable names as long as it is in different scopes. The symbol table therefore needs to be expanded to handle scopes.\\
 To implement scope in the symbol table, we changed it from a map of string identifier to variable allocation to a stack of such maps. This way, when we enter a new scope, we can push a new map onto the stack, thus getting a clean symbol table. When we go out of scope, we the simply pop the latest map off the stack, removing the variables that were created in the scope. This also means that it is possible to access variables from higher scopes, as they will be stored in one of the maps on the stack.\\
-To make sure we accessed the last defined variable with a give identifier, we made a copy of the stack, checked if the variable was in the top map, and if not popping the map of the stack, and repeating the check on the next. This way the code generator goes up one scope whenever a variable is not found, and only if the top level is reached (and the stack i empty) does it conclude that the variable is missing.
+
+\todo{Re-writte and add mutable explanation}
+
+To make sure we accessed the last defined variable with a given identifier, we made a
+copy of the stack, checked if the variable was in the top map, and if not popping the
+map off the stack, and repeating the check on the next map. This way the code generator goes up one scope whenever a variable is not found, and only if the top level is reached (and the stack i empty) does it conclude that the variable is missing.
 
 \subsubsection{Output}
 \label{sec:Output}
 Implementing an output posed a new type of challenge, as writing an output is not the responsibility of the compiler, but rather the operating system. As such the challenge went from finding the correct LLVM method to finding out how to use external functions in our program. Because an output is not strictly necessary to answer our problem statement, but more a quality of life, it did become a quick and unappealing implementation, that needs refinement.\\
-The first way to output elements from our  program involved another programming language (C). The fact that we compile to a .o file allowed us to write our functions, and then link the .o file to a C program that would call the \lang{} functions and print their output with the C implementation of printf(). A workable, but unsatisfying solution, that allowed us to test the compiler. The next step was to bring printf() into \lang. Because our focus is on memory and type safety, the print function implementation became a hard coded reference to printf() with the specific formatting required to print our types.\\
-This works only because we already compile with libc linked in the GCC compiler (it is how the main function is called), as this library contains the printf() function. It is also necessary to turn off position independent execution (PIE), to reach the printf() function. This introduces a small security risk (in case of a buffer overflow attack), which is entirely mitigated by the lack of user input. significant amounts of additional work is required to bring the current output up to a good state (such as allowing PIE, making print() not be hard coded, and implementing an input in a similar manner).
+
+The first way to output elements from our  program involved another programming
+language (\texttt{C}). The fact that we compile to a .o file allowed us to write our
+functions, and then link the .o file to a C program that would call the \lang{}
+functions and print their output with the \texttt{C} implementation of printf(). A workable, but unsatisfying solution, that allowed us to test the compiler. The next step was to bring printf() into \lang. Because our focus is on memory and type safety, the print function implementation became a hard coded reference to printf() with the specific formatting required to print our types.\\
+
+This works only because we already compile with libc linked in the GCC compiler (it
+is how the main function is called), as this library contains the printf() function.
+It is also necessary to turn off position independent execution (PIE), to reach the
+printf() function. This introduces a small security risk (in case of a buffer
+overflow attack), which is entirely mitigated by the lack of user input. Significant
+amounts of additional work is required to bring the current output up to a good state
+(such as allowing PIE, avoiding hardcoding printf() into the compiler, and implementing an input in a similar manner).
 

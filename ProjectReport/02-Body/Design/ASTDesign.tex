@@ -4,8 +4,8 @@
 The \ast{} of a typical \lang{} program can typically be divided into three
 sections; the program layer, the function layer and the expression layer (see
 figure~\ref{fig:astStruct}). Each node in the \ast{} correspond one-to-one with a
-type of expression in \lang{} but without loose of generality they will just be
-refered to as nodes.
+type of expression in \lang{} but without loss of generality they will just be
+refered to as nodes or expressions.
 
 \begin{figure}[ht]
   \centering
@@ -52,15 +52,16 @@ refered to as nodes.
   \end{tikzpicture}
   \caption{\ast{} for \lang{} showing how a typical program is structured after
   being parsed by the \lang{} parser. Each expression node, can then be further
-subdivided until leaf becomes a terminal expression.}
+subdivided until reaching the leafs of each branch which corresponds to terminal
+expressions.}
   \label{fig:astStruct}
 \end{figure}
 
 It is this structure on which the \typeChecker, the \borrowChecker, and the
-\codeGen{} will operate to produce and object file which the \gcc{} can turn in to
-machine code. The use of the visitor pattern (see section~\ref{sec:VisitorDesign}) is
-specifically used to facilitate a depth first left to right walk through of the \ast{} to do
-type checking, borrow checking and gode generation.
+\codeGen{} will operate to produce an object file which the \gcc{} can turn into an
+excutable file. The use of the visitor pattern (see section~\ref{sec:VisitorDesign}) is
+specifically used to facilitate a depth first left to right traversal of the \ast{} to do
+type checking, borrow checking and code generation.
 
 This ensures the code is analyzed in the same order in which it appears in the
 source code.

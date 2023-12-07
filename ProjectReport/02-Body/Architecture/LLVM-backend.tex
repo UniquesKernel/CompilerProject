@@ -1,16 +1,16 @@
-\subsection{Code Generator and the \gcc{}}
+\subsection{\texttt{C}ode Generator and the \gcc{}}
 \label{sec:LLVM}
 
 The \codeGen{} for the \lang{} compiler is responsible for traversing the
 \ast{} and translating each node into its corresponding low-level
 instructions. This process involves meticulously converting the structured,
-high-level representations of the \ast{} into a series of machine-level commands.
+high-level representations of the \ast{} into a series of machine-level instructions.
 Following this, the \codeGen{} outputs this low-level code into an object file.
-This file, while containing executable code, is not yet in a form that can be
+This file, while containing machine-level code, is not yet in a form that can be
 directly run on a computer. \\
 
 At this juncture, the \gcc{} plays a vital role. It
-takes the object file produced by our Code Generator and performs the necessary
+takes the object file produced by our \texttt{C}ode Generator and performs the necessary
 linking with other object files. This step is essential for resolving external
 references and integrating various code modules into a cohesive whole. After linking,
 the \gcc{} embarks on translating the aggregated object code into an executable file. \\
@@ -20,14 +20,15 @@ This use of the \gcc{} offers three distinct advantages:
 \begin{itemize}
   \item[\textbf{Optimization:}] The \gcc{} is capable of very sophisitcated
     optimizations on our low-level code.
-  \item[\textbf{Target Specific Compilation:}] The \gcc{} is capable of generating code
+  \item[\textbf{Target Specific \texttt{C}ompilation:}] The \gcc{} is capable of generating code
     for a wide target of hardware architectures allowing \lang{} code to run on must
     platoforms and architectures.
-  \item[\textbf{Integration with C/C++:}] C/C++ also make use of the \gcc{} and
-    object files. By forwarding function declaration in C/C++, functions written in
-    \lang{} can be forward declared and called inside C/C++ code bases. This allows
-    users to take theoretically take advantage of \lang{}'s memory and concurrency
-    safety\footnote{This is has been observed and excuted for simple programs but
+  \item[\textbf{Integration with \texttt{C}/\texttt{C++}:}] \texttt{C}/\texttt{C++} also make use of the \gcc{} and
+    object files. By forwarding function declaration in \texttt{C}/\texttt{C++}, functions written in
+    \lang{} can be forward declared and called inside \texttt{C}/\texttt{C++} code
+    bases. This, in theory, allows
+    users to take advantage of \lang{}'s memory and concurrency
+    safety\footnote{This has been observed and excuted for simple programs but
     not tested in full}.
 \end{itemize}
 

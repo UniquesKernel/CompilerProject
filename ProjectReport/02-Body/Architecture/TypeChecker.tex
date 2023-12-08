@@ -14,3 +14,19 @@ representation of the source code.
 
 \todo{Make list of type checker rules}
 
+The types of the nodes will be verified using the following rules:
+\begin{enumerate}
+
+\item All nodes has the type of their child with following exceptions/clarifications:
+\begin{enumerate}
+\item Terminal expressions and variables determine their own type
+\item Binary Expression Comparisons ($<$, $>$, $==$ and $!=$) has type \textit{bool}
+\item Blocks get the type of their return statements. 
+\item If statements and functions has the type of the block
+\end{enumerate}
+\item Binary expressions: Both children must have the same type
+\item All return statements in a block must have the same type
+\item If/else statement blocks must be the same type
+\item Variables must be assigned a value of its declared type
+\item Function block type must match declared function type
+\end{enumerate}

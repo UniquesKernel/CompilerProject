@@ -9,8 +9,6 @@ Section~\ref{sec:BorrowCheckerDesign}. The \borrowChecker{} then uses these tabl
 same ownership, borrowing and reference rules as the \texttt{Rust} language as described
 in section~\ref{sec:LanguageDesign} and section~\ref{sec:BorrowCheckerDesign}. \\
 
-\todo{re-write snippet to add more to the implementation instead of discussions}
-
 Consider the code snippet as provided in listing~\ref{lst:referenceExample}. When the
 \borrowChecker{} needs to evaluate if a reference assignment is legal, it retrieves
 the a list of existing references to the variable that is being referenced from the
@@ -54,10 +52,10 @@ compliance with the rules laid out in section~\ref{par:Ownership}.
 
 This implementation is only responsible for tracking references inside a single
 function scope, the implementation gets more difficult when tracking variables
-between function scope and the current implementation of the \borrowChecker{} does
-not yet accomplish this leading to correct programs throwing compile time errors when
-they should. \\
+between function scopes and the current implementation of the \borrowChecker{} does
+not yet accomplish this, leading to correct programs throwing compile time errors when
+they shouldn't. \\
 
-The issue here seems to stem from an issue of correctly tracking and removing
+The issue here seems to stem from an issue of incorrectly tracking and removing
 variables from the \texttt{symbolTable} and the \texttt{referenceTable} when the
 scopes are not nested inside each other.

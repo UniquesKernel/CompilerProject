@@ -54,9 +54,6 @@ The time spent on implementing the \borrowChecker{} would have been better
 spent implementing language features which could benefit from the use of a
 \borrowChecker{} later, as \lang{} matures as a language.
 
-\todo{add the other side of the argument that the borrowchecker is now in place for
-futher features}
-
 \subsubsection{Type Checking and Immutability}
 
 Unlike the \borrowChecker{} a more nuanced argument can be made for the
@@ -95,14 +92,14 @@ LLVM code generator backend instead of its own native backend should it be neces
   caption={Code snippet showing how to use llvm to assign values to variables.},
   label={lst:assignment}
   ]
-  ...
-  llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
+...
+llvm::Function *parentFunction = Builder->GetInsertBlock()->getParent();
 
-  llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(
-      parentFunction, variableName, getLLVMType(variable->getType()));
-  ...
-  Builder->CreateAlignedStore(llvm_result, varAllocation, llvm::Align(8));
-  ...
+llvm::AllocaInst *varAllocation = CreateEntryBlockAlloca(
+    parentFunction, variableName, getLLVMType(variable->getType()));
+...
+Builder->CreateAlignedStore(llvm_result, varAllocation, llvm::Align(8));
+...
 \end{lstlisting}
 
 The code snippet Listing~\ref{lst:assignment} shows in a simplified way how LLVM can

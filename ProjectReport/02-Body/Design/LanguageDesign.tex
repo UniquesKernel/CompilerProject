@@ -38,21 +38,21 @@ section shall focus on the language design elements which are the most important
 \end{grammar}
 \caption{Shows the production rules used by the \parser{} to parse variable
 assignments.}
-\label{fig:assingmentRule}
+\label{fig:assignmentRule}
 \end{figure}
 
-As can be seen in figure~\ref{fig:assingmentRule} shows a simple example of how
+In figure~\ref{fig:assignmentRule}, a simple example of how
 variable assignment and function declarations are defined in the \lang. Variable
 assignments uses the
 \texttt{let} keyword optionally followed by the \texttt{mut} keyword to determine if
 the variable is a mutable variable or not. Next comes the name of the variable
 separated by an obligatory colon and the type of the variable. Lastly using the
-\texttt{=} operator we specify which expression should be stored in the variable. \\
+\texttt{=} operator specifies which expression should be stored in the variable. \\
 
 Function declarations work similarly to how must other languages define functions.
 \lang{} uses the \texttt{fn} keyword followed by the function name and a comma
-seperated list of arguments in side parenthesis. After this is uses a colon
-seperation to define the return type of the function and lastly bracers to encluse
+seperated list of arguments inside parenthesis. After this is used a colon
+seperation to define the return type of the function and lastly bracers to enclose
 the function body. \\
 
 For a complete language definition see appendix~\ref{sec:appB} which holds a
@@ -64,7 +64,7 @@ they translate to keywords like \texttt{let} and \texttt{mut}.
 \paragraph{Explicit Typing} \hfill
 \vspace{0.1em}
 
-In \lang{} the declaration of any varialbes require explicit typing. The compiler
+In \lang{} the declaration of any variables require explicit typing. The compiler
 must never attempts to infere the type of a variable from its use and so all types
 must be known at compile time.\\
 
@@ -78,9 +78,9 @@ rules laied out in figure~\ref{fig:assignmentRule}.
   frame=single,
   caption={
     \lang{} code showing the correct and incorrect way of declaring an immutable
-    variable in accordance with the rule in figure~\ref{fig:assingmentRule}.
+    variable in accordance with the rule in figure~\ref{fig:assignmentRule}.
     },
-  label={lst:assignmentRule}
+  label={lst:assignmentRule},
   numbers=left,
   ]
   fn main(): int {

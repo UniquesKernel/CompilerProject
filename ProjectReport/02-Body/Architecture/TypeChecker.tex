@@ -12,8 +12,6 @@ with the expected type. This is done to facilitate the \codeGen{} component, whi
 uses the annotated type information to generate the correct intermediate
 representation of the source code.
 
-\todo{Make list of type checker rules}
-
 The types of the nodes will be verified using the following rules:
 \begin{enumerate}
 
@@ -21,12 +19,17 @@ The types of the nodes will be verified using the following rules:
 \begin{enumerate}
 \item Terminal expressions and variables determine their own type
 \item Binary Expression Comparisons ($<$, $>$, $==$ and $!=$) has type \textit{bool}
+\item Binary Expression involving references are automatically converted to the
+  primitive type and not to a reference type\footnote{this is currently implemented
+  they other way around}.
 \item Blocks get the type of their return statements. 
-\item If statements and functions has the type of the block
+\item If statements and functions has the type of the block(s)
 \end{enumerate}
 \item Binary expressions: Both children must have the same type
+\item Binary expressions: References are threated as same type as the
+  variable they reference.
 \item All return statements in a block must have the same type
 \item If/else statement blocks must be the same type
 \item Variables must be assigned a value of its declared type
-\item Function block type must match declared function type
+\item Function block type must match declared function return type
 \end{enumerate}

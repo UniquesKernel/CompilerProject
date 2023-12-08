@@ -9,9 +9,8 @@ starting point when looking for the correct LLVM functions.
 LLVM works with three important components: a Builder, a Context, and a Module. The Builder provides an API to create the program instructions, the Context manages the core global data (types, code blocks and program instructions created by the builder), while the Module stores the functions.
 
 \paragraph*{Variables}
-When the Builder creates a program instruction, it usually returns an llvm::Value type. It is possible to store these in a symbol table and access them later, but because LLVM creates a static single assignment IR, it is not possible to change the value of the stored variables. To get around this we create an allocation instance (llvm::AllocaInst), which can hold an llvm::Value. We can then store new llvm::Values in the same llvm::AllocaInst, obtaining mutable variables. The exact implementation is shown in listing \ref{lst:varAssignment}.
+When the Builder creates a program instruction, it usually returns an llvm::Value type. It is possible to store these in a \texttt{symbolTable} and access them later, but because LLVM creates a static single assignment IR, it is not possible to change the value of the stored variables. To get around this we create an allocation instance (llvm::AllocaInst), which can hold an llvm::Value. We can then store new llvm::Values in the same llvm::AllocaInst, obtaining mutable variables. The exact implementation is shown in listing \ref{lst:varAssignment}.
 
-\todo{please drop in code snippets}
 \begin{lstlisting}[
   language=c++,
   frame=single,
@@ -52,15 +51,45 @@ assembly level to generate the same effects as a high level function call.
 
 
 \subsubsection{Scope and variables}
-To store variables we need a symbol table. The first solution is to create a map from the variable identifier to the llvm::AllocaInst. This works well as long as no variables have the same name. This is not good enough, as it should be possible to reuse variable names as long as it is in different scopes. The symbol table therefore needs to be expanded to handle scopes.\\
-To implement scope in the symbol table, we changed it from a map of string identifier to variable allocation to a stack of such maps. This way, when we enter a new scope, we can push a new map onto the stack, thus getting a clean symbol table. When we go out of scope, we the simply pop the latest map off the stack, removing the variables that were created in the scope. This also means that it is possible to access variables from higher scopes, as they will be stored in one of the maps on the stack.\\
-
-\todo{Re-write and add mutable explanation}
+To store variables we need a \texttt{symbolTable}. The first solution is to create a map from the variable identifier to the llvm::AllocaInst. This works well as long as no variables have the same name. This is not good enough, as it should be possible to reuse variable names as long as it is in different scopes. The symbol table therefore needs to be expanded to handle scopes.\\
+To implement scope in the \texttt{symbolTable}, we changed it from a map of string identifier to variable allocation to a stack of such maps. This way, when we enter a new scope, we can push a new map onto the stack, thus getting a clean symbol table. When we go out of scope, we the simply pop the latest map off the stack, removing the variables that were created in the scope. This also means that it is possible to access variables from higher scopes, as they will be stored in one of the maps on the stack.\\
 
 To make sure we accessed the last defined variable with a given identifier, we made a
-copy of the stack and checked if the variable was in the top map. If not, the top map was popped off the stack and the next map is searched for the variable. This way the code generator goes up one scope whenever a variable is not found, and only if the top level is reached (and the stack i empty) does it conclude that the variable is missing.\\
+copy of the stack and checked if the variable was in the top map. If not, the top map
+was popped off the stack and the next map is searched for the variable. This way the
+code generator goes up one scope whenever a variable is not found, and only if the
+top level is reached (and the stack i empty) does it conclude that the variable is
+missing.
 
-To keep track of which variables are mutable, and which are not, the identifiers of all mutable variables are stored in a list. When a variable is reassigned a value we check this list, and throw an error if the variable identifier is not found. We have here the same issue with scope as the symbol table, and the solution is the same: a stack of lists. When a map is popped of the symbol table we do the same in the mutable stack.
+\begin{lstlisting}[
+  language=c++,
+  numbers=left, 
+  frame=single,
+  caption={Implementation showing how the code generator search for variables in
+  different scopes},
+  label={},
+  ]
+while (!tmpStack.empty()) {
+  if (tmpStack.top().find(variable->getVariable()->getName()) !=
+      tmpStack.top().end()) {
+    loadedVar = tmpStack.top()[variable->getVariable()->getName()];
+    if (tmpMutableVars.top().find(variable->getVariable()->getName()) ==
+        tmpMutableVars.top().end()) {
+      throw std::runtime_error("Reassignment of immutable variable.");
+    }
+    break;
+  }
+  tmpStack.pop();
+  tmpMutableVars.pop();
+}
+\end{lstlisting}
+
+To keep track of which variables are mutable, and which are not, the identifiers of
+all mutable variables are stored in a list. When a variable is reassigned a value we
+check this list, and throw an error if the variable identifier is not found. We have
+here the same issue with scope as the \texttt{symbolTable}, and the solution is the same: a
+stack of lists. When a map is popped of the \texttt{symbolTable} we do the same in the
+mutable stack.
 
 \subsubsection{Output}
 \label{sec:Output}

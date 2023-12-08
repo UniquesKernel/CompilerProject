@@ -28,25 +28,60 @@ by the objective of the language as set forth in section~\ref{sec:Objectives}. T
 section shall focus on the language design elements which are the most important for
 \lang{}.
 
+\begin{figure}[ht]
+\centering
+\begin{grammar}
+<variable-assignment> ::= `KW_VAR' <identifier> `COLON' <type> `=' <expr>
+\alt `KW_VAR' `KW_MUT' <identifier> `COLON' <type> `=' <expr>
+
+<function-decl> ::= `FUNCTION' <identifier> `LPAREN' <arg-list> `RPAREN' `COLON' <type> <expr-block>
+\end{grammar}
+\caption{Shows the production rules used by the \parser{} to parse variable
+assignments.}
+\label{fig:assingmentRule}
+\end{figure}
+
+As can be seen in figure~\ref{fig:assingmentRule} shows a simple example of how
+variable assignment and function declarations are defined in the \lang. Variable
+assignments uses the
+\texttt{let} keyword optionally followed by the \texttt{mut} keyword to determine if
+the variable is a mutable variable or not. Next comes the name of the variable
+separated by an obligatory colon and the type of the variable. Lastly using the
+\texttt{=} operator we specify which expression should be stored in the variable. \\
+
+Function declarations work similarly to how must other languages define functions.
+\lang{} uses the \texttt{fn} keyword followed by the function name and a comma
+seperated list of arguments in side parenthesis. After this is uses a colon
+seperation to define the return type of the function and lastly bracers to encluse
+the function body. \\
+
+For a complete language definition see appendix~\ref{sec:appB} which holds a
+complete list of all language constructs and their definitions. Furthermore
+appendix~\ref{sec:appA} holds the list of tokens used in the production rules and how
+they translate to keywords like \texttt{let} and \texttt{mut}.
+
+
 \paragraph{Explicit Typing} \hfill
 \vspace{0.1em}
 
-In \lang{} the declaration of any variable requires explicit typing. This is because
-the \lang{} compiler does not support type inferencing, meaning the compiler must be
-able to determine the type of every variable by simply checking the expected type of
-the variable against the type of its value without any extra work.
+In \lang{} the declaration of any varialbes require explicit typing. The compiler
+must never attempts to infere the type of a variable from its use and so all types
+must be known at compile time.\\
 
-The same goes for function declarations, as seen below. Every function must
-explicitly be declared with a return value, so the compiler can simply check the
-expected return type against the type of any returned values. 
+The same goes for function declarations. Every function must explicitly be declared
+with a return value, so the compiler can simply check the expected return type
+against the type of any returned values. listing~\ref{lst:assignmentRule} showcases
+how to write a simle main program with variable assignment in accordance with the
+rules laied out in figure~\ref{fig:assignmentRule}.
 
 \begin{lstlisting}[
   frame=single,
   caption={
-    \lang{} code showing the correct and incorrect way of declaring a variable
-    \texttt{x}.
-    }, 
-    numbers=left
+    \lang{} code showing the correct and incorrect way of declaring an immutable
+    variable in accordance with the rule in figure~\ref{fig:assingmentRule}.
+    },
+  label={lst:assignmentRule}
+  numbers=left,
   ]
   fn main(): int {
     let x: int = 1; // compiles
@@ -120,8 +155,6 @@ reference rules of the \texttt{Rust} language.
 
 To visualize these rules consider Listing~\ref{lst:scope} which portrays how the
 rules of ownership functions.
-
-\newpage
 
 \begin{lstlisting}[
   frame = single,

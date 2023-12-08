@@ -11,6 +11,7 @@ behaviour of the language. \\
 There are some impracticalities in unit-testing each process in the \lang{} compiler
 which are severe enough that their cost-benefit is deemed too steep a price for this
 project. The following sections are dedicated to justifying these missing tests and
+and why only tests for the \borrowChecker{} has been written.
 lastly we will go over the final testing results.
 
 \subsection{Testing Issues}
@@ -86,7 +87,8 @@ testing because it is uncertain what optimizations can be expected by LLVM.
 \subsection{Testing Results}
 
 \todo{Ensure it conforms with info in implementation}
-When testing the \borrowChecker{} as described in Section~\ref{sec:testStatic} it
+
+When testing the \borrowChecker{} as described in section~\ref{sec:testStatic} it
 becomes clear that the \borrowChecker{} works in most intended use cases. There is
 currently one failing test, which is closely related to the issues discussed in
 section~\ref{sec:BorrowCheckerImpl}, talking about the \borrowChecker's issues in
@@ -101,7 +103,7 @@ ownership (see Section~\ref{sec:BorrowCheckerImpl})}
   \label{fig:failTest}
 \end{figure}
 
-Ideally, it would have been prefered to be able to write test cases more
+Ideally, it would have been preferable to be able to write test cases more
 independently for each process, but this was not practically feasible and so this was
 the only testing performed besides manual testing, which involved writting programs
 and then printing their outputs to standard output to see if the programs performed

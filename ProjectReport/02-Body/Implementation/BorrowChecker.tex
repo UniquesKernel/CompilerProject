@@ -2,28 +2,62 @@
 \label{sec:BorrowCheckerImpl}
 
 The \borrowChecker{} implements the visitor pattern, as described in
-section~\ref{sec:VisitorDesign}, and uses two tables a
+section~\ref{sec:VisitorDesign}, and uses two tables; a
 \texttt{symbolTable} and a \texttt{referenceTable} to keep track of variables as well
 as keeping track of references, as described in
 Section~\ref{sec:BorrowCheckerDesign}. The \borrowChecker{} then uses these tables to enforce the
 same ownership, borrowing and reference rules as the \texttt{Rust} language as described
 in section~\ref{sec:LanguageDesign} and section~\ref{sec:BorrowCheckerDesign}. \\
 
-\todo{This seems more like discussion than implementation}
+\todo{re-write snippet to add more to the implementation instead of discussions}
 
-The implementation of the \borrowChecker{} is quite difficult and its current state
-does not yet support all features in \lang{}. 
-The \borrowChecker{} does a good job tracking ownership and references within
-functions, even across scopes. It it able to accurately track ownership and
-references across internal scopes\footnote{None function call related changes in
-scope, e.g. nested if-else statements and code blocks.} but once a variable is parsed
-to a function as an argument the current implementation of the \borrowChecker{} has
-difficulties keeping track of ownerships, in cases were the ownership of the
-variables need to change, or references in cases were references are parsed as
-arguments to a functions.
+Consider the code snippet as provided in listing~\ref{lst:referenceExample}. When the
+\borrowChecker{} needs to evaluate if a reference assignment is legal, it retrieves
+the a list of existing references to the variable that is being referenced from the
+\texttt{referenceMap} and then does some checks to ensure that the \ast{} is in
+compliance with the rules laid out in section~\ref{par:Ownership}.
 
-In fine, the \borrowChecker{} is not currently working as intended and due to this
-issue the project does not deliver on its objective to provide memory safety without
-the use of a garbage collector. Further more, due to the issues with the
-\borrowChecker{} the compiler chain (see section~\ref{sec:architecture}) currently
-causes some valid programs to not compile as intended.
+\begin{lstlisting}[
+  language=c++,
+  numbers=left,
+  frame=single,
+  caption={Code showing a snippet of the referenceAssignment function in the \lang{}
+  \borrowChecker{} implementation},
+  label={lst:referenceExample},
+  showstringspaces=false,
+  ]
+  ... // validation of the existence of the referenced variable 
+  ... // cut out for brevity. 
+
+   std::vector<std::pair<std::string, bool>> &vec =
+      referenceMap[variable->getReferenceIdentifier()]; 
+
+  int mutableCount = 0;
+  bool hasImmutable = false;
+  for (const auto &pair : vec) {
+    if (pair.second) {
+      mutableCount++;
+    } else {
+      hasImmutable = true;
+    }
+  }
+
+  if (mutableCount > 1) {
+    throw std::invalid_argument(
+        "Invalid argument: more than one mutable reference");
+  } else if (mutableCount == 1 && hasImmutable) {
+    throw std::invalid_argument(
+        "Invalid argument: mixed mutable and immutable references");
+  }
+  ...
+\end{lstlisting}
+
+This implementation is only responsible for tracking references inside a single
+function scope, the implementation gets more difficult when tracking variables
+between function scope and the current implementation of the \borrowChecker{} does
+not yet accomplish this leading to correct programs throwing compile time errors when
+they should. \\
+
+The issue here seems to stem from an issue of correctly tracking and removing
+variables from the \texttt{symbolTable} and the \texttt{referenceTable} when the
+scopes are not nested inside each other.

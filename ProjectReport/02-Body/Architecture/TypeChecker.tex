@@ -19,9 +19,7 @@ The types of the nodes will be verified using the following rules:
 \begin{enumerate}
 \item Terminal expressions and variables determine their own type
 \item Binary Expression Comparisons ($<$, $>$, $==$ and $!=$) has type \textit{bool}
-\item Binary Expression involving references are automatically converted to the
-  primitive type and not to a reference type\footnote{this is currently implemented
-  they other way around}.
+\item Binary Expression involving references are automatically converted to the primitive type and not to a reference type.
 \item Blocks get the type of their return statements. 
 \item If statements and functions has the type of the block(s)
 \end{enumerate}

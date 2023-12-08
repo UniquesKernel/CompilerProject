@@ -45,11 +45,7 @@ void typeCheckingVisitor::visitBinaryExpression(BinaryExpression *expression) {
         boolOperators.end()) { // check if operator is a conditional operator
       type = "bool";
     } else {
-      if (isRef) {
-        type = "&" + lhsType;
-      } else {
         type = lhsType;
-      }
     }
     expression->setType(lhsType);
   } else if ((lhsType == "int" && rhsType == "char") ||

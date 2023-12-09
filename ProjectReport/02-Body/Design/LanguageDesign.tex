@@ -2,30 +2,31 @@
 \label{sec:LanguageDesign}
 
 \lang{} is an expression based language. Every language construct, except function
-declarations return a value and can be stored in a variable for later use. To achieve
+declarations, return a value and can be stored in a variable for later use. To achieve
 our three main goals of clarity, type safety, and memory safety, \lang{} is designed
-to require explicit typing, immutability by default and to enforce the same
+to require explicit typing, immutability by default, and to enforce the same
 borrowing and reference rules as the \texttt{Rust} programming language.\\
 
-Due to time constraints \lang{} does not support multiple files, this constraint
+Due to time constraints \lang{} does not support multiple files. This constraint
 influences the way \lang{} is designed. Unlike scripting languages like
 \texttt{Python} and \texttt{JavaScript}, which are capable of running its code without
-a dedicated main function \lang{} organizes its code similar to procedural
+a dedicated main function, \lang{} organizes its code similar to procedural
 languages like \texttt{C} in which a main function is required for a standalone
 program. \\
 
-Because \lang{} is entirely constrained to a single file its grammar is designed to
-help and encourage users to modularize their code through the use of functions but it
-also limits its scalability as it becomes impractical to write large application
-using \lang{} as this would lead to an unmanagably large file. 
+Because \lang{} is entirely constrained to a single file, its grammar is designed to
+help and encourage users to modularize their code through the use of functions. This
+limits its scalability as it becomes impractical to write large applications using
+\lang{}; as this would lead to an unmanagably large file. 
 
 \subsubsection{Language Features}
 \label{sec:Grammar}
 
-\lang{} is quite simple, and it's features are heavy inspired by the
-\texttt{Rust} language\cite{RUST}, however it is also influenced by its limited feature set and
+\lang{} is quite simple, and its features are heavy inspired by the
+\texttt{Rust} language\cite{RUST}, however it is also influenced by its limited
+feature set, and
 by the objective of the language as set forth in section~\ref{sec:Objectives}. This
-section shall focus on the language design elements which are the most important for
+section focuses on the language design elements which are the most important for
 \lang{}.
 
 \begin{figure}[ht]
@@ -37,22 +38,22 @@ section shall focus on the language design elements which are the most important
 <function-decl> ::= `FUNCTION' <identifier> `LPAREN' <arg-list> `RPAREN' `COLON' <type> <expr-block>
 \end{grammar}
 \caption{Shows the production rules used by the \parser{} to parse variable
-assignments.}
+assignments and function declarations.}
 \label{fig:assignmentRule}
 \end{figure}
 
 In figure~\ref{fig:assignmentRule}, a simple example of how
-variable assignment and function declarations are defined in the \lang. Variable
+variable assignment and function declarations are defined in \lang. Variable
 assignments uses the
 \texttt{let} keyword optionally followed by the \texttt{mut} keyword to determine if
-the variable is a mutable variable or not. Next comes the name of the variable
-separated by an obligatory colon and the type of the variable. Lastly using the
+a variable is a mutable variable or not. Next comes the name of the variable
+followed by an obligatory colon and the type of the variable. Lastly the
 \texttt{=} operator specifies which expression should be stored in the variable. \\
 
-Function declarations work similarly to how must other languages define functions.
+Function declarations work similarly to how most other languages define functions.
 \lang{} uses the \texttt{fn} keyword followed by the function name and a comma
-seperated list of arguments inside parenthesis. After this is used a colon
-seperation to define the return type of the function and lastly bracers to enclose
+seperated list of arguments inside parenthesis. After this a colon
+seperation is used to define the return type of the function and lastly braces to enclose
 the function body. \\
 
 For a complete language definition see appendix~\ref{sec:appB} which holds a
@@ -65,14 +66,14 @@ they translate to keywords like \texttt{let} and \texttt{mut}.
 \vspace{0.1em}
 
 In \lang{} the declaration of any variables require explicit typing. The compiler
-must never attempts to infere the type of a variable from its use and so all types
+will never attempt to infer the type of a variable from its use and so all types
 must be known at compile time.\\
 
 The same goes for function declarations. Every function must explicitly be declared
 with a return value, so the compiler can simply check the expected return type
-against the type of any returned values. listing~\ref{lst:assignmentRule} showcases
+against the type of any returned values. Listing~\ref{lst:assignmentRule} showcases
 how to write a simle main program with variable assignment in accordance with the
-rules laied out in figure~\ref{fig:assignmentRule}.
+rules laid out in figure~\ref{fig:assignmentRule}.
 
 \begin{lstlisting}[
   frame=single,
@@ -90,7 +91,7 @@ rules laied out in figure~\ref{fig:assignmentRule}.
   }
 \end{lstlisting}
 
-This ensures clarity, in accordance with the objectives of \lang{}, since a
+This ensures clarity in accordance with the objectives of \lang{}, since a
 developer can always read the source code and see which type of data they are working
 with.
 
@@ -100,7 +101,7 @@ with.
 Another important feature to ensure clarity in \lang{} is the default immutability of
 variables. This ensures that unless explicitly declared by a developer, by using the
 \texttt{mut} keyword, a variable
-cannot be changed after it's initialization.
+cannot be changed after its initialization.
 
 \begin{lstlisting}[
   frame=single,
@@ -120,10 +121,10 @@ cannot be changed after it's initialization.
   }
 \end{lstlisting}
 
-By forcing developers to be explicit about their intend to change data \lang{}
+By forcing developers to be explicit about their intend to change data, \lang{}
 achieves higher clarity and safety in its code. \\ 
 
-A developer in \texttt{C} can create a variable and it might or might not change at
+A developer in \texttt{C} can create a variable and it may or may not change at
 runtime unless a developer prevents it from changing. This is not ideal as a
 developer might have intended for a variable to never change but forget to ensure it
 by declaring the variable as \texttt{const}. In \lang, however, a developer is protected from
@@ -135,13 +136,13 @@ runtime and can't do so by accident.
 
 In order to ensure memory safety without the use of a garbage collector as described
 in section~\ref{sec:Objectives} \lang{} enforces the same ownership, borrowing and
-reference rules of the \texttt{Rust} language.
+reference rules of the \texttt{Rust} language\cite{RUST}.
 
 \subparagraph{Onwership rules:}
 \begin{enumerate}
-  \item Each value has an owner\cite{RUST}. 
-  \item There can be only one owner at a time\cite{RUST}. 
-  \item When the owner goes out of scope the value is dropped\cite{RUST}.
+  \item Each value has an owner. 
+  \item There can be only one owner at a time. 
+  \item When the owner goes out of scope the value is dropped.
 \end{enumerate}
 
 \subparagraph{Borrowing and Referencing:}
@@ -149,12 +150,12 @@ reference rules of the \texttt{Rust} language.
 
 \begin{enumerate}
   \item At any given time, you can have either one mutable reference or any number of
-    immutable references\cite{RUST}.
-  \item References must always be valid\cite{RUST}.
+    immutable references.
+  \item References must always be valid.
 \end{enumerate}
 
 To visualize these rules consider Listing~\ref{lst:scope} which portrays how the
-rules of ownership functions.
+rules of ownership function.
 
 \begin{lstlisting}[
   frame = single,
@@ -176,7 +177,7 @@ fn main(): int{
   let y: int = factorial(x); // ownership of x is transfered to factorial.
 
   // x is no longer in scope and cannot be used.
-  print("%i", x); // does not compile
+  print(x); // does not compile
 
   return 0;
 }
@@ -189,12 +190,14 @@ rules. \\
 
 Lines 11-12, however, shows something interesting regarding the constraints imposed
 by ownership rule 2. Because a variable can only have a single owner, when a variable
-is parsed to a function, the ownership of the variable is transfered to that function
-and goes out of scope along with the function's inner scope, rendering the variable
+is pass to a function, the ownership of the variable is transfered to that function
+and goes out of scope with that function, rendering the variable
 \texttt{x} unusable afterwards. The variable is moved into the scope of the calling
-function similarly to how smart pointers are used in treated in languages like
+function similarly to how smart pointers are used and treated in
 \texttt{C++} when they are moved between scopes\cite{CPPRef}. Thus the
 \texttt{factorial} function is said to take ownership of \texttt{x}.
+
+\newpage
 
 \lstset{
   escapeinside={(*}{*)}
@@ -213,32 +216,32 @@ fn main(): int {
 
   let y: int = factorial(&x); // x is borrowed as a reference.
 
-  printf("%i", x); // ownership is tranfered and x goes out of scope.
+  print(x); // ownership is tranfered and x goes out of scope.
 
   return 0;
 }
 \end{lstlisting}
 
-If one wishes to parse a variable to a function without moving the ownership into the
-function, then we can instead parse a reference of the varaible to the function instead. This is
-called borrowing and it allows us to parse into the function a reference to the
+If one wishes to pass a variable to a function without moving the ownership into the
+function, then we can instead pass a reference of the varaible to the function instead. This is
+called borrowing and it allows us to pass into the function a reference to the
 memory location of out variable, which the function can follow once it needs the value
 of the its input argument. For all practical purposes references are just pointers, but they
 are governed by special rules and just as with variables they are immutable unless
 explicitly declared to be mutable. \\
 
 The use of references allows \lang{} to be very efficient in its use of memory as
-duplication of variables aren't necessary. But it's important to understand that
+duplication of variables isn't necessary. But it's important to understand that
 references do have some limitations in \lang{} as noted in \ref{par:borrowing}. \\
 
 As per the first rule, we can only have either one mutable or any number of immutable references to a
-variable. This rule is enforced by \lang{} but not strictly necessary as these rules
-are in place to ensure memory safety in concurrent programs to ensure that data isn't
+variable. This rule is enforced by \lang{} but not strictly necessary as this rule
+is in place to ensure memory safety in concurrent programs to ensure that data isn't
 modified by multiple threads or read by one thread while being modified by a second
 thread. \\
 
 The second rule is more important for \lang{}, the requirement that references must
 always be valid means that functions cannot return references. This is because as per
-the rule of ownership a references goes out of bound when it goes out of scope, so if
+the rule of ownership a reference goes out of bounds when it goes out of scope, so if
 functions could return references it opens up the possiblity of dangling pointers
 which can cause serious security issues if allowed.

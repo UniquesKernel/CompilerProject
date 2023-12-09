@@ -1,13 +1,13 @@
 \section{Introduction}
 \label{sec:ProblemStatement}
 
-As of 2023, the top four most popular programming languages: \texttt{Python},
+As of 2023, the top most popular general purpose programming languages: \texttt{Python},
 \texttt{JavaScript},
 \texttt{TypeScript}, and \texttt{Java}, permit to various degrees a loose or optional type
 system\cite{STACK}. This flexibility often results in ambiguities that may hinder the
 readability and maintainability of code as type deductions occur either at compile
-time or runtime. With increasing complexities in software systems, there is an
-emerging need for a language and compiler that enforce discipline and explicitness in
+time or runtime. With increasing complexities in software systems, it would be
+desirable to use a language and compiler that enforce discipline and explicitness in
 code while offering robust control over system memory.
 
 \subsection{Problem}
@@ -22,14 +22,12 @@ could have been handled at compile time.
 \subsection{Objectives}
 \label{sec:Objectives}
 
-To design and develop a compiled programming language which encourages clarity, offers
-type safety and memory safety while avoiding the issues typically associated with
+To design and develop a compiled programming language, named \lang{}, which encourages clarity, offers
+type safety, and memory safety while avoiding the overhead typically associated with
 garbage collectors. It will make use of the same technique as the \texttt{Rust} programming
 language which uses a borrow checking and reference based system to ensure memory
-safety\cite{RUST}. To ensure type safety, our language won't make use of type
-inference, meaning the compiler will never attempt to guess what type a developer
-intends to use. If the \typeChecker{} cannot identify the type of an expression at
-compile time it will instead throw an error. \\
+safety\cite{RUST}. To ensure type safety, the \lang{} compiler will not infere types,
+i.e. the compiler will never attempt to guess what type a developer intends to use. \\
 
 The following objectives can be summized:
 

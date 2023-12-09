@@ -2,7 +2,7 @@
   \begin{center}
     \begin{tikzpicture}
 
-      \node[draw, rectangle, minimum width=4cm] (source) {Source Code};
+      \node[draw, rectangle, minimum width=4cm] (source) {Source File};
       \node[draw, rectangle, minimum width=4cm, below=0.7cm of source] (lexer) {\lexer};
       \node[draw, rectangle, minimum width=4cm, below=0.7cm of lexer] (parser)
         {\parser};
@@ -26,12 +26,12 @@
       \node[draw, rectangle, minimum width=4cm, below=0.7cm of object] (exec) {Executable};
 
 
-      \draw[->,thick] (source) -- (lexer) node[midway, right] {Source File};
+      \draw[->,thick] (source) -- (lexer) node[midway, right] {Source Code};
       \draw[->,thick] (lexer) -- (parser) node[midway, right] {Token Stream};
       \draw[->,thick] (parser) -- (static) node[midway, right] {AST};
       \draw[->,thick] (static) -- (codeGen) node[midway, right] {AST};
       \draw[->,thick] (codeGen) -- (object) node[midway, right] {Object File};
-      \draw[->,thick] (object) -- (exec) node[midway, right] {Binary File}; 
+      \draw[->,thick] (object) -- (exec) node[midway, right] {Binary Code}; 
     \end{tikzpicture}
   \end{center}
   \caption{The compiler pipeline, transforming source code into an executable.}

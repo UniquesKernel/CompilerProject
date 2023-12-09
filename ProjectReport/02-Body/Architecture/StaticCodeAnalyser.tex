@@ -1,13 +1,13 @@
-\subsection{Static Code Analyser}
+\subsection{\static}
 
 Following the syntactical validation by the \lexer{} and \parser{}, which results in
 the formation of an \ast{}, the next critical phase involves the \static{}. This
 component is tasked with conducting a semantic analysis of the \ast{}, a process
 essential for ensuring the semantic correctness of the program. The \static{}
-contains two subcomponents, the \typeChecker{} and the \borrowChecker{} which each is
+contains two subcomponents, the \typeChecker{} and the \borrowChecker{}, which each is
 responsible for one of two phases in the \static.\\
 
-The \typeChecker{} is responsible for scrutinizing the use of types within the
+The \typeChecker{} is responsible for scrutinising the use of types within the
 program. It systematically verifies that each type is correctly declared and applied,
 ensuring type consistency across the program. This step is vital in preventing
 type-related errors and maintaining the integrity of data handling within the
@@ -17,13 +17,13 @@ On the other hand, the \borrowChecker{} focuses on memory safety. It analyses th
 borrowing and lifespan of variables, ensuring compliance with stringent
 rules\footnote{These are the rules also used by Rust} for memory, and concurrency
 safety\cite{RUST}. The \borrowChecker{} plays a crucial role in avoiding common
-pitfalls related to managing memory, such as memory leaks, unauthorized access and
+pitfalls related to managing memory, such as memory leaks, unauthorised access and
 dangling pointers, thereby enhancing the program's reliability and safety. It also
 ensures safety when dealing with concurrent programs as specific rules are design to
 prevent race conditions.\\
 
 In tandem, these two stages of semantic analysis form a comprehensive approach to
-validating the program beyond its syntax, ensuring that the logic is sound and the
+validating the program beyond its syntax, ensuring the
 safe allocation and deallocation of memory. The following sections provide a detailed
 exploration of the \typeChecker{} and \borrowChecker.
 

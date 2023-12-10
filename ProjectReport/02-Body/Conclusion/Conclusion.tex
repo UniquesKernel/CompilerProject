@@ -4,7 +4,7 @@
 In response to the growing popularity of interpreted, dynamically and weakly typed programming
 languages such as \texttt{Python} and \texttt{JavaScript}, the intension was to offer
 a compiled alternative, called \lang, with a clear explicit syntax, that is both statically and strongly
-typed and offeres type safety and memory safety at compile time without the overhead
+typed and offers type safety and memory safety at compile time without the overhead
 of a garbage collector. \\ 
 
 \lang{} offers many of the same constructs as modern programming languages,
@@ -12,17 +12,19 @@ such as immutable variables, basic arithmetic, functions, if-else constructs and
 support for terminal outputs. \\
 
 The project succeeds in the implementation of a \lexer{}, \parser{}, 
-\typeChecker{} and a \codeGen{} that allows us to fully parse a \lang{} program,
-generating an \ast{} and ensuring type consistency throughout the \ast{} by
-implmenting a \typeChecker{} using a visitor pattern that also allows the seemless
+\typeChecker{}, and a \codeGen{} that allows us to fully parse a \lang{} program,
+generating an \ast{} and ensuring type consistency throughout the \ast{}. This is
+done by
+Implmenting a \typeChecker{} using a visitor pattern that also allows the seemless
 implementation of a \borrowChecker{} to enforce the same ownership and borrowing
-rules of \texttt{Rust} and a \codeGen{} using LLVM to seemlessly generate executable
+rules as \texttt{Rust}. Lastly the implementation of a \codeGen{} using LLVM and the
+\gcc{} allows us to seemlessly generate executable
 files for any architecture. \\
 
 The project encountered challenges in fully implementing the Rust-like
 ownership and borrowing rules.
 The \borrowChecker{} managed ownership within functions but faced difficulties with
-ownership transfer between functions. Consequently, this aspect of the project did
+ownership transfer between functions. Consequently this aspect of the project did
 not fully meet the objectives set forth in sections~\ref{sec:Objectives} and
 \ref{sec:Requirements}. \\
 
@@ -30,7 +32,6 @@ The use of a flexible iterative "minimal viable progress" development process al
 the group to explore the different aspects of the problem, and face the challenges
 inherent in such projects. While the group didn't manage to solve all the objectives
 of the project, the process proved well suited for this kind task and for the group
-size and would like serve well in the develop of future language features (see
-section~\ref{sec:FutureWork}).
+size and would likely serve well in the develop of future language features.
 
 \newpage

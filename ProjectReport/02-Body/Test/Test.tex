@@ -1,24 +1,24 @@
 \section{Test}
 \label{sec:Test}
 
-Testing a compiler like the \lang{} compiler is a none trivial task to
+Testing a compiler like the \lang{} compiler is a non trivial task to
 accomplish. Ideally, one would have unit testing implemented for each process in the
-compiler as well as integration tests between the different processes
-to minimize and catch potential issues which is critical for a compiler as it would
+compiler as well as integration tests between the different processes to minimize and
+catch potential issues. It is critical for a compiler to be well tested as it would
 be impossible for a developer to debug their own code if they cannot trust the
 behaviour of the language. \\
 
 There are some impracticalities in unit-testing each process in the \lang{} compiler
 which are severe enough that their cost-benefit is deemed too steep a price for this
 project. The following sections are dedicated to justifying these missing tests and
-and why only tests for the \borrowChecker{} has been written.
-lastly we will go over the final testing results.
+and why only tests for the \borrowChecker{} have been written.
+Lastly we will go over the final testing results.
 
 \subsection{Testing Issues}
 
-There are several issues that makes it excessively difficult to test each section of
-the \lang{} compiler separately. This means that only two types of tests can be
-performed; static analysis and full pipeline testing. 
+There are several issues that makes it excessively difficult to test each component of
+the \lang{} compiler separately. This means that only integration tests can be
+performed, and only to test the \borrowChecker{} and the full compiler process. 
 
 \subsubsection{Lexial Analysis Testing}
 
@@ -34,41 +34,39 @@ confirm that behavour of the \lexer{}.
 \subsubsection{Parser Testing}
 
 The \parser{} suffers from similar issues to testing as the \lexer. In theory we can
-parse a test program, and build by hand a \ast{} to represent the expected \ast{}
-if the two tree structures match, then we can pass the test. \\ 
+parse a test program, and build an \ast{}, by hand, to represent the expected \ast.
+If the two tree structures match, then we can pass the test. \\ 
 
-The issue once again lies in the impractical amount of time, which it would take to
+The issue once again lies in the impractical amount of time which it would take to
 manually craft the \ast{} of different test programs. Further adding to the
 impractically is the fact that this process is much more error prone than that of the
-\lexer. As the test cases become more complex to cover different edge cases the
-chance that a test is failing due to a bug in the test itself increases
-exponentially. Thus making this sort of hand written too time consuming to perform.
+\lexer. The chance that a test case fails increases exponentially as test cases
+increase in complexity to cover edge cases.
 
 \subsubsection{Static Analysis Testing}
 \label{sec:testStatic}
 
-Static Code analysis turns out to be quite feasible to perform for the
+Static code analysis turns out to be quite feasible to perform for the
 \borrowChecker{} and thus several tests
-have been written to test this section of the \static. Here we can simply parse a
-test program through the \lexer{} and the \parser{} then once the type checking and
-borrow checking visitors analize the \ast{} we can simply assert whether or not the
-visitors are expected to throw an error.
-
+have been written to test this section of the \static. Here we can pass a
+test program through the \lexer{} and the \parser{}. Once the type checking and
+borrow checking visitors analyse the \ast{}, we can assert whether or not the
+visitors are expected to throw an error. \\
 Their are some issues here in regards to the \typeChecker{} which makes it possible
-to only do limited testing on this process. 
+to only do limited testing on this process. \\ 
 
 One kind of tests are to run similar tests as the \borrowChecker{} and simply
 asserting if certain programs are valid from the standpoint of the \typeChecker. This
-approach is possible, but it offers only incomplete insight into the \typeChecker{}.
-This is because the \typeChecker actively modifies the state of the \ast{} on which
-it operates mening that the aformentioned tests are incomplete as they only tell us
+approach is possible, but it offers only incomplete insight into the \typeChecker.
+This is because the \typeChecker{} actively modifies the state of the \ast{} on which
+it operates meaning that the aformentioned tests are incomplete as they only tell us
 if compilation will stop due to the \typeChecker{} it does not tell us if the
 \typeChecker{} correctly identified the different types and correctly assigned them
 to their respective expressions. \\
 
-To achieve the later information from testing, one runs into similar problems as those
-encountered when testing the parser itself, in that one would have to manually craft
-\ast s for testing and manually assign the types for all their expressions before
+To ascertain the later information from testing, one runs into similar problems as those
+encountered when testing the \parser{}, in that one would have to manually craft
+\ast s for testing, and manually assign the types for all their expressions, before
 asserting that the types of each node in the the generated and hand crafted \ast s
 are as expected.
 
@@ -80,13 +78,14 @@ Testing the \codeGen{} carries different impracticalities. It would still be
 extremely time consuming to write the expected IR of any test program, but there are
 different issues at play as well. 
 
-Once the LLVM backend converts an \ast{} into an LLVM IR code, it performs certain
-optimizations - These optimizations make it virtually impossible to write any IR
-testing because it is uncertain what optimizations can be expected by LLVM.
+Once the LLVM backend converts an \ast{} into LLVM IR code, it performs certain
+optimizations - These optimizations make it virtually impossible to write any
+\codeGen{}
+tests because it is uncertain what optimizations can be expected by LLVM.
 
 \subsection{Testing Results}
 
-When testing the \borrowChecker{} as described in section~\ref{sec:testStatic} it
+When testing the \borrowChecker{} as described in section~\ref{sec:testStatic}, it
 becomes clear that the \borrowChecker{} works in most intended use cases. There is
 currently one failing test, which is closely related to the issues discussed in
 section~\ref{sec:BorrowCheckerImpl}, talking about the \borrowChecker's issues in

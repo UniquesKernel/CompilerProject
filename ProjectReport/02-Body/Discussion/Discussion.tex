@@ -24,42 +24,43 @@ Early in the project an attempt to write a custom \lexer{} and \parser{} was
 made, which turned out to be very complicated and impeding to the progress of the
 overall project. A decision was made to use tools, such as \lexerGen{} and
 \parserGen{}, to generate the \lexer{} and the \parser{} from specification files.
-This significantly speed of the process of parsing the source code into an \ast{}
+This significantly sped up of the process of parsing the source code into an \ast{}
 which is the fundamental structure for any further work in interpreting or compiling
 a programming language. This switch turned out to be very beneficial as language
 syntax could now be added very quickly allowing our focus to be turned to code
 generation rather than struggling with syntax implementation. \\ 
 
-Next comes a decision to use the visitor pattern to effectively walk the newly
-generated \ast{}, this decision turns out to be invaluable, as it modulized the code
-to an extend where new features such as the \typeChecker, \borrowChecker{} and
+Next comes the decision to use the visitor pattern to effectively walk the newly
+generated \ast{}. This decision turned out to be invaluable, as it modulized the code
+to an extend where new features such as the \typeChecker, \borrowChecker{}, and
 \codeGen{} could be added in a non intrusive way, that didn't require changing the
-\ast{} and each visitor implementation was loosely coupled from the the others. \\
+\ast. Thus each visitor implementation ends up being loosely coupled. \\
 
 Coming back to the heuristic nature of development, after the implementation of the
-\codeGen. The next logical step, seems to be to add type checking and borrow checking
-to the compiler infastructure, a task that has now been trivialized by the visitor
-pattern. While implementing the \borrowChecker{} it becomes apparent quite late in
+\codeGen, the next logical step, seemed to be to add type checking and borrow checking
+to the compiler infastructure. A task that had now been trivialized by the visitor
+pattern. While implementing the \borrowChecker{} it became apparent quite late in
 the development process that many of the required lanaguage features necessary for
-the \borrowChecker{} to add value to the language and the compiler - are missing. \\
+the \borrowChecker{} to add value to the language and the compiler - were missing. \\
 
-While the \borrowChecker{} adds a little bit of value to the current state of \lang{}
+While the \borrowChecker{} adds a little bit of value to the current state of
+\lang{},
 in hindsight much of the value of the \borrowChecker{} comes from it's ability to
 prevent issues when dealing with heap allocated memory and concurrency, not when
 dealing with stack allocations as this is automatically cleaned up when exiting any
-scope. In hindsight many of the restrictions added to stack based memory comes as a side
+scope. Many of the restrictions added to stack based memory comes as a side
 effect to the restrictions that the \borrowChecker{} puts on heap allocated memory. 
 
-The time spent on implementing the \borrowChecker{} would have been better
+The time spent on implementing the \borrowChecker{} might have been better
 spent implementing language features which could benefit from the use of a
 \borrowChecker{} later, as \lang{} matures as a language.
 
 \subsubsection{Type Checking and Immutability}
 
-Unlike the \borrowChecker{} a more nuanced argument can be made for the
+Unlike the \borrowChecker, a more nuanced argument can be made for the
 implementation of the \typeChecker{} and Immutability in \lang. On one side the
 \typeChecker{} much like the \borrowChecker{} detracts from the development of
-\lang{} which takes time away from adding much needed features such as the ability
+\lang{} taking time away from adding other features such as the ability
 to read and write to standard output and standard input as well as features such as
 arrays, strings and heap allocations, which when mature better justify the need for a
 \typeChecker{} and a \borrowChecker. \\ 
@@ -71,16 +72,16 @@ and strongly typed language and so an argument can be made that evolving the
 correctly interact with already existing features in the inteded manner. It can be
 speculated that type checking is an integral enough part of a language that adding it
 afterwards becomes too complicated as the scope of interactions between different
-types is more difficult to handle as an after thought. \\ 
+types is more difficult to handle as an afterthought. \\ 
 
 \subsubsection{Code Generation and LLVM}
 
-Code generation is a non trivial task, to convert a high level representation like an
+Code generation is a non trivial task; to convert a high level representation like an
 \ast{} into assembly or machine level code would require deep knowledge of the targeted
 architecture and even more modulization if the code generation needs to be platform
 agnostic. The choice to leverage LLVM as a code generation backend is a choice that
 aims to keeps the focus on the implementation logic rather than on
-the complexity of low-level gode generation. Leading to vastly faster development of
+the complexity of low-level code generation. Leading to vastly faster development of
 new language features. Most modern compilers today leverage LLVM for this task, with
 the exception of the \texttt{Haskell} compiler and even so it lets you swap in the
 LLVM code generator backend instead of its own native backend should it be necessary.
@@ -112,16 +113,16 @@ even specify how the variable should be aligned in memory.\\
 The LLVM backend then takes care of making sure that the appropriate code is
 generated based on our instructions.
 
-If the project, was writting our own code generator from scratch it would have been
+If the project was writing our own code generator from scratch, it would have been
 vastly more time consuming to do so, as intimate knowledge is needed about the
-targeted architecture and it would have been impossible to write a platform agnostic
+targeted architecture. It would have been impossible to write a platform agnostic
 code generator capable of generating assembly instructions for a wide range of
-architectures. Thus the choice to use LLVM has saved a significant amount of time and
+architectures. The choice to use LLVM has saved a significant amount of time and
 without doubt ensured more reliable code generation. \\
 
 The downside of LLVM is arguably its vast and very complex API which hides away the
-process of generating code, which depending on a projects need might not be desirable
-but unless a code generator is the core feature of the project this is not so much a
+process of generating code which, depending on a projects need, might not be
+desirable. Unless a code generator is the core feature of the project this is not so much a
 drawback as an advantage. The really issue is that due to the vastness of the API
 it's impossible to learn all the features that LLVM has to offer which often means
 that as one reads through its documentation, one often stumbles upon features that
@@ -131,7 +132,7 @@ An example is they way scopes are handled by the \lang{} compiler which is a ver
 manual insertion and removal of value in a stack and map based approach. Later in the
 development it seems that LLVM itself has a way of implementing a symbol table to
 track symbols and scopes. By the time one discovers these new features it's
-impossible to swap to using this new feature without rewritting the code generator.
+impossible to swap to using this new feature without rewriting the \codeGen.
 
 \subsection{The Process}
 

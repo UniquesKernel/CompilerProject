@@ -4,8 +4,10 @@
 The \ast{} of a typical \lang{} program can typically be divided into three
 sections; the program layer, the function layer and the expression layer (see
 figure~\ref{fig:astStruct}). Each node in the \ast{} correspond one-to-one with a
-type of expression in \lang{} but without loss of generality they will just be
-refered to as nodes or expressions.
+type of expression in \lang{} and will hereafter be refered to as nodes or
+expressions. 
+
+\newpage 
 
 \begin{figure}[ht]
   \centering
@@ -24,8 +26,8 @@ refered to as nodes or expressions.
       
     }
 
-    \node[draw] (int1) at (-5,-4) {expr 1};
-    \node[draw] (int2) at (-3,-4) {expr 2};
+    \node[draw] (int1) at (-5,-4) {Expr 1};
+    \node[draw] (int2) at (-3,-4) {Expr 2};
 
     \draw[] (func1) -- (int1);
     \draw[] (func1) -- (int2);
@@ -59,9 +61,9 @@ expressions.}
 
 It is this structure on which the \typeChecker, the \borrowChecker, and the
 \codeGen{} will operate to produce an object file which the \gcc{} can turn into an
-excutable file. The use of the visitor pattern (see section~\ref{sec:VisitorDesign}) is
-specifically used to facilitate a depth first left to right traversal of the \ast{} to do
-type checking, borrow checking and code generation.
+excutable file. The use of the visitor pattern (see section~\ref{sec:VisitorDesign})
+is specifically used to facilitate a depth first, left to right traversal of the
+\ast{} to do type checking, borrow checking and code generation.
 
 This ensures the code is analyzed in the same order in which it appears in the
 source code.

@@ -1,23 +1,36 @@
 \subsection{Type Checker}
 \label{typecheckImpl}
 
-The type checker implements a visitor, as described in section
-\ref{sece:Design}. The types available are \textit{int}, \textit{float},
-\textit{char}, \textit{bool}, \&\textit{int}, \&\textit{float}, \&\textit{char} and
-\&\textit{bool}. To keep track of the type of each expression, the base expression (that all expressions inherit from) was given an attribute "type", with public get and set functions. The types where denoted with string types. It was considered using an Enumerator, but in order to get usable error messages from the \lang{} compiler, it was necessary to have the types as string anyway. Having the types as strings also allows for easy expansion of the number of permitted types, as only terminal expressions determines type.\\
+The types available are \texttt{int}, \texttt{float}, \texttt{char}, \texttt{bool},
+and using a \texttt{\&} prefix to denote references. To keep track
+of the type of each expression, the base expression (that all expressions inherit
+from) was given an attribute type, with public get and set functions. The types
+where denoted with string types. It was considered using an enumerator, but in order
+to get usable error messages from the \lang{} compiler, it was necessary to have the
+types as \texttt{string} anyway. Having the types as \texttt{string} also allows for easy expansion of
+the number of permitted types, as only terminal expressions and variable expressions determines type.\\
 
-Variables are handled with a symbol table that maps the variable identifier to its type. As it is possible to have several variables with the same name if they are in different scopes, the symbol table is actually implemented as a stack of maps, each corresponding to  a single scope. This is explained in more detail in section \ref{sec:CodeGenImplement}, as it is the same technique used in Code Generation.
+Variables are handled with a symbol table that maps the variable identifier to its
+type. As it is possible to have several variables with the same name if they are in
+different scopes, the symbol table is actually implemented as a stack of maps, each
+corresponding to  a single scope. This is explained in more detail in section
+\ref{sec:CodeGenImplement}, as it is the same technique used by the \codeGen.
 
 \subsubsection{Type in AST}
 
 The \codeGen{} and \borrowChecker{} need to know the types of certain expressions,
-which poses a small problem. Most expressions do not know what their type is. I.e. a
+which poses a small problem. Most expressions do not know what their type is, i.e. a
 binary expression knows only which two expressions to work on, but not what type they
-are. Only terminal and assignment expressions know their own type. In order for the \borrowChecker{} and \codeGen{} to work, each expression therefore must be given a type. This task falls to the \typeChecker{}. As it checks that the type safty is kept it calculates the type of every expression, and, once certain that the expression does not violate type safety, sets the type field in the expression to the calculated type.\\
+are. Only terminal and assignment expressions know their own type. In order for the
+\borrowChecker{} and \codeGen{} to work, each expression therefore must be given a
+type. This task falls to the \typeChecker{}. It calculates the type of every
+expression, and, once it is certain that the expression does not violate type safety,
+it sets the type field in the expression to the calculated type.\\
 
 This introduces a bit of coupling, as the later modules depend on the \typeChecker{}
-setting the types in the AST, but the alternative is to calculate the types when
-creating the tree, and again in the \typeChecker, it was decided that a slight
-coulping was preferable to this double work. It is of course still possible to use
+setting the types in the \ast. The alternative is to calculate the types when
+creating the tree, and again with the \typeChecker. It was decided that a slight
+coupling was preferable to this double work. It is of course still possible to use
 the modularity that the visitor pattern gives, as one can easily still swap the
-\typeChecker{} with another, as long as the new \typeChecker{} also writes the types to the AST.
+\typeChecker{} with another, as long as the new \typeChecker{} also writes the types
+to the \ast.

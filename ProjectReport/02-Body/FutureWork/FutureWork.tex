@@ -1,38 +1,38 @@
 \section{Future Work}
 \label{sec:FutureWork}
 
-Considering the results as laid out in Section~\ref{sec:Discussion}; what work is left
+Considering the discussion as laid out in Section~\ref{sec:Discussion}; what work is left
 unfinished and what else can then be added to the scope of the project in the future?
-For a good overview of the possible future work let's split this into three sections;
+For a good overview of the possible future work has been split into three sections;
 unfinished work, feature work and tooling.
 
 \subsubsection{Unfinished Work}
 \label{sec:unfinished}
 
 When looking strictly at the objectives of the project, the \borrowChecker{} is the
-single largest missing piece of work. To fully complete the project's objective the
+single largest missing piece of work. To fully complete the project's objectives the
 current issues with the \borrowChecker{} needs to be fixed. 
 
-Further, while not strictly related to the objectives of the project, having the
-ability to read inputs at runtime, is a major missing feature when considering the
+While not strictly related to the objectives of the project, having the
+ability to read inputs at runtime is a major missing feature, when considering the
 current state of the project.
 
 \subsubsection{Feature Work}
 \label{sec:feature}
 
 \lang{} is a very minimalistic language and so it lacks many features that is
-currently taken for granted in many languages, among these features are loops,
+currently taken for granted in many languages, among these features are traditional loops,
 arrays, and ways to combine associated data types, like algebraic types like in
 \texttt{Haskell} or structs like in \texttt{C}.\\
 
 \lang{} currently lack any support for heap allocated memory which is a very powerful
-feature of most modern programming languages. The inclusion of more data types like
-fixed size array is also a natural next step for \lang's features. With heap
-allocations come a whole new set of rules for the \borrowChecker{} which it would
-need to be extended to handle. \\
+feature in most modern programming languages. The inclusion of more data types like
+fixed size arrays is also a natural next step for \lang's features. With heap
+allocated memory, the \borrowChecker{} becomes a much more integral part of \lang{},
+by ensuring memory is allocated and accessed safely.\\
 
 To help better organize the code base adding a way of supporting multiple files and
-importing functions and other future features into the files where they are relevant
+importing functions and other future features into files where they are relevant
 would be a huge step when it comes to new features. \\
 
 The creation of a standard library, would help \lang{} significantly as it would help
@@ -45,14 +45,14 @@ safety it is also a very natural concept to add to the language at large.\\
 
 One feature related to the use of LLVM which would act as a natural extension to its
 current use would be to allow \lang{} to use its own runtime setup rather than the
-setup provided by the \gcc{} which would allow PIE (see section~\ref{sec:Output}) to be
+setup provided by the \gcc. This would allow PIE (see section~\ref{sec:Output}) to be
 re-enabled which would be very desirable when the language is extended to allow user
 input as it would help prevent certain vulnerabilities.
 
 \subsubsection{Tooling} \label{sec:tooling}
 
 Any language and compiler needs great tooling to support the ease of using the
-language. Language like \texttt{Rust} have the Cargo tool, \texttt{C/C++} have tools like make
+language. Languages like \texttt{Rust} have the Cargo tool, \texttt{C/C++} have tools like make
 and cmake, \texttt{Haskell} have the stack and cabal tools. When considering any
 future work, tools like these are therefore natural to consider for \lang{} to help
 manage dependencies, install dependencies and configure the compiler, with debugging,

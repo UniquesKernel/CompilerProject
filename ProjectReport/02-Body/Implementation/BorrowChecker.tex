@@ -12,14 +12,14 @@ in section~\ref{sec:LanguageDesign} and section~\ref{sec:BorrowCheckerDesign}. \
 Consider the code snippet as provided in listing~\ref{lst:referenceExample}. When the
 \borrowChecker{} needs to evaluate if a reference assignment is legal, it retrieves
 the a list of existing references to the variable that is being referenced from the
-\texttt{referenceMap} and then does some checks to ensure that the \ast{} is in
+\texttt{referenceMap} and then checks that the \ast{} is in
 compliance with the rules laid out in section~\ref{par:Ownership}.
 
 \begin{lstlisting}[
   language=c++,
   numbers=left,
   frame=single,
-  caption={Code showing a snippet of the referenceAssignment function in the \lang{}
+  caption={Code showing a snippet of the \texttt{referenceAssignment} function in the \lang{}
   \borrowChecker{} implementation},
   label={lst:referenceExample},
   showstringspaces=false,

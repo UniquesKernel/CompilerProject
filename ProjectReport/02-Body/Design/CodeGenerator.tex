@@ -1,7 +1,11 @@
 \subsection{Code Generator}
-\label{sec:codeGeneratorDesign}
-Transforming the \ast{} into executable code is the task of the \codeGen. As it works on the \ast{}, it is designed to use the visitor pattern. We decided early in the process that the code generation should use the LLVM package.\footnote{https://llvm.org} As such the design of the code generation conforms to the requirements of LLVM. Set-up of the LLVM environment is handled in the constructor of the code generator visitor.\\
-As described in section \ref{sec:LLVM}, the code generation creates an object (.o)
-file. This can then be compiled with GCC or any other C compiler. Because of this, we
-don't create an entry point. This is in part because GCC does it for us, but also to
-allow \lang{} to be used to create functions for other programming languages. 
+\label{sec:codeGeneratorDesign} 
+
+Transforming the \ast{} into executable code is the task of the \codeGen. As it works
+on the \ast{}, it is designed to use the visitor pattern. The \codeGen{} uses the
+LLVM package\cite{LLVM}. As described in section \ref{sec:LLVM}, the code generation
+creates an object (.o) file. This can then be compiled with GCC or any other C
+compiler. Because of this, we don't create an entry point. This is in part because
+GCC does it for us, but also to allow \lang{} to be used to create functions for
+other programming languages that also uses the GCC compiler. 
+

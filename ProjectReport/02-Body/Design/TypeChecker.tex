@@ -1,30 +1,36 @@
-\subsection{Type Checker}
+\subsection{\typeChecker{}}
 \label{sec:typeCheckerDesign}
-The type checker implements a visitor (see sec \ref{sec:VisitorDesign}). 
-Because its primary purpose is to ensure type safety, the main part of the expression nodes that it accesses it the type field. It of course also accesses the children of the node.\\
+The \typeChecker{} implements a visitor (see section \ref{sec:VisitorDesign}). 
+Because its primary purpose is to ensure type safety, the main part of the expression
+nodes that it accesses is the type field. It of course also accesses the children of
+the nodes.\\
 
-The types of the nodes will be verified using the following rules:
+The type of the nodes will be verified using the following rules:
 \begin{enumerate}
 
-\item All nodes has the type of their child with following exceptions/clarifications:
+\item All nodes has the type of their children with following exceptions/clarifications:
 \begin{enumerate}
-\item Terminal expressions and variables determine their own type
-\item Binary Expression Comparisons ($<$, $>$, $==$ and $!=$) has type \textit{bool}
-\item Binary Expression involving references are automatically converted to the primitive type and not to a reference type.
-\item Blocks get the type of their return statements. 
-\item If statements and functions has the type of the block(s)
+\item Terminal expressions and variables determine their own type.
+\item Binary expression comparisons ($<$, $>$, $==$ and $!=$) are type \textit{bool}.
+\item Binary expressions involving references are primitive types and not reference
+  types.
+\item Blocks are the type of their return statements. 
+\item If statements and functions are the type of the block(s).
 \end{enumerate}
-\item Binary expressions: Both children must have the same type
+\item Binary expressions: Both children must be the same type.
 \item Binary expressions: References are threated as same type as the
   variable they reference.
-\item All return statements in a block must have the same type
-\item If/else statement blocks must be the same type
-\item Variables must be assigned a value of its declared type
-\item Function block type must match declared function return type
+\item All return statements in a block must be the same type.
+\item If/else statement blocks must be the same type.
+\item Variables must be assigned a value of its declared type.
+\item The type of a function body must match its declared return type.
 \end{enumerate}
 
 The majority of nodes are created without any explicit type (indeed only variable
 assignment and terminal expressions can know their own type). This is not immediately
-a problem, as the type checker is entirely capable of cascading types up through the
+a problem, as the \typeChecker{} is entirely capable of cascading types up through the
 tree. It is however sometimes necessary to check the type of an expression at a later
-stage of the compile process (eg. in code generation, when allocating space for a variable). As such we decided that the type checker, since it was already calculating the type of the node, should save the type to the particular node, so that it can be accessed by the following visitors.
+stage of the compile process (eg. in code generation, when allocating space for a
+variable). As such we decided that the \typeChecker, since it was already calculating
+the type of the node, should save the type to the particular node.
+

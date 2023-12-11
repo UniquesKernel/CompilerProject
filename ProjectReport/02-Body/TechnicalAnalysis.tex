@@ -15,7 +15,7 @@ how \texttt{Rust} has organized its compiler architecture.
     \def\datas{{Source Code}, {Source Code}, {Token Stream}, {AST}, {HIR
     Representation}, {MIR Representation}, {Binary File}}
  
-    \node[draw, rectangle, minimum height=1cm, minimum width=3cm] (node1) {Input};
+    \node[draw, rectangle, minimum height=.7cm, minimum width=3cm] (node1) {Input};
 
     % Loop through each word
     \foreach \word [count=\i] in \words {
@@ -25,10 +25,10 @@ how \texttt{Rust} has organized its compiler architecture.
       \ifnum\i=1\relax
       \else 
         \ifthenelse{\equal{\word}{HIR lowering} \OR \equal{\word}{MIR lowering}} {
-          \node[draw, rectangle, minimum height=1cm, minimum width=3cm, below=of
+          \node[draw, rectangle, minimum height=.7cm, minimum width=3cm, below=of
             node\prevIndex, yshift=.5cm, anchor=north] (node\i) {\word};
         }{
-          \node[draw, rectangle, minimum height=1cm, minimum width=3cm, below=of
+          \node[draw, rectangle, minimum height=.7cm, minimum width=3cm, below=of
             node\prevIndex, yshift=.5cm] (node\i) {\word};
         }
       \fi
@@ -109,7 +109,7 @@ found to take too much time away from the goal of the project. To keep the focus
 the objective of \lang{} it was instead decided that it would be better to use a tool
 to generate the \parser{}.
 
-\subsubsection{\parserGen{}}
+\subsubsection{Bison}
 \label{sec:bison}
 
 \parserGen{} is a prominent parser generator, part of the GNU project, capable of
@@ -138,7 +138,7 @@ These steps effectively correspond to a \static{}. \texttt{Rust}, however, takes
 to convert it's \ast{} into different intermediate representations namely a
 high-level and medium-level intermediate representation, which it claims makes type
 checking and borrow checking simpler to perform in contrast to working directly on
-the \ast. 
+the \ast.
 
 \lang{} doesn't implement these types of conversions and instead works directly with
 the \ast{} when doing type checking and borrow checking and collects these steps in a

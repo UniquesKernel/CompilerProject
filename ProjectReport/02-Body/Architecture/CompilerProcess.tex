@@ -2,11 +2,13 @@
   \begin{center}
     \begin{tikzpicture}
 
-      \node[draw, rectangle, minimum width=4cm] (source) {Source File};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of source] (lexer) {\lexer};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of lexer] (parser)
+      \node[draw, rectangle, minimum width=4cm, minimum height = .7cm] (source) {Source File};
+      \node[draw, rectangle, minimum width=4cm, below=0.5cm of source, minimum height
+        = .7cm] (lexer) {\lexer};
+      \node[draw, rectangle, minimum width=4cm, below=0.5cm of lexer, minimum height
+        = .7cm] (parser)
         {\parser};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of parser, align=center]
+      \node[draw, rectangle, minimum width=4cm, below=0.5cm of parser, align=center]
         (static) {\static\\[0.5em] % Increased height to accommodate inner nodes
       % Inner nodes for Type Checker and Borrow Checker
       \begin{tikzpicture}
@@ -19,11 +21,14 @@
 
       \end{tikzpicture}
       };
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of static]
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of static, minimum
+      height = .7cm]
       (codeGen) {\codeGen};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of codeGen]
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of codeGen, minimum
+      height = .7cm]
       (object) {\gcc};
-      \node[draw, rectangle, minimum width=4cm, below=0.7cm of object] (exec) {Executable};
+      \node[draw, rectangle, minimum width=4cm, below=0.7cm of object, minimum height
+      = .7cm] (exec) {Executable};
 
 
       \draw[->,thick] (source) -- (lexer) node[midway, right] {Source Code};

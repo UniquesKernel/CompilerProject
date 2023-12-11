@@ -84,11 +84,11 @@ rules laid out in figure~\ref{fig:assignmentRule}.
   label={lst:assignmentRule},
   numbers=left,
   ]
-  fn main(): int {
-    let x: int = 1; // compiles
-    let x = 1; // does not compile
-    return 0;
-  }
+fn main(): int {
+  let x: int = 1; // compiles
+  let x = 1; // does not compile
+  return 0;
+}
 \end{lstlisting}
 
 This ensures clarity in accordance with the objectives of \lang{}, since a
@@ -110,15 +110,15 @@ cannot be changed after its initialization.
     }, 
     numbers=left
   ]
-  fn main(): int {
-    let x: int = 1; 
-    x = 2; // does not compile as x is immutable
+fn main(): int {
+  let x: int = 1; 
+  x = 2; // does not compile as x is immutable
 
-    let mut y: int = 1; 
-    y = y + 1; // does compile as y has been declared mutable
+  let mut y: int = 1; 
+  y = y + 1; // does compile as y has been declared mutable
 
-    return 0;
-  }
+  return 0;
+}
 \end{lstlisting}
 
 By forcing developers to be explicit about their intend to change data, \lang{}
@@ -130,6 +130,8 @@ developer might have intended for a variable to never change but forget to ensur
 by declaring the variable as \texttt{const}. In \lang, however, a developer is protected from
 such mistakes as they must be explicit about their intent to change a variable at
 runtime and can't do so by accident.
+
+\newpage
 
 \paragraph{Ownership and Borrowing} \hfill 
 \label{par:Ownership}

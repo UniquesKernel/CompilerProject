@@ -64,13 +64,15 @@ To store variables we need a symbol table. The first solution is to create a map
 the variable identifier to the \texttt{llvm::AllocaInst}. This works well as long as
 no variables have the same name. This is not good enough, as it should be possible to
 reuse variable names as long as it is in different scopes. The symbol table therefore
-needs to be expanded to handle scopes.\\ To implement scope in the symbol table, we
-changed it, from a map of string identifier to variable allocation, to a stack of
-such maps. This way, when we enter a new scope, we can push a new map onto the stack,
-thus getting a clean symbol table. When we go out of scope, we the simply pop the
-latest map off the stack, removing the variables that were created in the scope. This
-also means that it is possible to access variables from higher scopes, as they will
-be stored in one of the maps on the stack.\\
+needs to be expanded to handle scopes.\\ 
+
+To implement scope in the symbol table, we changed it, from a map of string
+identifier to variable allocation, to a stack of such maps. This way, when we enter a
+new scope, we can push a new map onto the stack, thus getting a clean symbol table.
+When we go out of scope, we the simply pop the latest map off the stack, removing the
+variables that were created in the scope. This also means that it is possible to
+access variables from higher scopes, as they will be stored in one of the maps on the
+stack.\\
 
 To make sure we access the last defined variable with a given identifier, we make a
 copy of the stack and check if the variable is in the top map. If not, the top map

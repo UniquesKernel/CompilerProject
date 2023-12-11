@@ -5,9 +5,10 @@
 \centering
   \midsepremove{}
   \begin{tabular}{|l|l|l|}
+  \rowcolor{gray!50}
     \toprule
     Symbol & Token & Regular Expression \\
-    \midrule
+    \hline \rule{0pt}{10pt}
     "fn" & FUNCTION & \regex{"fn"} \\
     "true", & T\_TRUE & \regex{"true"} \\
     "false" & T\_FALSE & \regex{"false"} \\
@@ -16,7 +17,7 @@
     "else" & ELSE\_TOKEN & \regex{"else"} \\
     "let" & KW\_VAR & \regex{"let"} \\
     "mut" & KW\_MUT & \regex{"mut"} \\
-    \hline
+    \hline \rule{0pt}{10pt}
     "\&int" & TYPE\_REF & \regex{"&int"} \\
     "\&bool" & TYPE\_REF & \regex{"&bool"} \\
     "\&float" & TYPE\_REF & \regex{"&float"} \\
@@ -26,19 +27,17 @@
     "float" & TYPE & \regex{"float"} \\
     "char" & TYPE & \regex{"char"} \\
     "\&" & KW\_REF & \regex{"&"} \\
-    "\&mut" & KW\_MUT\_REF & \regex{"&mut"} \\
-    \hline
+    \hline \rule{0pt}{10pt}
     "==", "!=" & EQ, NEQ & \regex{"=="}, \regex{"!="} \\ 
     "\l", "\g" & LT, GT & \regex{"<"}, \regex{">"} \\
     "*", "/" & MUL, DIV & \regex{"*"}, \regex{"/"} \\
     "+", "-" & PLUS, MINUS & \regex{"+"}, \regex{"-"} \\
-    "\%" & MOD & \regex{"\%"} \\
-    \hline
+    \hline \rule{0pt}{10pt}
     Identifiers & IDENTIFIER & \regex{[a-zA-Z][a-zA-Z0-9]*} \\
     Character literals & TOKEN\_CHAR & \regex{[a-zA-Z]} \\
     Floating point numbers & TOKEN\_FLOAT & \regex{[0-9]+\.[0-9]+} \\
     Integer literals & TOKEN\_INT & \regex{[0-9]+} \\
-    \hline
+    \hline \rule{0pt}{10pt}
     "\{" "\}" & LBRACE, RBRACE & \regex{"{" "}"} \\
     ";" & END\_OF\_LINE & \regex{[;]} \\
     ":" & COLON & \regex{":"} \\

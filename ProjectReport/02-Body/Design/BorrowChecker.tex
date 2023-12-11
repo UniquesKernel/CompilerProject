@@ -13,12 +13,12 @@ references of each variable.
   label={lst:BorrowCheckerCode},
   caption={Example Program to illustrate how the \borrowChecker{} is designed   to walk the \ast{} and use tables to keep track of references},
   ]
-  fn main(): int {
-    let mut x: int = 1;
-    let y: &int = &mut x; // declaration of mutable reference
-    let z: &int = &x; // declaration of immutable reference
-    return 0;
-  }
+fn main(): int {
+  let mut x: int = 1;
+  let y: &int = &mut x; // declaration of mutable reference
+  let z: &int = &x; // declaration of immutable reference
+  return 0;
+}
 \end{lstlisting}
 
 Consider the example program (see Listing~\ref{lst:BorrowCheckerCode}) and the
@@ -73,7 +73,6 @@ In the example program, the \borrowChecker{} will add the \texttt{x} variable to
 \texttt{x} to ensure it is an existing variable that can be referenced, then it will
 store \texttt{y} in the \texttt{symbolTable} as well as a reference in the
 \texttt{referenceTable} to determine if future references are legal to perform. 
-
 Once it reaches the last instruction, it will look up \texttt{x} in the
 \texttt{symbolTable}, which is fine, but it will determine from the
 \texttt{referenceTable} that a mutable reference already exists. Thus the last
